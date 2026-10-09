@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Manual do Plugin SDD</title>
+<script>
+(function () {
+  try {
+    var saved = localStorage.getItem("sdd-manual-theme");
+    var dark = saved ? saved === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  } catch (e) {
+    document.documentElement.setAttribute("data-theme", "light");
+  }
+})();
+</script>
+<style>
+:root {
+  --bg: #ffffff; --bg-alt: #f3f5f9; --surface: #ffffff; --text: #1b2330; --muted: #4a5565;
+  --border: #d5dae3; --accent: #1f5fbf; --accent-contrast: #ffffff; --accent-soft: #e4eefc;
+  --ok-bg: #dcf5e4; --ok-fg: #0b5a2a; --ill-bg: #fff0c9; --ill-fg: #6a4500;
+  --tip-bg: #e4f4ff; --tip-bar: #0b6fa8; --warn-bg: #fff4d6; --warn-bar: #a86a00;
+  --danger-bg: #fde7e7; --danger-bar: #b42323; --code-bg: #0d1117; --code-fg: #e6edf3;
+  --shadow: 0 1px 2px rgba(16, 24, 40, .08), 0 4px 14px rgba(16, 24, 40, .06);
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  --sidebar-w: 17rem;
+}
+html[data-theme="dark"] {
+  --bg: #0f141b; --bg-alt: #161d27; --surface: #1a222d; --text: #e6ebf2; --muted: #a9b4c3;
+  --border: #2d3846; --accent: #7db2ff; --accent-contrast: #0b1320; --accent-soft: #1b2b45;
+  --ok-bg: #12351f; --ok-fg: #8ee6a8; --ill-bg: #3d2f0a; --ill-fg: #ffd57a;
+  --tip-bg: #112b3d; --tip-bar: #5cb8f0; --warn-bg: #3a2c0b; --warn-bar: #e0a93a;
+  --danger-bg: #3d1717; --danger-bar: #ff8a8a; --code-bg: #090c11;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 4px 14px rgba(0, 0, 0, .35);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+body { margin: 0; font: 1rem/1.65 var(--font); color: var(--text); background: var(--bg); overflow-wrap: break-word; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.skip-link { position: absolute; left: .5rem; top: -4rem; background: var(--accent); color: var(--accent-contrast); padding: .6rem 1rem; border-radius: 6px; z-index: 100; font-weight: 600; }
+.skip-link:focus { top: .5rem; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Header */
+.site-header { position: sticky; top: 0; z-index: 40; display: flex; align-items: center; gap: .75rem; padding: .6rem 1rem; background: var(--surface); border-bottom: 1px solid var(--border); box-shadow: var(--shadow); }
+.site-header h1 { font-size: 1.15rem; margin: 0; line-height: 1.2; }
+.site-header .ver { display: block; font-size: .78rem; font-weight: 500; color: var(--muted); }
+.logo { flex: none; width: 2.2rem; height: 2.2rem; border-radius: 9px; background: var(--accent); color: var(--accent-contrast); display: grid; place-items: center; font-weight: 800; font-size: .8rem; letter-spacing: .02em; }
+.header-tools { margin-left: auto; display: flex; align-items: center; gap: .5rem; min-width: 0; }
+.btn { font: inherit; font-size: .9rem; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); padding: .4rem .75rem; border-radius: 8px; display: inline-flex; align-items: center; gap: .4rem; }
+.btn:hover { background: var(--accent-soft); border-color: var(--accent); }
+.btn svg { width: 1.1em; height: 1.1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.search { position: relative; min-width: 0; }
+.search input { font: inherit; font-size: .9rem; width: 16rem; max-width: 100%; padding: .45rem .7rem; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; }
+.search input::placeholder { color: var(--muted); }
+#menu-btn { display: none; }
+
+/* Layout */
+.layout { display: flex; align-items: flex-start; }
+.sidebar { position: sticky; top: 3.9rem; flex: none; width: var(--sidebar-w); height: calc(100vh - 3.9rem); overflow-y: auto; padding: 1rem; background: var(--bg-alt); border-right: 1px solid var(--border); }
+.sidebar h2 { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 .5rem; }
+.sidebar ol { list-style: none; margin: 0; padding: 0; counter-reset: nav; }
+.sidebar li { counter-increment: nav; }
+.sidebar a { display: block; padding: .38rem .6rem; border-radius: 6px; text-decoration: none; color: var(--text); font-size: .92rem; border-left: 3px solid transparent; }
+.sidebar a::before { content: counter(nav) ". "; color: var(--muted); }
+.sidebar a:hover { background: var(--accent-soft); }
+.sidebar a[aria-current="true"] { background: var(--accent-soft); border-left-color: var(--accent); font-weight: 700; color: var(--accent); }
+.sidebar a.dim { opacity: .45; }
+main { flex: 1; min-width: 0; padding: 1.5rem clamp(1rem, 4vw, 3rem) 4rem; max-width: 60rem; }
+.hero { background: linear-gradient(135deg, var(--accent-soft), var(--bg-alt)); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 2rem; }
+.hero h2 { margin: 0 0 .5rem; font-size: 1.6rem; line-height: 1.25; }
+.hero p { margin: .3rem 0; }
+#status { color: var(--muted); font-size: .9rem; min-height: 1.4em; }
+
+/* Sections */
+section.sec { margin-bottom: 3rem; }
+section.sec > h2 { font-size: 1.55rem; margin: 0 0 1rem; padding-bottom: .4rem; border-bottom: 2px solid var(--border); line-height: 1.25; }
+section.sec > h2 .n { color: var(--accent); margin-right: .35rem; }
+h3 { font-size: 1.15rem; margin: 1.6rem 0 .5rem; line-height: 1.3; }
+h4 { font-size: .95rem; margin: 0 0 .4rem; }
+p, ul, ol { margin: .6rem 0; }
+code { font-family: var(--mono); font-size: .88em; background: var(--bg-alt); border: 1px solid var(--border); padding: .08em .35em; border-radius: 5px; overflow-wrap: anywhere; }
+.hidden { display: none !important; }
+
+/* Code */
+.code { position: relative; margin: .7rem 0; background: var(--code-bg); border-radius: 10px; border: 1px solid var(--border); }
+.code pre { margin: 0; padding: 2.4rem 1rem .9rem; overflow-x: auto; max-width: 100%; }
+.code code { display: block; background: none; border: 0; padding: 0; color: var(--code-fg); font-size: .85rem; line-height: 1.55; white-space: pre; overflow-wrap: normal; }
+.code .label { position: absolute; left: .8rem; top: .5rem; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: #aab4c2; }
+.copy-btn { position: absolute; right: .5rem; top: .4rem; font: inherit; font-size: .78rem; cursor: pointer; color: #e6edf3; background: #263140; border: 1px solid #3b4859; padding: .2rem .6rem; border-radius: 6px; }
+.copy-btn:hover { background: #31404f; }
+.copy-btn:focus-visible { outline-color: #7db2ff; }
+
+/* Callouts */
+.callout { margin: 1rem 0; padding: .8rem 1rem .8rem 1rem; border-radius: 8px; border-left: 5px solid; display: flex; gap: .75rem; }
+.callout > svg { flex: none; width: 1.3rem; height: 1.3rem; margin-top: .2rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.callout p { margin: .2rem 0; }
+.callout .t { font-weight: 700; display: block; }
+.callout.tip { background: var(--tip-bg); border-color: var(--tip-bar); }
+.callout.warn { background: var(--warn-bg); border-color: var(--warn-bar); }
+.callout.danger { background: var(--danger-bg); border-color: var(--danger-bar); }
+.callout.tip > svg { color: var(--tip-bar); } .callout.warn > svg { color: var(--warn-bar); } .callout.danger > svg { color: var(--danger-bar); }
+
+/* Badges */
+.badge { display: inline-block; font-size: .72rem; font-weight: 700; letter-spacing: .03em; padding: .12rem .55rem; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.badge.verified { background: var(--ok-bg); color: var(--ok-fg); }
+.badge.illustrative { background: var(--ill-bg); color: var(--ill-fg); }
+
+/* Timeline */
+.timeline { list-style: none; padding: 0; margin: 1rem 0; display: flex; flex-wrap: wrap; gap: .6rem; counter-reset: tl; }
+.timeline li { counter-increment: tl; flex: 1 1 8.5rem; position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .6rem .7rem .6rem 2.6rem; font-size: .9rem; min-height: 3.2rem; display: flex; flex-direction: column; justify-content: center; }
+.timeline li::before { content: counter(tl); position: absolute; left: .6rem; top: 50%; transform: translateY(-50%); width: 1.5rem; height: 1.5rem; border-radius: 50%; background: var(--accent); color: var(--accent-contrast); font-weight: 700; font-size: .8rem; display: grid; place-items: center; }
+.timeline li.opt { border-style: dashed; }
+.timeline li.done { border-color: var(--ok-fg); }
+.timeline small { color: var(--muted); font-size: .76rem; }
+.states { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: .8rem 0; font-size: .82rem; }
+.states .chip { font-family: var(--mono); font-size: .78rem; padding: .25rem .55rem; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); }
+.states .chip.loop { border-style: dashed; border-color: var(--warn-bar); }
+.states .chip.done { background: var(--ok-bg); color: var(--ok-fg); border-color: var(--ok-fg); font-weight: 700; }
+.states .arrow { color: var(--muted); }
+
+/* Cards, tables */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem; margin: 1rem 0; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; box-shadow: var(--shadow); }
+.card h3 { margin: 0 0 .3rem; font-size: 1.02rem; display: flex; align-items: center; gap: .5rem; }
+.card .avatar { flex: none; width: 1.9rem; height: 1.9rem; border-radius: 8px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-weight: 800; font-size: .85rem; }
+.card p { margin: .3rem 0; font-size: .92rem; }
+.card .tag { display: inline-block; font-size: .72rem; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: .05rem .5rem; margin-right: .25rem; }
+.table-wrap { overflow-x: auto; max-width: 100%; margin: 1rem 0; border: 1px solid var(--border); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 30rem; }
+th, td { text-align: left; padding: .55rem .75rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { background: var(--bg-alt); font-size: .82rem; }
+tr:last-child td { border-bottom: 0; }
+.cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.cmp > div { border-radius: 10px; padding: .8rem 1rem; border: 1px solid var(--border); }
+.cmp .bad { background: var(--danger-bg); } .cmp .good { background: var(--ok-bg); color: var(--ok-fg); }
+.cmp .bad h4 { color: var(--danger-bar); } .cmp .good h4 { color: var(--ok-fg); }
+.cmp ul { padding-left: 1.1rem; margin: .3rem 0; }
+.cmp .bad { color: var(--text); }
+
+/* Examples */
+.example-index { columns: 2 16rem; padding-left: 1.2rem; }
+.example { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin: 1.4rem 0; box-shadow: var(--shadow); overflow: hidden; }
+.example > header { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; padding: .75rem 1rem; background: var(--bg-alt); border-bottom: 1px solid var(--border); }
+.example > header h3 { margin: 0; font-size: 1.05rem; flex: 1 1 14rem; }
+.example .num { flex: none; width: 2rem; height: 2rem; border-radius: 50%; background: var(--accent); color: var(--accent-contrast); display: grid; place-items: center; font-weight: 700; }
+.example .src { margin: 0; padding: .5rem 1rem 0; font-size: .85rem; color: var(--muted); }
+.steps { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; margin: 0; padding: .5rem 1rem 1rem; list-style: none; counter-reset: st; }
+.step { counter-increment: st; position: relative; padding: .5rem 0 .5rem 2.4rem; border-left: 2px solid var(--border); margin-left: .8rem; }
+.step::before { content: counter(st); position: absolute; left: -.85rem; top: .6rem; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); color: var(--accent); font-size: .78rem; font-weight: 700; display: grid; place-items: center; }
+.step { min-width: 0; overflow-wrap: anywhere; }
+.step h4 { color: var(--accent); }
+.example, .card, .callout, .trouble, .timeline li, .example > header > * { min-width: 0; overflow-wrap: anywhere; }
+.step p, .step ul { font-size: .94rem; }
+.step ul { padding-left: 1.2rem; }
+
+/* Trouble */
+.trouble { border: 1px solid var(--border); border-radius: 10px; padding: .2rem 1rem .8rem; margin: 1rem 0; background: var(--surface); }
+.trouble h3 { margin-top: .8rem; }
+
+/* Footer, top button */
+.site-footer { border-top: 1px solid var(--border); padding: 1rem; text-align: center; color: var(--muted); font-size: .85rem; }
+#to-top { position: fixed; right: 1rem; bottom: 1rem; z-index: 30; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity .2s; }
+#to-top.show { opacity: 1; pointer-events: auto; }
+#live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.backdrop { display: none; }
+
+/* Responsive */
+@media (max-width: 62rem) {
+  #menu-btn { display: inline-flex; }
+  .sidebar { position: fixed; z-index: 50; left: 0; top: 0; height: 100vh; width: min(18rem, 86vw); transform: translateX(-102%); visibility: hidden; transition: transform .2s, visibility .2s; box-shadow: var(--shadow); }
+  .sidebar.open { transform: none; visibility: visible; }
+  .backdrop.open { display: block; position: fixed; inset: 0; background: rgba(0, 0, 0, .5); z-index: 45; }
+  .site-header { flex-wrap: wrap; }
+  .search input { width: 100%; }
+  .search { flex: 1 1 8rem; }
+  .header-tools { flex: 1 1 14rem; }
+}
+@media (max-width: 36rem) {
+  .site-header { padding: .4rem .6rem; gap: .4rem; }
+  .site-header h1 { font-size: 1rem; }
+  .steps { padding: .5rem .6rem 1rem; }
+  .step { padding-left: 1.9rem; margin-left: .6rem; }
+  .cmp { grid-template-columns: 1fr; }
+  .site-header .ver { font-size: .72rem; }
+  .btn .lbl { display: none; }
+  .hero h2 { font-size: 1.3rem; }
+  section.sec > h2 { font-size: 1.3rem; }
+}
+
+/* Print */
+@media print {
+  :root, html[data-theme="dark"] { --bg: #fff; --bg-alt: #f3f3f3; --surface: #fff; --text: #000; --muted: #333; --border: #999; --accent: #003a8c; --code-bg: #f3f3f3; --code-fg: #000; --accent-soft: #eee; }
+  .sidebar, .backdrop, .site-header .header-tools, #menu-btn, #to-top, .copy-btn, .skip-link { display: none !important; }
+  .site-header { position: static; box-shadow: none; }
+  .layout { display: block; }
+  main { max-width: none; padding: 0; }
+  .hidden { display: block !important; }
+  .example, .card, .callout, .trouble, .code { break-inside: avoid; box-shadow: none; }
+  .code pre { overflow: visible; white-space: pre-wrap; padding-top: 1.6rem; }
+  .code code { white-space: pre-wrap; color: #000; }
+  .code .label { color: #333; }
+  a { color: #000; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+<div id="live" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<header class="site-header">
+  <button type="button" class="btn" id="menu-btn" aria-controls="sidebar" aria-expanded="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span class="lbl">Menu</span>
+  </button>
+  <span class="logo" aria-hidden="true">SDD</span>
+  <h1>Manual do Plugin SDD <span class="ver">sdd 0.1.2 · authoring 0.2.0</span></h1>
+  <div class="header-tools" role="search">
+    <div class="search">
+      <label for="q" class="sr-only">Buscar no manual</label>
+      <input id="q" type="search" placeholder="Buscar seções e exemplos..." autocomplete="off">
+    </div>
+    <button type="button" class="btn" id="theme-btn" aria-pressed="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span class="lbl" id="theme-lbl">Escuro</span>
+    </button>
+  </div>
+</header>
+
+<div class="layout">
+<div class="backdrop" id="backdrop"></div>
+<nav class="sidebar" id="sidebar" aria-label="Índice do manual">
+  <h2>Índice</h2>
+  <ol id="toc">
+    <li><a href="#visao-geral">Visão geral</a></li>
+    <li><a href="#instalacao">Instalação</a></li>
+    <li><a href="#configurar">Configurar o projeto</a></li>
+    <li><a href="#agentes-skills">Agentes e skills</a></li>
+    <li><a href="#como-pedir">Como pedir</a></li>
+    <li><a href="#exemplos">Exemplos passo a passo</a></li>
+    <li><a href="#estados-done">Estados e critérios de DONE</a></li>
+    <li><a href="#jira">Jira (opcional)</a></li>
+    <li><a href="#atualizacao">Atualização e versões</a></li>
+    <li><a href="#problemas">Solução de problemas</a></li>
+    <li><a href="#limitacoes">Limitações conhecidas</a></li>
+    <li><a href="#referencias">Referências</a></li>
+  </ol>
+</nav>
+
+<main id="conteudo" tabindex="-1">
+<div class="hero">
+  <h2>Do pedido ao DONE, com evidência</h2>
+  <p>Guia para devs que vão instalar e usar o plugin <code>sdd</code> do marketplace <code>claude-sdd-framework</code> em projetos de qualquer stack.</p>
+  <p>Os selos indicam a origem do conteúdo: <span class="badge verified">Verificado</span> comando ou comportamento confirmado no README ou nos relatórios de validação; <span class="badge illustrative">Ilustrativo</span> exemplo de como a conversa tende a ser, sem garantia de texto idêntico.</p>
+  <p id="status" aria-hidden="true"></p>
+</div>
+
+<!-- 1 -->
+<section class="sec" id="visao-geral" aria-labelledby="h-visao">
+  <h2 id="h-visao"><span class="n">1.</span>Visão geral</h2>
+  <p>O plugin <code>sdd</code> distribui o processo de engenharia SDD (Spec-Driven Development) para qualquer projeto e linguagem. Você conversa com um único agente, o <strong>TecLeader</strong>. Ele transforma o pedido em <code>spec.md</code> e <code>tasks.md</code>, delega a agentes especializados e só encerra a entrega com evidência. <span class="badge verified">Verificado</span></p>
+  <p>As regras de engenharia vão como skills; o conhecimento de cada stack fica em <code>references/</code>. A stack do projeto é declarada na seção <code>## Stack</code> do <code>CLAUDE.md</code>: os agentes não dependem de linguagem.</p>
+
+  <h3>Fluxo SDD</h3>
+  <ol class="timeline" aria-label="Fluxo SDD">
+    <li>Requirement<small>o pedido</small></li>
+    <li>Spec<small>REQs + critérios de aceite</small></li>
+    <li class="opt">Technical Design<small>quando obrigatório</small></li>
+    <li>Task<small>em <code>tasks.md</code></small></li>
+    <li>Test Design<small>rastreio REQ → teste</small></li>
+    <li>Implementation<small>backend / frontend</small></li>
+    <li class="opt">Security Review<small>quando aplicável</small></li>
+    <li>Validation<small>agente <code>tests</code></small></li>
+    <li>Correction<small>até aprovar</small></li>
+    <li class="done">Done<small>só o TecLeader encerra</small></li>
+  </ol>
+  <p>Linhas tracejadas são etapas condicionais. O design técnico é obrigatório para mudança arquitetural, novo módulo, banco de dados, contrato de API, integração externa, infraestrutura e mudança relevante de domínio; a revisão de segurança, para autenticação/autorização, dados sensíveis, entrada externa, novas dependências, segredos e infraestrutura.</p>
+
+  <h3>Papéis</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Tipo</th><th>Agentes</th><th>Pode</th><th>Não pode</th></tr></thead>
+    <tbody>
+      <tr><td>Coordenador</td><td><code>sdd:tecleader</code></td><td>delegar, aprovar design, encerrar (DONE)</td><td>ser implementador</td></tr>
+      <tr><td>Implementadores</td><td><code>sdd:backend</code>, <code>sdd:frontend</code></td><td>implementar e testar a própria feature</td><td>encerrar tasks</td></tr>
+      <tr><td>Revisão de segurança</td><td><code>sdd:security</code></td><td>reportar riscos com severidade e evidência</td><td>implementar, corrigir, encerrar</td></tr>
+      <tr><td>Validador</td><td><code>sdd:tests</code></td><td>validar requisitos, regressão, E2E, aceite</td><td>corrigir produção, encerrar</td></tr>
+      <tr><td>Arquitetural</td><td><code>sdd:infra-architect</code></td><td>decisões de infraestrutura</td><td>implementar mudanças</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout tip" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5V15h8v-1.5A6 6 0 0 0 12 3z"/></svg><div><span class="t">Dica</span><p>Perguntas, leitura de arquivos e esclarecimentos são respondidos direto pelo TecLeader, sem gerar spec nem tasks.</p></div></div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="instalacao" aria-labelledby="h-inst">
+  <h2 id="h-inst"><span class="n">2.</span>Instalação</h2>
+  <h3>Pré-requisitos <span class="badge verified">Verificado</span></h3>
+  <ul>
+    <li>Claude Code <strong>2.1.288</strong> ou superior (<code>claude --version</code>).</li>
+    <li>Git, para instalar a partir do GitHub.</li>
+    <li>Opcional: conector <strong>Atlassian</strong> no claude.ai, para ler issues do Jira.</li>
+  </ul>
+
+  <h3>A partir de uma pasta local <span class="badge verified">Verificado</span></h3>
+  <ol>
+    <li>Copie <a href="../templates/project-settings.local.json"><code>templates/project-settings.local.json</code></a> para <code>&lt;projeto&gt;/.claude/settings.json</code> e troque <code>&lt;CAMINHO_ABSOLUTO_DO_REPO_claude-sdd-framework&gt;</code> pelo caminho da pasta (use <code>/</code>).</li>
+    <li>No projeto, rode:</li>
+  </ol>
+  <div class="code" data-label="bash"><pre><code>claude plugin marketplace add "&lt;caminho&gt;/claude-sdd-framework" --scope project
+claude plugin install sdd@claude-sdd-framework --scope project
+claude plugin list        # sdd ... Status: enabled</code></pre></div>
+  <ol start="3">
+    <li>Copie <a href="../templates/CLAUDE.md"><code>templates/CLAUDE.md</code></a> para a raiz do projeto e preencha (principalmente <code>## Stack</code> e os comandos). Projeto sem <code>CLAUDE.md</code>: o TecLeader faz o onboarding.</li>
+    <li>Abra <code>claude</code> no projeto. A sessão já inicia como <code>sdd:tecleader</code> (<code>"agent": "sdd:tecleader"</code> no settings). Alternativa:</li>
+  </ol>
+  <div class="code" data-label="bash"><pre><code>claude --agent sdd:tecleader</code></pre></div>
+
+  <h3>A partir do GitHub <span class="badge verified">Verificado</span></h3>
+  <p>Use <a href="../templates/project-settings.git.json"><code>templates/project-settings.git.json</code></a> com a URL do repositório (quando ele existir). O Claude Code usa as credenciais git da sua máquina.</p>
+  <div class="callout danger" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18h.01"/></svg><div><span class="t">Perigo</span><p><strong>Nunca</strong> coloque usuário, senha ou token na URL do repositório. Use SSH ou HTTPS com o gerenciador de credenciais do git.</p></div></div>
+
+  <h3>Catálogo opcional <code>authoring</code> <span class="badge verified">Verificado</span></h3>
+  <p>Skills para criar novas skills e agentes. Sem instalação, nada com prefixo <code>authoring:</code> aparece.</p>
+  <div class="code" data-label="bash"><pre><code>claude plugin install authoring@claude-sdd-framework --scope project</code></pre></div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="configurar" aria-labelledby="h-conf">
+  <h2 id="h-conf"><span class="n">3.</span>Configurar o projeto</h2>
+  <h3><code>CLAUDE.md</code> e a seção <code>## Stack</code></h3>
+  <p>O modelo em <a href="../templates/CLAUDE.md"><code>templates/CLAUDE.md</code></a> tem estas seções: Visão do projeto, <strong>Stack</strong>, Comandos, Arquitetura e Regras específicas do projeto. A seção <code>## Stack</code> é a fonte da stack para <code>sdd:backend</code> e <code>sdd:frontend</code>.</p>
+  <div class="code" data-label="markdown (trecho do modelo)"><pre><code>## Stack
+
+### Backend
+
+- Linguagem e versão: &lt;EX.: LINGUAGEM X.Y&gt;
+- Framework e versão: &lt;FRAMEWORK X.Y&gt;
+- Gerenciador de pacotes/build: &lt;GERENCIADOR&gt;
+- Banco de dados: &lt;BANCO E VERSÃO | NÃO SE APLICA&gt;
+- Referência do plugin: `backend-engineering/references/&lt;stack&gt;.md` &lt;OU "SEM REFERÊNCIA"&gt;</code></pre></div>
+  <div class="callout warn" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><div><span class="t">Atenção</span><p>Preencha apenas com informação verificada (código, arquivos de configuração, comandos executados). O que não for conhecido fica como <code>&lt;A DEFINIR&gt;</code>. Registre na tabela de comandos somente comandos que já rodaram com sucesso.</p></div></div>
+  <p>Regras do projeto no <code>CLAUDE.md</code> complementam as do plugin e prevalecem quando mais específicas, mas <strong>não podem relaxar</strong>: segredos/credenciais, verificação SSL, confirmação de ações irreversíveis, Jira somente leitura e menor privilégio.</p>
+
+  <h3>Settings</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Template</th><th>Quando usar</th><th>Campo que você ajusta</th></tr></thead>
+    <tbody>
+      <tr><td><code>project-settings.local.json</code></td><td>marketplace em pasta local</td><td><code>source.path</code> = caminho absoluto do repositório</td></tr>
+      <tr><td><code>project-settings.git.json</code></td><td>marketplace no GitHub</td><td><code>source.url</code> = URL do repositório</td></tr>
+    </tbody>
+  </table></div>
+  <p>Os dois declaram o marketplace em <code>extraKnownMarketplaces</code>, habilitam <code>sdd@claude-sdd-framework</code> em <code>enabledPlugins</code>, definem <code>"agent": "sdd:tecleader"</code> e bloqueiam em <code>permissions.deny</code> as 16 ferramentas de escrita do Atlassian (8 do conector claude.ai e 8 do MCP remoto). <span class="badge verified">Verificado</span></p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="agentes-skills" aria-labelledby="h-ag">
+  <h2 id="h-ag"><span class="n">4.</span>Agentes e skills</h2>
+  <h3>Agentes</h3>
+  <div class="grid">
+    <article class="card"><h3><span class="avatar" aria-hidden="true">TL</span><code>sdd:tecleader</code></h3><p>Coordena, aprova e encerra. Roda como agente da sessão principal; cria spec e tasks, delega e consolida.</p><span class="tag">não implementa</span><span class="tag">Jira leitura</span></article>
+    <article class="card"><h3><span class="avatar" aria-hidden="true">BE</span><code>sdd:backend</code></h3><p>APIs, domínio, persistência, testes unitários e de integração, conforme a <code>## Stack</code>.</p><span class="tag">implementa</span></article>
+    <article class="card"><h3><span class="avatar" aria-hidden="true">FE</span><code>sdd:frontend</code></h3><p>Interfaces web, UX, acessibilidade, testes de componente, conforme a <code>## Stack</code>.</p><span class="tag">implementa</span></article>
+    <article class="card"><h3><span class="avatar" aria-hidden="true">TS</span><code>sdd:tests</code></h3><p>Validação independente: regressão, E2E, aceite.</p><span class="tag">valida</span></article>
+    <article class="card"><h3><span class="avatar" aria-hidden="true">SC</span><code>sdd:security</code></h3><p>Revisão de segurança, somente leitura. Parecer APROVADO ou RISCO IDENTIFICADO.</p><span class="tag">somente leitura</span></article>
+    <article class="card"><h3><span class="avatar" aria-hidden="true">IA</span><code>sdd:infra-architect</code></h3><p>Decisões de infraestrutura, com critérios verificáveis.</p><span class="tag">não implementa</span></article>
+  </div>
+
+  <h3>Skills</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Skill</th><th>Para que serve</th></tr></thead>
+    <tbody>
+      <tr><td><code>sdd:sdd-rules</code></td><td>regras globais de engenharia (escopo, qualidade, segurança, README, execução final); references: <code>readme</code>, <code>final-run</code>, <code>reproducibility</code></td></tr>
+      <tr><td><code>sdd:sdd-governance</code></td><td>papéis, estados, escalonamento, Jira somente leitura</td></tr>
+      <tr><td><code>sdd:backend-engineering</code></td><td>princípios de backend; references por stack</td></tr>
+      <tr><td><code>sdd:frontend-engineering</code></td><td>princípios de frontend; references por stack</td></tr>
+      <tr><td><code>sdd:requirements-grilling</code></td><td>perguntas para fechar requisitos ambíguos</td></tr>
+      <tr><td><code>sdd:bug-diagnosis</code></td><td>diagnóstico de defeitos em 5 fases</td></tr>
+      <tr><td><code>sdd:domain-modeling</code></td><td>glossário, modelo de domínio, ADR</td></tr>
+      <tr><td><code>authoring:skill-development</code></td><td>criar ou revisar skills (plugin opcional)</td></tr>
+      <tr><td><code>authoring:agent-development</code></td><td>criar ou revisar agentes (plugin opcional)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Stacks com referência</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Parte</th><th>Stack</th><th>Arquivo</th></tr></thead>
+    <tbody>
+      <tr><td>Backend</td><td>.NET</td><td><code>backend-engineering/references/dotnet.md</code></td></tr>
+      <tr><td>Backend</td><td>Python</td><td><code>backend-engineering/references/python.md</code></td></tr>
+      <tr><td>Frontend</td><td>React</td><td><code>frontend-engineering/references/react.md</code> (e <code>web-interface.md</code>)</td></tr>
+    </tbody>
+  </table></div>
+  <p>Outras stacks usam os princípios gerais e o agente declara a lacuna no relato. Ainda não existe referência Angular. <span class="badge verified">Verificado</span></p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="como-pedir" aria-labelledby="h-pedir">
+  <h2 id="h-pedir"><span class="n">5.</span>Como pedir</h2>
+  <p>Um bom pedido diz o <strong>projeto</strong>, o que deve acontecer e, se você souber, como saber que está certo. Não precisa escrever a spec: o TecLeader propõe os requisitos e você confirma.</p>
+  <div class="cmp">
+    <div class="bad"><h4>Evite</h4><ul><li>"melhora o login"</li><li>"cria uma API"</li><li>"tá dando erro"</li><li>"faz sem teste, é rápido"</li></ul></div>
+    <div class="good"><h4>Prefira</h4><ul><li>"No <code>meu-app</code>, mostre 'Sessão expirada' ao voltar ao login após logout"</li><li>"Crie um projeto novo em <code>api-tarefas</code>: CRUD de tarefas (título, descrição, concluída)"</li><li>"No <code>meu-app</code>, e-mail com espaço no final falha. Esperado: ignorar espaços nas pontas"</li></ul></div>
+  </div>
+  <span class="badge illustrative">Ilustrativo</span>
+  <ul>
+    <li><strong>Uma feature por pedido.</strong> O resultado fica mais previsível.</li>
+    <li><strong>Revise a spec com atenção.</strong> É o ponto que mais influencia o resultado.</li>
+    <li><strong>Não peça para pular etapas.</strong> O TecLeader não implementa sem spec nem encerra sem validação (ver exemplo 15).</li>
+  </ul>
+  <div class="callout danger" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18h.01"/></svg><div><span class="t">Perigo</span><p>Nunca cole tokens ou senhas reais na conversa. Use variáveis de ambiente.</p></div></div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="exemplos" aria-labelledby="h-ex">
+  <h2 id="h-ex"><span class="n">6.</span>Exemplos passo a passo</h2>
+  <p>Cada exemplo tem quatro blocos: <strong>Pedido</strong>, <strong>O que o TecLeader faz</strong>, <strong>O que você responde</strong> e <strong>Resultado</strong>. Exemplos <span class="badge verified">Verificado</span> reproduzem comandos e comportamentos dos relatórios; os <span class="badge illustrative">Ilustrativo</span> mostram o formato esperado, mas nomes de arquivos, REQs e mensagens variam a cada caso.</p>
+  <ol class="example-index" aria-label="Lista de exemplos">
+    <li><a href="#ex-1">Instalação local</a></li>
+    <li><a href="#ex-2">Instalação via GitHub</a></li>
+    <li><a href="#ex-3">Projeto novo (onboarding)</a></li>
+    <li><a href="#ex-4">Feature em projeto existente</a></li>
+    <li><a href="#ex-5">Bug com teste de regressão</a></li>
+    <li><a href="#ex-6">Backend .NET</a></li>
+    <li><a href="#ex-7">Backend Python</a></li>
+    <li><a href="#ex-8">Frontend React</a></li>
+    <li><a href="#ex-9">Revisão de segurança</a></li>
+    <li><a href="#ex-10">Issue do Jira</a></li>
+    <li><a href="#ex-11">Retomar após compact</a></li>
+    <li><a href="#ex-12">Stack sem referência</a></li>
+    <li><a href="#ex-13">Atualização do plugin</a></li>
+    <li><a href="#ex-14">Criar skill ou agente com authoring</a></li>
+    <li><a href="#ex-15">Pedido sem spec é recusado</a></li>
+  </ol>
+
+  <article class="example" id="ex-1">
+    <header><span class="num" aria-hidden="true">1</span><h3>Instalação local</h3><span class="badge verified">Verificado</span></header>
+    <p class="src">Fonte: README.md (Instalação); validation/t008a.md, cenário 1.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4><p>Você quer o plugin em um projeto, a partir da pasta clonada do <code>claude-sdd-framework</code>.</p>
+        <div class="code" data-label="bash"><pre><code>claude plugin marketplace add "&lt;caminho&gt;/claude-sdd-framework" --scope project
+claude plugin install sdd@claude-sdd-framework --scope project
+claude plugin list</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Ainda nada: a instalação é feita por você, na CLI, antes de abrir a sessão. O marketplace passa a constar como declarado nas settings do projeto.</p></div>
+      <div class="step"><h4>O que você responde</h4><p>Copie <code>templates/project-settings.local.json</code> para <code>&lt;projeto&gt;/.claude/settings.json</code> (trocando o caminho) e <code>templates/CLAUDE.md</code> para a raiz. Abra <code>claude</code> no projeto.</p></div>
+      <div class="step"><h4>Resultado</h4><p>No piloto de instalação limpa, <code>sdd@claude-sdd-framework</code> apareceu habilitado, escopo project, com agentes <code>sdd:backend</code>, <code>sdd:frontend</code>, <code>sdd:infra-architect</code>, <code>sdd:security</code>, <code>sdd:tecleader</code>, <code>sdd:tests</code>, e nenhum <code>authoring:</code>.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-2">
+    <header><span class="num" aria-hidden="true">2</span><h3>Instalação via GitHub</h3><span class="badge verified">Verificado</span></header>
+    <p class="src">Fonte: README.md (A partir do GitHub); templates/project-settings.git.json.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4><p>Seu time publicou o marketplace no GitHub e você quer usá-lo sem clonar manualmente.</p></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Nada nesta etapa. O Claude Code usa as credenciais git da sua máquina para acessar o repositório.</p></div>
+      <div class="step"><h4>O que você responde</h4><p>Copie <code>templates/project-settings.git.json</code> para <code>&lt;projeto&gt;/.claude/settings.json</code> e preencha a URL do repositório no campo indicado:</p>
+        <div class="code" data-label="json (trecho)"><pre><code>"extraKnownMarketplaces": {
+  "claude-sdd-framework": {
+    "source": { "source": "git", "url": "https://github.com/powerlok/claude-sdd-framework.git" }
+  }
+}</code></pre></div>
+        <div class="callout danger" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18h.01"/></svg><div><span class="t">Perigo</span><p>Sem usuário, senha ou token na URL. Use SSH ou HTTPS com o gerenciador de credenciais.</p></div></div></div>
+      <div class="step"><h4>Resultado</h4><p>Com o marketplace declarado, instale com <code>claude plugin install sdd@claude-sdd-framework --scope project</code> e confirme com <code>claude plugin list</code>. Em sessão interativa, o Claude Code também oferece instalar o que o <code>settings.json</code> declara.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-3">
+    <header><span class="num" aria-hidden="true">3</span><h3>Projeto novo (onboarding)</h3><span class="badge illustrative">Ilustrativo</span></header>
+    <p class="src">Fonte do comportamento: agents/tecleader.md (Onboarding de Projeto). Diálogo ilustrativo.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4>
+        <div class="code" data-label="prompt"><pre><code>Crie um projeto novo em api-tarefas: API com CRUD de tarefas
+(título, descrição, concluída).</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><ul><li>Percebe que o projeto é novo e vazio: não há o que analisar, então pergunta stack e convenções.</li><li>Registra <strong>apenas o que você informar</strong>, inclusive na <code>## Stack</code>.</li><li>Cria <code>CLAUDE.md</code> e a pasta <code>.specs/</code>, e propõe REQs com critérios de aceite.</li></ul></div>
+      <div class="step"><h4>O que você responde</h4>
+        <div class="code" data-label="prompt"><pre><code>Backend em Python, FastAPI, pytest, sem banco por enquanto (memória).
+Pode seguir com os REQs propostos.</code></pre></div></div>
+      <div class="step"><h4>Resultado</h4><p>Projeto com <code>CLAUDE.md</code> (com <code>## Stack</code>), <code>.specs/&lt;feature&gt;/spec.md</code> e <code>tasks.md</code>. O TecLeader informa o que foi criado. Em projeto existente sem <code>CLAUDE.md</code>, ele explora o código (README, manifestos, configs de build/lint/teste, CI) e extrai a stack dos manifestos. Se já existir <code>CLAUDE.md</code>, não sobrescreve: só sugere melhorias.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-4">
+    <header><span class="num" aria-hidden="true">4</span><h3>Feature em projeto existente</h3><span class="badge illustrative">Ilustrativo</span></header>
+    <p class="src">Fonte do comportamento: agents/tecleader.md (Workflow SDD, Design Técnico). Diálogo ilustrativo.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4>
+        <div class="code" data-label="prompt"><pre><code>No meu-app, adicione a opção "Mostrar senha" no campo de senha do login.</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Lê o <code>CLAUDE.md</code> e <code>.specs/</code> existentes e propõe:</p>
+        <div class="code" data-label="proposta"><pre><code>REQ-005: botão que alterna a visibilidade da senha
+Critérios de aceite:
+- alterna o campo entre type="password" e type="text"
+- tem nome acessível e funciona pelo teclado
+Validação: teste de componente req005 + E2E</code></pre></div>
+        <p>Mudança pequena: sem design técnico e sem revisão de segurança (nenhum dos gatilhos se aplica).</p></div>
+      <div class="step"><h4>O que você responde</h4>
+        <div class="code" data-label="prompt"><pre><code>Ok, mas o padrão deve ser senha oculta.</code></pre></div></div>
+      <div class="step"><h4>Resultado</h4><p><code>tasks.md</code> recebe as tasks (implementação e validação), o TecLeader delega, mostra os comandos de teste e build executados com resultado e demonstra o sistema funcionando antes de encerrar.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-5">
+    <header><span class="num" aria-hidden="true">5</span><h3>Bug com teste de regressão</h3><span class="badge illustrative">Ilustrativo</span></header>
+    <p class="src">Fonte: regra de qualidade (sdd-rules) e skill bug-diagnosis (5 fases). Diálogo ilustrativo.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4>
+        <div class="code" data-label="prompt"><pre><code>No meu-app, se eu digitar " user@example.com" (com espaço no início)
+o login dá erro. Esperado: ignorar espaços nas pontas do e-mail.</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Registra o defeito como requisito e exige correção <strong>mais teste de regressão</strong>. O diagnóstico segue as 5 fases: reproduzir, isolar, hipótese com evidência, correção mínima com teste de regressão, verificar e prevenir. A task vai ao agente da stack (aqui, <code>sdd:frontend</code>), e depois <code>sdd:tests</code> roda a regressão.</p></div>
+      <div class="step"><h4>O que você responde</h4><p>Normalmente nada, além de confirmar o requisito proposto. Se a causa não for reproduzível, passe os passos exatos.</p></div>
+      <div class="step"><h4>Resultado</h4><p>Correção com o teste de regressão e evidência da suíte executada. Problemas encontrados fora do escopo são registrados como observação, não corrigidos sozinhos.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-6">
+    <header><span class="num" aria-hidden="true">6</span><h3>Backend .NET</h3><span class="badge verified">Verificado</span></header>
+    <p class="src">Fonte: validation/t008c.md (piloto .NET); formato de delegação em agents/tecleader.md.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4>
+        <div class="code" data-label="prompt"><pre><code>Crie em api-todos uma API de tarefas (criar e consultar) em ASP.NET Core.</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Lê a <code>## Stack</code> do <code>CLAUDE.md</code> e delega a <code>sdd:backend</code> indicando a referência:</p>
+        <div class="code" data-label="delegação (campos)"><pre><code>Objetivo / Requisitos / Spec / Tasks / Contexto
+Stack: &lt;linguagem/framework/versão&gt; — referência: backend-engineering/references/dotnet.md
+Arquivos permitidos / Arquivos proibidos
+Critérios de aceite / Validação obrigatória / Resultado esperado</code></pre></div></div>
+      <div class="step"><h4>O que você responde</h4><p>Confirma os REQs e informa convenções que o agente não pode deduzir (por exemplo, tipo do id), pois a spec do piloto não definia.</p></div>
+      <div class="step"><h4>Resultado</h4><p>No piloto, o agente leu <code>dotnet.md</code>, organizou <code>Domain/Application/Infrastructure/Endpoints</code>, usou <code>ProblemDetails</code>, nomeou testes <code>Req001_*</code> com <code>[Trait("Requirement","REQ-001")]</code> e <code>WebApplicationFactory&lt;Program&gt;</code>. <code>dotnet test</code>: 9 passed. O validador acrescentou 3 testes (título vazio gera 400 <code>application/problem+json</code>; id inexistente gera 404).</p>
+        <p>Observação do relatório: o piloto executou o agente <code>sdd:backend</code> diretamente com o texto da delegação, sem passar pela sessão do TecLeader.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-7">
+    <header><span class="num" aria-hidden="true">7</span><h3>Backend Python</h3><span class="badge verified">Verificado</span></header>
+    <p class="src">Fonte: validation/t008b.md (piloto Python).</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4>
+        <div class="code" data-label="prompt"><pre><code>Crie em api-todos uma API de tarefas em Python (FastAPI), com testes por requisito.</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Delega a <code>sdd:backend</code> com <code>Stack: ... — referência: backend-engineering/references/python.md</code>. O mesmo agente, sem instruções de Python no seu texto, serve a qualquer stack: o conhecimento vem do <code>CLAUDE.md</code> e da referência.</p></div>
+      <div class="step"><h4>O que você responde</h4><p>Confirma os REQs. Se o design técnico for exigido (módulo novo), aprova o <code>design.md</code> que o TecLeader apresentar. No piloto o agente não criou <code>design.md</code> e declarou o risco no relato.</p></div>
+      <div class="step"><h4>Resultado</h4><p>Código em camadas <code>domain/application/infrastructure/api</code> (Pydantic v2, <code>create_app</code>), <code>tests/test_req001.py</code> e <code>test_req002.py</code>. <code>pytest</code>: 13 passed (8 do agente + 5 do validador). Validações extras: título vazio, ausente ou com 201 caracteres geram 422; id inexistente gera 404.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-8">
+    <header><span class="num" aria-hidden="true">8</span><h3>Frontend React</h3><span class="badge illustrative">Ilustrativo</span></header>
+    <p class="src">Fonte: references/react.md existe no plugin; delegação conforme agents/tecleader.md. Diálogo ilustrativo.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4>
+        <div class="code" data-label="prompt"><pre><code>No meu-app (React + TypeScript + Vite), crie uma tela simples de login.</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Propõe REQs que cobrem os estados obrigatórios de UX (carregamento, erro, vazio, sucesso), responsividade, teclado e acessibilidade, e delega a <code>sdd:frontend</code> com <code>referência: frontend-engineering/references/react.md</code>.</p></div>
+      <div class="step"><h4>O que você responde</h4>
+        <div class="code" data-label="prompt"><pre><code>Pode seguir. Autenticação mock; credenciais de teste só na spec.</code></pre></div></div>
+      <div class="step"><h4>Resultado</h4><p>Tela com testes de componente rastreados a REQs; <code>sdd:tests</code> valida de forma independente (aceite, E2E). O TecLeader encerra só com testes, build e demonstração do sistema em execução.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-9">
+    <header><span class="num" aria-hidden="true">9</span><h3>Revisão de segurança</h3><span class="badge illustrative">Ilustrativo</span></header>
+    <p class="src">Fonte do fluxo: agents/tecleader.md (Revisão de Segurança); validation-report.md registra o ciclo real do plugin (volta 1 RISCO IDENTIFICADO, volta 2 APROVADO). Diálogo ilustrativo.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4>
+        <div class="code" data-label="prompt"><pre><code>Adicione autenticação por token na api-tarefas.</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Autenticação e entrada externa exigem design técnico (aprovado antes do código) e, após IMPLEMENTED e antes de VALIDATING, a revisão do <code>sdd:security</code>.</p>
+        <ul><li><strong>APROVADO</strong>: segue para validação.</li><li><strong>RISCO IDENTIFICADO</strong>: volta ao implementador, parecer refeito (limite de 3 voltas) e <code>sdd:tests</code> reexecutado.</li></ul></div>
+      <div class="step"><h4>O que você responde</h4><p>Decisões de risco que o TecLeader levar a você. Risco HIGH ou CRITICAL aberto impede o DONE.</p></div>
+      <div class="step"><h4>Resultado</h4><p>Parecer registrado em <code>.specs/&lt;feature&gt;/</code> e correções com teste. O <code>sdd:security</code> só reporta; não implementa nem corrige.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-10">
+    <header><span class="num" aria-hidden="true">10</span><h3>Issue do Jira</h3><span class="badge illustrative">Ilustrativo</span></header>
+    <p class="src">Fonte do comportamento: agents/tecleader.md (Jira); spike-result.md. A chave PROJ-123 é fictícia.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4>
+        <div class="code" data-label="prompt"><pre><code>Leia a issue PROJ-123 do Jira e implemente no meu-app.</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Lê a issue (<code>getJiraIssue</code>), converte em <code>.specs/&lt;feature&gt;/spec.md</code> e <code>tasks.md</code> registrando a chave. Issue sem critério de aceite: pede complementação antes de implementar.</p></div>
+      <div class="step"><h4>O que você responde</h4>
+        <div class="code" data-label="prompt"><pre><code>Aceito os critérios propostos. Pode seguir.</code></pre></div></div>
+      <div class="step"><h4>Resultado</h4><p>Fluxo SDD normal até o DONE. O TecLeader <strong>nunca escreve no Jira</strong> (não comenta nem muda status): atualize a issue você mesmo com as evidências. Na 1ª chamada de ferramenta MCP, o Claude Code pede permissão.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-11">
+    <header><span class="num" aria-hidden="true">11</span><h3>Retomar após compact</h3><span class="badge illustrative">Ilustrativo</span></header>
+    <p class="src">Fonte do mecanismo: hooks/hooks.json (SessionStart, matcher compact) e agents/tecleader.md (Gestão de Contexto). Diálogo ilustrativo.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4>
+        <div class="code" data-label="prompt"><pre><code>/context
+/compact</code></pre></div><p>Antes de uma tarefa grande, o TecLeader pede <code>/context</code> e, se o uso estiver alto, <code>/compact</code> (agentes não conseguem executar nem medir isso).</p></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Após o compact, o hook <code>SessionStart:compact</code> lembra de reler <code>spec.md</code> e <code>tasks.md</code> e de recarregar <code>sdd:sdd-rules</code> e <code>sdd:sdd-governance</code>. O estado de cada task é gravado em <code>tasks.md</code> a cada mudança.</p></div>
+      <div class="step"><h4>O que você responde</h4>
+        <div class="code" data-label="prompt"><pre><code>Continue a feature login do meu-app.
+Qual o estado das tasks?</code></pre></div></div>
+      <div class="step"><h4>Resultado</h4><p>O TecLeader retoma a partir de <code>tasks.md</code>, sem confiar apenas no resumo da conversa. Funciona também em outra sessão ou outro dia.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-12">
+    <header><span class="num" aria-hidden="true">12</span><h3>Stack sem referência</h3><span class="badge illustrative">Ilustrativo</span></header>
+    <p class="src">Fonte: agents/tecleader.md (campo Stack) e README.md (Stacks com referência). Diálogo ilustrativo.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4>
+        <div class="code" data-label="prompt"><pre><code>No meu-portal (Angular), crie a tela de listagem de pedidos.</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Delega a <code>sdd:frontend</code> com <code>referência: nenhuma</code> no campo Stack e registra a lacuna como observação em <code>tasks.md</code>. Não existe referência Angular.</p></div>
+      <div class="step"><h4>O que você responde</h4><p>Preencha bem a <code>## Stack</code> do <code>CLAUDE.md</code> (versão, build, comandos) e, se quiser, peça uma referência da stack com o catálogo <code>authoring</code> (exemplo 14).</p></div>
+      <div class="step"><h4>Resultado</h4><p>O agente aplica os princípios gerais de <code>frontend-engineering</code> e declara a lacuna no relato; a entrega continua passando por testes e validação.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-13">
+    <header><span class="num" aria-hidden="true">13</span><h3>Atualização do plugin</h3><span class="badge verified">Verificado</span></header>
+    <p class="src">Fonte: README.md (Atualização); validation-report.md (update 0.1.1 para 0.1.2 executado).</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4><p>Saiu uma versão nova do plugin e você quer atualizar.</p>
+        <div class="code" data-label="bash"><pre><code>claude plugin marketplace update claude-sdd-framework
+claude plugin update sdd@claude-sdd-framework --scope project</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Nada: é uma operação da CLI. A versão segue semver em <code>plugins/*/.claude-plugin/plugin.json</code>.</p></div>
+      <div class="step"><h4>O que você responde</h4><p>Reinicie a sessão para aplicar ("Restart to apply changes"). Leia o <a href="../CHANGELOG.md">CHANGELOG.md</a> para saber o que mudou.</p></div>
+      <div class="step"><h4>Resultado</h4><p>Conferido com <code>claude plugin list</code>. Exemplo real do histórico: a 0.1.2 corrigiu os agentes para indicar o caminho das references via <code>${CLAUDE_PLUGIN_ROOT}</code>, evitando que o agente buscasse a referência no disco.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-14">
+    <header><span class="num" aria-hidden="true">14</span><h3>Criar skill ou agente com authoring</h3><span class="badge illustrative">Ilustrativo</span></header>
+    <p class="src">Fonte: plugins/authoring (skills skill-development e agent-development); instalação verificada no README. Diálogo ilustrativo.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4><p>Instale o catálogo e peça a criação:</p>
+        <div class="code" data-label="bash"><pre><code>claude plugin install authoring@claude-sdd-framework --scope project</code></pre></div>
+        <div class="code" data-label="prompt"><pre><code>Crie uma skill para o padrão de logs do nosso time, em português,
+para ser usada pelo sdd:backend.</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Como qualquer mudança, passa pelo fluxo SDD: spec com critérios de aceite e validação. O trabalho se apoia em <code>authoring:skill-development</code> (ou <code>authoring:agent-development</code>): <code>description</code> com gatilhos ("Usar quando ..."), ferramentas mínimas, conteúdo curto e verificável.</p></div>
+      <div class="step"><h4>O que você responde</h4><p>Defina onde a skill vive (no projeto ou em um plugin) e revise a <code>description</code>, que decide quando ela dispara.</p></div>
+      <div class="step"><h4>Resultado</h4><p>Skill ou agente validado com <code>claude plugin validate ./plugins/&lt;nome&gt;</code> (comando do README para plugins). Lembre: <code>skills:</code> só pré-carrega em subagentes (seção 11).</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-15">
+    <header><span class="num" aria-hidden="true">15</span><h3>Pedido sem spec é recusado</h3><span class="badge verified">Verificado</span></header>
+    <p class="src">Fonte: validation/t008a.md, cenário 4.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4>
+        <div class="code" data-label="prompt"><pre><code>Implemente um endpoint /health agora, sem spec.</code></pre></div><p>(Formulação ilustrativa do pedido; o cenário validado foi uma solicitação de implementação sem especificação.)</p></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Carrega <code>sdd:sdd-rules</code> e <code>sdd:sdd-governance</code>, e recusa: a governança SDD não permite implementar sem especificação.</p></div>
+      <div class="step"><h4>O que você responde</h4><p>Confirme o requisito e o critério de aceite propostos e informe a stack.</p></div>
+      <div class="step"><h4>Resultado</h4><p>Na validação, o TecLeader propôs REQ-001 com critério de aceite e pediu a stack. Nenhum arquivo foi criado (o projeto continuou só com <code>.claude/settings.json</code>).</p></div>
+    </div>
+  </article>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="estados-done" aria-labelledby="h-est">
+  <h2 id="h-est"><span class="n">7.</span>Estados e critérios de DONE</h2>
+  <p>Estados oficiais de uma task, gravados em <code>tasks.md</code>. <span class="badge verified">Verificado</span></p>
+  <div class="states" role="img" aria-label="Fluxo de estados: TODO, IN_PROGRESS, IMPLEMENTED, SECURITY_REVIEW opcional, VALIDATING; em falha, FAILED_VALIDATION, FIXING, VALIDATING_AGAIN e de volta a VALIDATING; por fim DONE">
+    <span class="chip">TODO</span><span class="arrow">→</span><span class="chip">IN_PROGRESS</span><span class="arrow">→</span><span class="chip">IMPLEMENTED</span><span class="arrow">→</span><span class="chip">SECURITY_REVIEW (se aplicável)</span><span class="arrow">→</span><span class="chip">VALIDATING</span><span class="arrow">→</span><span class="chip done">DONE</span>
+  </div>
+  <div class="states" role="img" aria-label="Ciclo de correção: VALIDATING, FAILED_VALIDATION, FIXING, VALIDATING_AGAIN, de volta a VALIDATING">
+    <span class="chip">VALIDATING</span><span class="arrow">→</span><span class="chip loop">FAILED_VALIDATION</span><span class="arrow">→</span><span class="chip loop">FIXING</span><span class="arrow">→</span><span class="chip loop">VALIDATING_AGAIN</span><span class="arrow">→</span><span class="chip">VALIDATING</span>
+  </div>
+  <p>O ciclo de correção se repete até aprovar. Após 3 falhas sem progresso, o TecLeader registra o bloqueio, resume o motivo, lista as tentativas e escala a você.</p>
+
+  <h3>Checklist de DONE</h3>
+  <p>Somente o TecLeader move uma task para DONE. Confira na entrega:</p>
+  <ul>
+    <li>requisitos implementados e critérios de aceite atendidos;</li>
+    <li>testes existentes e executados, nenhum defeito aberto;</li>
+    <li>evidências registradas e relatório gerado;</li>
+    <li><code>README.md</code> do projeto criado ou atualizado;</li>
+    <li>design técnico aprovado e registrado (quando obrigatório);</li>
+    <li>parecer de segurança APROVADO, sem risco HIGH/CRITICAL aberto (quando exigido);</li>
+    <li>funcionamento demonstrado: apps e serviços iniciados e demonstrados; bibliotecas, SDKs e CLIs com exemplo ou comando real e a saída.</li>
+  </ul>
+  <div class="callout tip" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5V15h8v-1.5A6 6 0 0 0 12 3z"/></svg><div><span class="t">Dica</span><p>Se faltar algum item, peça: <code>mostre as evidências da T-004</code>.</p></div></div>
+  <h3>Quando o TecLeader para e pergunta</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Situação</th><th>O que ele faz</th></tr></thead>
+    <tbody>
+      <tr><td>Falta requisito, critério de aceite ou forma de validar</td><td>propõe e pede confirmação</td></tr>
+      <tr><td>Excluir arquivos, migração destrutiva, push, deploy, infraestrutura</td><td>pede confirmação explícita</td></tr>
+      <tr><td>Mesma falha 3 vezes sem progresso</td><td>para e escala com motivo e tentativas</td></tr>
+      <tr><td>Não consegue subir o sistema</td><td>informa o motivo e mantém a feature aberta</td></tr>
+      <tr><td>Problema fora do escopo</td><td>registra como observação, sem corrigir sozinho</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="jira" aria-labelledby="h-jira">
+  <h2 id="h-jira"><span class="n">8.</span>Jira (opcional, somente leitura)</h2>
+  <ul>
+    <li><strong>Padrão:</strong> conector Atlassian do claude.ai (claude.ai, Settings, Connectors, Atlassian). Em nova sessão, <code>/mcp</code> deve mostrar o conector como <code>connected</code>.</li>
+    <li><strong>Sem login claude.ai:</strong> copie <a href="../templates/mcp-atlassian.json"><code>templates/mcp-atlassian.json</code></a> para <code>&lt;projeto&gt;/.mcp.json</code> (MCP remoto oficial, OAuth, sem token em arquivo).</li>
+    <li>Só o TecLeader acessa o Jira. Ferramentas permitidas: <code>atlassianUserInfo</code>, <code>getAccessibleAtlassianResources</code>, <code>getJiraIssue</code> e <code>searchJiraIssuesUsingJql</code>. Os demais agentes recebem apenas a spec.</li>
+    <li>Os templates de settings bloqueiam as ferramentas de escrita do Atlassian em <code>permissions.deny</code>.</li>
+    <li>Não há ferramenta de leitura dedicada para "listar projetos"; use issue por chave ou JQL.</li>
+  </ul>
+  <div class="callout warn" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><div><span class="t">Atenção</span><p>O caminho via <code>.mcp.json</code> não foi validado com Zscaler ativo, e os nomes <code>mcp__atlassian__*</code> não foram verificados. Em erro, registre a mensagem exata e acione a TI. Nunca desabilite a verificação de SSL.</p></div></div>
+  <p>Issue sem critério de aceite: o TecLeader pede complementação antes de implementar. A spec no repositório passa a ser a fonte de verdade; o Jira é a origem do requisito.</p>
+  <div class="code" data-label="prompts"><pre><code>Leia a PROJ-123 e diga se ela está pronta para implementar.
+Liste as issues abertas atribuídas a mim no projeto PROJ.</code></pre></div>
+  <p><span class="badge illustrative">Ilustrativo</span> Chaves e projetos fictícios.</p>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="atualizacao" aria-labelledby="h-upd">
+  <h2 id="h-upd"><span class="n">9.</span>Atualização e versões</h2>
+  <div class="code" data-label="bash"><pre><code>claude plugin marketplace update claude-sdd-framework
+claude plugin update sdd@claude-sdd-framework --scope project</code></pre></div>
+  <p>Reinicie a sessão para aplicar. <span class="badge verified">Verificado</span></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Plugin</th><th>Versão deste manual</th></tr></thead>
+    <tbody><tr><td><code>sdd</code></td><td>0.1.2</td></tr><tr><td><code>authoring</code></td><td>0.2.0</td></tr></tbody>
+  </table></div>
+  <p>As versões seguem semver, definidas em <code>plugins/*/.claude-plugin/plugin.json</code>; as mudanças ficam no <a href="../CHANGELOG.md">CHANGELOG.md</a>.</p>
+  <p>Para validar um plugin ou testá-lo sem instalar (só na sessão):</p>
+  <div class="code" data-label="bash"><pre><code>claude plugin validate .                    # marketplace
+claude plugin validate ./plugins/sdd
+claude plugin validate ./plugins/authoring
+claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allowedTools "Read,Glob,Grep"</code></pre></div>
+</section>
+
+<!-- 10 -->
+<section class="sec" id="problemas" aria-labelledby="h-prob">
+  <h2 id="h-prob"><span class="n">10.</span>Solução de problemas</h2>
+
+  <article class="trouble"><h3><code>claude</code> não é encontrado no Windows</h3>
+    <p>O instalador nativo coloca o <code>claude.exe</code> em <code>%USERPROFILE%\.local\bin</code>, que pode estar fora do PATH. No PowerShell:</p>
+    <div class="code" data-label="powershell"><pre><code>$env:Path += ";$HOME\.local\bin"</code></pre></div></article>
+
+  <article class="trouble"><h3>Erro "Input must be provided..." ao usar <code>-p</code></h3>
+    <p><code>--allowedTools</code> aceita vários valores e consome o prompt se ele vier depois. Coloque o prompt logo após <code>-p</code>:</p>
+    <div class="code" data-label="bash"><pre><code>claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allowedTools "Read,Glob,Grep"</code></pre></div></article>
+
+  <article class="trouble"><h3>Porta ocupada por outro projeto no E2E</h3>
+    <p>No piloto, a porta 4173 estava em uso por outro projeto e o E2E falhou por ambiente (defeito D-003). A regressão passou em uma porta isolada (4180). Libere a porta ou configure uma porta própria no projeto.</p></article>
+
+  <article class="trouble"><h3>As skills não pré-carregam na sessão principal</h3>
+    <p>É comportamento do Claude Code: <code>skills:</code> só pré-carrega em subagentes. O TecLeader carrega <code>sdd:sdd-rules</code> e <code>sdd:sdd-governance</code> com a ferramenta <code>Skill</code> no início da sessão e após compact. Se uma skill não carregar, ele segue com a governança do próprio agente e avisa você.</p></article>
+
+  <article class="trouble"><h3>"not found in marketplace" ao instalar</h3>
+    <p>Aconteceu no spike quando o plugin foi instalado antes de adicionar o marketplace. Rode antes <code>claude plugin marketplace add ... --scope project</code> e depois o <code>install</code>.</p></article>
+
+  <article class="trouble"><h3>Conector do Jira aparece como <code>pending</code> em <code>-p</code></h3>
+    <p>Em modo não interativo o conector conecta de forma assíncrona. No spike, funcionou com a variável abaixo:</p>
+    <div class="code" data-label="bash"><pre><code>MCP_CONNECTION_NONBLOCKING=false claude -p "&lt;prompt&gt;"</code></pre></div></article>
+
+  <article class="trouble"><h3>Testes lentos ou com timeout na máquina</h3>
+    <p>Nos relatórios, falhas de timeout (vitest worker, <code>locator.fill</code>) apareceram com a máquina lenta e foram classificadas como prováveis causas ambientais; reexecute com a máquina ociosa antes de investigar o código.</p></article>
+</section>
+
+<!-- 11 -->
+<section class="sec" id="limitacoes" aria-labelledby="h-lim">
+  <h2 id="h-lim"><span class="n">11.</span>Limitações conhecidas</h2>
+  <ul>
+    <li><code>skills:</code> só pré-carrega em subagentes; o TecLeader carrega as regras pela ferramenta <code>Skill</code> no início da sessão e após compact.</li>
+    <li>No texto do agente, <code>${CLAUDE_PLUGIN_ROOT}</code> é substituído pelo caminho do plugin; no texto da skill, não.</li>
+    <li>Referência Angular ainda não existe; stacks sem referência usam princípios gerais e o agente declara a lacuna.</li>
+    <li>O caminho <code>.mcp.json</code> do Jira não foi validado com Zscaler ativo, e os nomes <code>mcp__atlassian__*</code> não foram verificados.</li>
+    <li>O carregamento das regras no TecLeader depende da instrução do agente (sem pré-carregamento na sessão principal); funcionou nos testes de validação.</li>
+    <li>Comandos de exemplo das references (lint, auditoria de dependências) não foram executados nos pilotos.</li>
+    <li><code>/compact</code> não executa em modo <code>-p</code>.</li>
+  </ul>
+  <p><span class="badge verified">Verificado</span> Fonte: README.md e validation-report.md.</p>
+</section>
+
+<!-- 12 -->
+<section class="sec" id="referencias" aria-labelledby="h-ref">
+  <h2 id="h-ref"><span class="n">12.</span>Referências</h2>
+  <p>Links relativos a partir de <code>docs/</code>.</p>
+  <ul>
+    <li><a href="../README.md">README.md</a>: instalação, atualização, validação, árvore de pastas.</li>
+    <li><a href="arquitetura.md">arquitetura.md</a>: arquitetura do plugin (componentes, carregamento, hooks, segurança).</li>
+    <li><a href="../CHANGELOG.md">CHANGELOG.md</a>: mudanças por versão.</li>
+    <li><a href="../templates/CLAUDE.md">templates/CLAUDE.md</a>: modelo de <code>CLAUDE.md</code> com <code>## Stack</code>.</li>
+    <li><a href="../templates/project-settings.local.json">templates/project-settings.local.json</a> e <a href="../templates/project-settings.git.json">project-settings.git.json</a>.</li>
+    <li><a href="../templates/mcp-atlassian.json">templates/mcp-atlassian.json</a>: MCP do Jira.</li>
+  </ul>
+</section>
+</main>
+</div>
+
+<footer class="site-footer">Manual do Plugin SDD · sdd 0.1.2 · authoring 0.2.0 · arquivo único, funciona offline.</footer>
+
+<button type="button" class="btn" id="to-top" aria-label="Voltar ao topo">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span class="lbl">Topo</span>
+</button>
+
+<script>
+(function () {
+  "use strict";
+  var doc = document;
+  var live = doc.getElementById("live");
+  var timer = null;
+
+  function announce(msg) {
+    live.textContent = "";
+    window.clearTimeout(timer);
+    timer = window.setTimeout(function () { live.textContent = msg; }, 50);
+  }
+
+  /* Theme */
+  var root = doc.documentElement;
+  var themeBtn = doc.getElementById("theme-btn");
+  var themeLbl = doc.getElementById("theme-lbl");
+  function syncThemeBtn() {
+    var dark = root.getAttribute("data-theme") === "dark";
+    themeBtn.setAttribute("aria-pressed", dark ? "true" : "false");
+    themeLbl.textContent = dark ? "Claro" : "Escuro";
+    themeBtn.setAttribute("aria-label", dark ? "Alternar para tema claro" : "Alternar para tema escuro");
+  }
+  themeBtn.addEventListener("click", function () {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("sdd-manual-theme", next); } catch (e) { /* storage indisponível */ }
+    syncThemeBtn();
+    announce(next === "dark" ? "Tema escuro ativado" : "Tema claro ativado");
+  });
+  syncThemeBtn();
+
+  /* Copy buttons */
+  function fallbackCopy(text) {
+    var ta = doc.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    doc.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = doc.execCommand("copy"); } catch (e) { ok = false; }
+    doc.body.removeChild(ta);
+    return ok;
+  }
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return fallbackCopy(text); });
+    }
+    return Promise.resolve(fallbackCopy(text));
+  }
+  Array.prototype.forEach.call(doc.querySelectorAll(".code"), function (block) {
+    var label = block.getAttribute("data-label");
+    if (label) {
+      var span = doc.createElement("span");
+      span.className = "label";
+      span.textContent = label;
+      block.insertBefore(span, block.firstChild);
+    }
+    var btn = doc.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copiar";
+    btn.setAttribute("aria-label", "Copiar bloco de código" + (label ? " (" + label + ")" : ""));
+    btn.addEventListener("click", function () {
+      var code = block.querySelector("code");
+      copyText(code ? code.textContent : "").then(function (ok) {
+        btn.textContent = ok ? "Copiado!" : "Falhou";
+        announce(ok ? "Código copiado para a área de transferência" : "Não foi possível copiar");
+        window.setTimeout(function () { btn.textContent = "Copiar"; }, 1800);
+      });
+    });
+    block.appendChild(btn);
+  });
+
+  /* Mobile menu */
+  var menuBtn = doc.getElementById("menu-btn");
+  var sidebar = doc.getElementById("sidebar");
+  var backdrop = doc.getElementById("backdrop");
+  function setMenu(open) {
+    sidebar.classList.toggle("open", open);
+    backdrop.classList.toggle("open", open);
+    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  menuBtn.addEventListener("click", function () { setMenu(!sidebar.classList.contains("open")); });
+  backdrop.addEventListener("click", function () { setMenu(false); });
+  sidebar.addEventListener("click", function (ev) { if (ev.target.tagName === "A") { setMenu(false); } });
+  doc.addEventListener("keydown", function (ev) {
+    if (ev.key === "Escape" && sidebar.classList.contains("open")) { setMenu(false); menuBtn.focus(); }
+  });
+
+  /* Active section highlight */
+  var links = Array.prototype.slice.call(doc.querySelectorAll("#toc a"));
+  var sections = Array.prototype.slice.call(doc.querySelectorAll("section.sec"));
+  function setActive(id) {
+    links.forEach(function (a) {
+      if (a.getAttribute("href") === "#" + id) { a.setAttribute("aria-current", "true"); }
+      else { a.removeAttribute("aria-current"); }
+    });
+  }
+  if ("IntersectionObserver" in window) {
+    var visible = {};
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { visible[e.target.id] = e.isIntersecting; });
+      for (var i = 0; i < sections.length; i++) {
+        if (visible[sections[i].id]) { setActive(sections[i].id); break; }
+      }
+    }, { rootMargin: "-80px 0px -60% 0px", threshold: 0 });
+    sections.forEach(function (s) { io.observe(s); });
+  }
+  setActive(sections[0].id);
+
+  /* Search: toggles classes only, never injects markup */
+  var input = doc.getElementById("q");
+  var status = doc.getElementById("status");
+  var items = sections.map(function (sec) {
+    var heading = sec.querySelector("h2");
+    return {
+      sec: sec,
+      title: (heading ? heading.textContent : "").toLowerCase(),
+      text: sec.textContent.toLowerCase(),
+      parts: Array.prototype.map.call(sec.querySelectorAll(".example, .card, .trouble"), function (el) {
+        return { el: el, text: el.textContent.toLowerCase() };
+      })
+    };
+  });
+  function runSearch() {
+    var q = input.value.trim().toLowerCase();
+    var shownCount = 0;
+    items.forEach(function (it, idx) {
+      var show;
+      if (!q) {
+        show = true;
+        it.parts.forEach(function (p) { p.el.classList.remove("hidden"); });
+      } else if (it.title.indexOf(q) !== -1) {
+        show = true;
+        it.parts.forEach(function (p) { p.el.classList.remove("hidden"); });
+      } else if (it.parts.length) {
+        var any = false;
+        it.parts.forEach(function (p) {
+          var m = p.text.indexOf(q) !== -1;
+          p.el.classList.toggle("hidden", !m);
+          if (m) { any = true; }
+        });
+        show = any;
+      } else {
+        show = it.text.indexOf(q) !== -1;
+      }
+      it.sec.classList.toggle("hidden", !show);
+      links[idx].classList.toggle("dim", !show);
+      if (show) { shownCount += 1; }
+    });
+    var msg = !q ? "" : (shownCount === 0 ? "Nenhum resultado." : shownCount + (shownCount === 1 ? " seção com resultados." : " seções com resultados."));
+    status.textContent = msg;
+    status.setAttribute("aria-hidden", msg ? "false" : "true");
+    if (q) { announce(msg); }
+  }
+  input.addEventListener("input", runSearch);
+
+  /* Back to top */
+  var topBtn = doc.getElementById("to-top");
+  function onScroll() { topBtn.classList.toggle("show", window.scrollY > 600); }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+  topBtn.addEventListener("click", function () {
+    window.scrollTo(0, 0);
+    var main = doc.getElementById("conteudo");
+    main.focus({ preventScroll: true });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "claude-sdd-framework",
+  "description": "Marketplace do processo de Desenvolvimento Orientado por Especificação (SDD): plugin sdd (padrão) e catálogo opcional de autoria.",
+  "owner": { "name": "Paulo Laredo" },
+  "plugins": [
+    {
+      "name": "sdd",
+      "source": "./plugins/sdd",
+      "description": "Processo SDD: agentes tecleader, backend, frontend, tests, security e infra-architect, regras globais, governança e hook pós-compact."
+    },
+    {
+      "name": "authoring",
+      "source": "./plugins/authoring",
+      "description": "Catálogo opcional: skills para criar skills e agentes"
+    }
+  ]
+}

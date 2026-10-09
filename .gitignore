@@ -1,0 +1,26 @@
+# SO / editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+# Artefatos gerados e dependências (nunca versionar)
+node_modules/
+.venv/
+__pycache__/
+dist/
+build/
+coverage/
+.cache/
+test-results/
+playwright-report/
+*.log
+
+# Segredos e configuração local
+.env
+.env.*
+*.pem
+*.key
+.claude/settings.local.json

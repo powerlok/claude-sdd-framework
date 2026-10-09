@@ -1,0 +1,223 @@
+<div align="center">
+
+# Claude SDD Framework
+
+**Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
+
+![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.1.2-2563EB)
+![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.0-7C3AED)
+![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React-0F766E)
+![idioma](https://img.shields.io/badge/docs-pt--BR-555)
+
+[Início rápido](#-início-rápido) · [Como funciona](#-como-funciona) · [O time](#-o-time) · [Manual de uso](docs/manual-de-uso.html) · [Arquitetura](docs/arquitetura.md)
+
+</div>
+
+---
+
+## ✨ O que é
+
+Um **marketplace de plugins do Claude Code** que instala, em qualquer projeto, um processo de
+engenharia completo:
+
+- **Você conversa com um só agente, o TecLeader.** Ele transforma o pedido em spec e tasks,
+  delega aos especialistas e só encerra quando há evidência de que funciona.
+- **Nada de implementação sem spec.** Requisito, critério de aceite e forma de validar vêm antes do código.
+- **Agnóstico de linguagem.** Os agentes não têm stack fixa: a stack do projeto é declarada no
+  `CLAUDE.md` e o conhecimento específico vem de referências (.NET, Python, React).
+- **Segurança e qualidade embutidas.** Revisão de segurança quando aplicável, validação independente,
+  regras que nenhum projeto pode relaxar (segredos, SSL, ações irreversíveis, menor privilégio).
+
+> Testado com pilotos reais: a **mesma delegação** gerou uma API em ASP.NET Core (12/12 testes)
+> e em FastAPI (13/13 testes), mudando apenas a stack declarada.
+
+## 🔄 Como funciona
+
+```mermaid
+flowchart LR
+    U([Você]) --> TL[sdd:tecleader]
+    TL --> S[spec.md + tasks.md]
+    S --> D{Design<br/>obrigatório?}
+    D -->|sim| DS[design.md aprovado]
+    D -->|não| I
+    DS --> I[sdd:backend / sdd:frontend<br/>implementação + testes]
+    I --> SR{Segurança<br/>aplicável?}
+    SR -->|sim| SEC[sdd:security]
+    SR -->|não| V
+    SEC --> V[sdd:tests<br/>validação independente]
+    V -->|falhou| I
+    V -->|aprovado| DONE([DONE com evidência])
+```
+
+Estados de cada task: `TODO → IN_PROGRESS → IMPLEMENTED → SECURITY_REVIEW → VALIDATING → DONE`
+(com `FAILED_VALIDATION → FIXING → VALIDATING_AGAIN` até aprovar). **Só o TecLeader encerra.**
+
+## 👥 O time
+
+| Agente | Papel | Modelo |
+|---|---|---|
+| `sdd:tecleader` | Orquestra, cria specs e tasks, aprova design, encerra (sessão principal) | opus |
+| `sdd:backend` | APIs, domínio, persistência e testes, na stack do projeto | sonnet |
+| `sdd:frontend` | Interfaces, UX, acessibilidade e testes, na stack do projeto | sonnet |
+| `sdd:tests` | Validação independente: regressão, contratos, E2E, aceite | sonnet |
+| `sdd:security` | Revisão de segurança (AppSec, dependências, segredos), somente leitura | opus |
+| `sdd:infra-architect` | Decisões de infraestrutura, trade-offs e rollback | opus |
+
+### Skills
+
+| Skill | Para que serve |
+|---|---|
+| `sdd-rules` · `sdd-governance` | Regras globais, papéis, estados, escalonamento |
+| `backend-engineering` | Princípios + referências **.NET** e **Python** |
+| `frontend-engineering` | Princípios + referências **React** e checklist de interface web |
+| `requirements-grilling` | Perguntas certas para fechar requisitos antes da spec |
+| `bug-diagnosis` | Diagnóstico de bugs em 5 fases, com teste de regressão |
+| `domain-modeling` | Glossário, modelo de domínio e registro de decisões (ADR) |
+
+Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, para criar novas skills e agentes.
+
+## 🚀 Início rápido
+
+**Pré-requisitos:** Claude Code ≥ 2.1.288 e Git com acesso a este repositório.
+
+1. No seu projeto, crie `.claude/settings.json` a partir de
+   [`templates/project-settings.git.json`](templates/project-settings.git.json):
+
+   ```json
+   {
+     "extraKnownMarketplaces": {
+       "claude-sdd-framework": {
+         "source": { "source": "git", "url": "https://github.com/powerlok/claude-sdd-framework.git" }
+       }
+     },
+     "enabledPlugins": { "sdd@claude-sdd-framework": true },
+     "agent": "sdd:tecleader"
+   }
+   ```
+
+   O template completo também bloqueia (`permissions.deny`) as ferramentas de escrita do Jira.
+
+2. Instale:
+
+   ```bash
+   claude plugin marketplace add https://github.com/powerlok/claude-sdd-framework.git --scope project
+   claude plugin install sdd@claude-sdd-framework --scope project
+   ```
+
+3. Copie [`templates/CLAUDE.md`](templates/CLAUDE.md) para a raiz do projeto e preencha a seção
+   **`## Stack`** e os comandos (sem `CLAUDE.md`, o TecLeader faz o onboarding).
+
+4. Abra `claude` no projeto. A sessão já começa com o **TecLeader**:
+
+   ```text
+   Crie um endpoint POST /todos que cadastra tarefas com título obrigatório
+   ```
+
+   Ele propõe os requisitos e critérios de aceite, você confirma, e o time executa até o DONE.
+
+> **Credenciais:** o Claude Code usa o git da sua máquina. Nunca coloque usuário, senha ou token na URL
+> (`https://user:token@...`); use SSH ou o gerenciador de credenciais do git.
+
+<details>
+<summary><b>Instalar a partir de um clone local</b></summary>
+
+Use [`templates/project-settings.local.json`](templates/project-settings.local.json), troque o placeholder
+pelo caminho do clone (com `/`) e rode:
+
+```bash
+claude plugin marketplace add "<caminho>/claude-sdd-framework" --scope project
+claude plugin install sdd@claude-sdd-framework --scope project
+```
+</details>
+
+<details>
+<summary><b>Instalar o catálogo opcional <code>authoring</code></b></summary>
+
+```bash
+claude plugin install authoring@claude-sdd-framework --scope project
+```
+</details>
+
+<details>
+<summary><b>Windows: <code>claude</code> não encontrado</b></summary>
+
+O instalador nativo coloca o `claude.exe` em `%USERPROFILE%\.local\bin`. No PowerShell:
+
+```powershell
+$env:Path += ";$HOME\.local\bin"
+```
+</details>
+
+## 🔁 Atualização
+
+```bash
+claude plugin marketplace update claude-sdd-framework
+claude plugin update sdd@claude-sdd-framework --scope project
+```
+
+Reinicie a sessão para aplicar. Versões seguem semver; veja o [CHANGELOG](CHANGELOG.md).
+
+## 🧩 Jira (opcional, somente leitura)
+
+- **Padrão:** conector Atlassian do claude.ai (Settings → Connectors → Atlassian). Só o TecLeader acessa.
+- **Sem login claude.ai:** copie [`templates/mcp-atlassian.json`](templates/mcp-atlassian.json) para
+  `.mcp.json` (MCP remoto oficial da Atlassian, OAuth, sem token em arquivo).
+- Ferramentas de escrita (criar, editar, comentar, transicionar) ficam bloqueadas nos templates.
+
+## 📚 Documentação
+
+| Documento | Conteúdo |
+|---|---|
+| [Manual de uso](docs/manual-de-uso.html) | 15 exemplos passo a passo, solução de problemas. Baixe e abra no navegador (funciona offline) |
+| [Arquitetura](docs/arquitetura.md) | Componentes, carregamento de skills, resolução da stack, segurança |
+| [CHANGELOG](CHANGELOG.md) | Histórico de versões |
+| [`.specs/`](.specs/) | Specs, design, decisões e evidências de validação deste projeto |
+
+## 🛠️ Desenvolvimento do framework
+
+```bash
+claude plugin validate .                    # marketplace
+claude plugin validate ./plugins/sdd
+claude plugin validate ./plugins/authoring
+```
+
+Testar um agente sem instalar (prompt logo após `-p`, pois `--allowedTools` aceita vários valores):
+
+```bash
+claude -p "<prompt>" --plugin-dir ./plugins/sdd --agent sdd:backend --allowedTools "Read,Glob,Grep"
+```
+
+Para adicionar uma stack: crie `plugins/sdd/skills/<backend|frontend>-engineering/references/<stack>.md`,
+registre na tabela do `SKILL.md`, suba a versão em `plugin.json` e registre no CHANGELOG.
+
+```text
+claude-sdd-framework/
+├── .claude-plugin/marketplace.json   # marketplace (plugins sdd e authoring)
+├── plugins/
+│   ├── sdd/                          # agentes, skills, references e hook do processo
+│   └── authoring/                    # catálogo opcional
+├── templates/                        # settings (git/local), CLAUDE.md de projeto, .mcp.json do Jira
+├── docs/                             # manual de uso (HTML) e arquitetura
+├── .specs/                           # specs, design e evidências
+├── CHANGELOG.md
+└── CLAUDE.md
+```
+
+## ⚠️ Limitações conhecidas
+
+- `skills:` só pré-carrega em subagentes; o TecLeader carrega as regras pela ferramenta `Skill`.
+- Referência **Angular** ainda não existe (o agente usa princípios gerais e declara a lacuna).
+- Caminho `.mcp.json` do Jira ainda não validado em rede com inspeção TLS (ex.: Zscaler).
+
+## 🙏 Créditos
+
+- `frontend-engineering`: seção de design visual adaptada de *frontend-design* (Anthropic), Apache-2.0.
+- `skill-creator-original.md`: [anthropics/skills](https://github.com/anthropics/skills), Apache-2.0.
+- Métodos inspirados (texto próprio) em [mattpocock/skills](https://github.com/mattpocock/skills),
+  [obra/superpowers](https://github.com/obra/superpowers) e
+  [vercel-labs/web-interface-guidelines](https://github.com/vercel-labs/web-interface-guidelines) (MIT).
+
+---
+
+<sub>Projeto da comunidade, **não afiliado à Anthropic**. "Claude" e "Claude Code" são marcas da Anthropic, PBC.</sub>

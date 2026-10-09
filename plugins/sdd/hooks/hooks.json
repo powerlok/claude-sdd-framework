@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"Contexto compactado. Antes de continuar: releia spec.md e tasks.md do projeto ativo para recuperar estados das tasks (TODO..DONE), REQs em andamento e decisoes. Nao confie apenas no resumo. Recarregue as skills sdd:sdd-rules e sdd:sdd-governance (regras SDD e estados).\""
+          }
+        ]
+      }
+    ]
+  }
+}
