@@ -113,6 +113,9 @@ Mudanças irreversíveis exigem confirmação explícita:
 Exceção: mover `.specs/<feature>/` para `.specs/done/<feature>/` no encerramento é pré-autorizado
 (reversível, parte do processo); registrar no relatório.
 Convenção de specs: `.specs/<feature>/` (ativas), `.specs/done/<feature>/` (concluídas), `.specs/INDEX.md` (índice).
+Local: `.specs/`, `CLAUDE.md` do projeto e `.claude/settings.json` ficam na **raiz do projeto** (raiz do repositório
+git; em monorepo, a pasta do projeto dentro do repositório). Workspace com vários projetos: um `.specs/` por projeto;
+**nunca** no diretório pai/workspace fora do git.
 
 ---
 

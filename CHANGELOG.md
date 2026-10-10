@@ -2,6 +2,24 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.6.1 — 2026-10-10
+
+- Segurança APROVADA: hook não executa `git` (verificado com `git` falso no PATH); subida limitada a 20 níveis;
+  `subrepos` não segue symlink/junction; 2000 subpastas em ~1,3 s. Correção: caminhos montados sem barra dupla
+  (sessão em `/` estourava o timeout por `//x` = rede no Git Bash; agora ~0,4 s).
+- Validação: workspace com repositório em subpasta (não cria nada, sugere abrir no repositório), raiz de repositório,
+  monorepo (`.specs/` na pasta do projeto) e pasta sem git (avisa e sugere `git init` sem executar).
+- `.specs/` sempre na raiz do projeto (`.specs/done/specs-location/spec.md`).
+- `sdd-rules` (REQ-001): `.specs/`, `CLAUDE.md` do projeto e `.claude/settings.json` ficam na raiz do projeto (raiz do
+  repositório git; em monorepo, a pasta do projeto); workspace com vários projetos: um `.specs/` por projeto, nunca
+  no diretório pai fora do git.
+- Hook `onboarding-check.sh` (REQ-002): acrescenta `git=root|inside|none subrepos=N` ao diagnóstico, **sem executar o
+  git** (só existência de `.git`, arquivo ou pasta; ancestrais até 20 níveis; subpastas diretas, só a contagem). Mantém
+  somente leitura, sem rede, sem `eval`, sempre `exit 0`, saída só com constantes e números.
+- `tecleader` (REQ-003/REQ-004): tabela por situação git no início de sessão (fora do repositório com `subrepos>0`:
+  não criar `.specs/`/`CLAUDE.md` e sugerir abrir o `claude` no repositório; sem git: avisar e sugerir `git init`, sem
+  executar); fallback sem hook verifica `.git` com Glob/Read; onboarding nunca cria `.specs/` fora da raiz do projeto.
+
 ## sdd 0.6.0 — 2026-10-10
 
 - Segurança (2 voltas, APROVADO): a saída do hook contém só constantes e contagens — nomes de arquivo vindos de glob

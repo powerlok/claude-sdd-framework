@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.6.0-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.6.1-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.0-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -82,6 +82,10 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
 ## 🚀 Início rápido
 
 **Pré-requisitos:** Claude Code ≥ 2.1.288 e Git com acesso a este repositório.
+
+> **Onde instalar:** na **raiz do projeto** (raiz do repositório git; em monorepo, a pasta do projeto). É lá que
+> ficam `.claude/settings.json`, `CLAUDE.md` e `.specs/` — nunca num diretório pai/workspace fora do git.
+> Abra o `claude` nessa pasta.
 
 1. No seu projeto, crie `.claude/settings.json` a partir de
    [`templates/project-settings.git.json`](templates/project-settings.git.json):

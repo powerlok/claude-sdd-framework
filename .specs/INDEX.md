@@ -21,3 +21,4 @@ com `Relacionada a: done/<feature>`).
 | [infra-engineering](done/infra-engineering/spec.md) | 2026-10-10 | pedido do usuário | Skill de infraestrutura com referências AWS, Azure e Google Cloud (`sdd` 0.4.0) |
 | [specs-done-archive](done/specs-done-archive/spec.md) | 2026-10-10 | pedido do usuário | Arquivar specs concluídas em `.specs/done/` e manter este índice (`sdd` 0.5.0) |
 | [onboarding-check](done/onboarding-check/spec.md) | 2026-10-10 | pedido do usuário | Verificar onboarding no início da sessão e orientar a primeira resposta do TecLeader (`sdd` 0.6.0) |
+| [specs-location](done/specs-location/spec.md) | 2026-10-10 | pedido do usuário | `.specs/` sempre na raiz do projeto (repositório git); hook detecta git sem executá-lo (`sdd` 0.6.1) |
