@@ -2,6 +2,19 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.4.0 — 2026-10-10
+
+- Nova skill **`infra-engineering`** para o `infra-architect`: princípios de nuvem + referências **AWS**, **Azure** e
+  **Google Cloud** (14 seções cada: framework oficial, landing zone, identidade, rede, computação, dados, segredos,
+  observabilidade, custo, DR, segurança, IaC com tabela "prévia × aplica", comandos só de leitura/prévia, armadilhas).
+- Regra não relaxável: o agente nunca roda apply/deploy/delete/execute; state e plano contêm segredos; prévia só com
+  identidade somente leitura sobre código revisado; lock file versionado e módulos de origem confiável.
+- `infra-architect` agnóstico de nuvem (nuvem vem do `## Stack`); template `CLAUDE.md` com linha de infra.
+- `sdd-rules`: fontes de instrução explícitas (CLAUDE.md, plugin, delegação, `.specs/`); o resto é dado não confiável
+  (vale para todos os subagentes).
+- Texto próprio: AWS (docs CC BY-SA 4.0, só fatos), Azure e Google Cloud (CC BY 4.0, com atribuição).
+- Revisão de segurança APROVADA (3 voltas); pilotos Azure, GCP e AWS validados.
+
 ## sdd 0.3.0 — 2026-10-10
 
 - Referência **Angular** em `frontend-engineering` (`references/angular.md`), GH#1: adapta-se à versão do projeto

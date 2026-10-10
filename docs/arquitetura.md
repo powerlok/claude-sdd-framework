@@ -68,7 +68,7 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.3.0 | padrão | 6 agentes, 7 skills, hook pós-compact |
+| `sdd` | 0.4.0 | padrão | 6 agentes, 8 skills, hook pós-compact |
 | `authoring` | 0.2.0 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
@@ -201,7 +201,7 @@ Na delegação e no settings, os agentes são chamados com o prefixo do plugin (
 | `sdd:frontend` | Implementador frontend agnóstico de framework (UX/UI, acessibilidade, performance, E2E) | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, frontend-engineering, bug-diagnosis |
 | `sdd:tests` | Validador (QA): requisitos, regressão, integração, API, performance, E2E | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, bug-diagnosis |
 | `sdd:security` | Revisor de segurança (AppSec); somente revisa | opus | Read, Grep, Glob, Bash | sdd-rules |
-| `sdd:infra-architect` | Decisões de infraestrutura local e AWS | opus | Read, Write, Grep, Glob | sdd-rules, domain-modeling |
+| `sdd:infra-architect` | Decisões de infraestrutura local e em nuvem (AWS, Azure, Google Cloud) | opus | Read, Write, Grep, Glob | sdd-rules, domain-modeling, infra-engineering |
 
 ### Segregação de responsabilidades
 
@@ -252,6 +252,7 @@ com arquivos, testes, comandos, evidências, riscos e a stack/referência lida; 
 | `frontend-engineering` | princípios frontend agnósticos + `references/react.md`, `references/web-interface.md` | frontend |
 | `bug-diagnosis` | diagnóstico em 5 fases (o `tests` usa a fase de reprodução) | backend, frontend, tests |
 | `domain-modeling` | glossário, modelo de domínio, critério e modelo de ADR | backend, infra-architect |
+| `infra-engineering` | princípios de nuvem + `references/aws.md`, `azure.md`, `gcp.md`; regra não relaxável: nunca aplicar sem confirmação | infra-architect |
 
 Referências de stack existentes:
 

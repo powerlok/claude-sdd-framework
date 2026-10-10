@@ -13,7 +13,7 @@
 
 ## Stack
 
-Fonte da stack para os agentes `sdd:backend` e `sdd:frontend`.
+Fonte da stack para os agentes `sdd:backend`, `sdd:frontend` e `sdd:infra-architect`.
 
 ### Backend
 
@@ -29,6 +29,10 @@ Fonte da stack para os agentes `sdd:backend` e `sdd:frontend`.
 - Framework e versão: <FRAMEWORK X.Y>
 - Gerenciador de pacotes/build: <GERENCIADOR>
 - Referência do plugin: `frontend-engineering/references/<stack>.md` <OU "SEM REFERÊNCIA">
+
+### Infra
+
+- Nuvem/infra: <AWS | Azure | Google Cloud | on-prem>; referência `infra-engineering/references/<nuvem>.md` <OU "SEM REFERÊNCIA">
 
 ## Comandos
 

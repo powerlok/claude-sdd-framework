@@ -332,7 +332,9 @@ Campo `Stack`:
 
 - origem: seção `## Stack` do `CLAUDE.md` do projeto
 - referência: `backend-engineering/references/<stack>.md`
-  ou `frontend-engineering/references/<stack>.md`, quando existir no plugin
+  ou `frontend-engineering/references/<stack>.md`, quando existir no plugin;
+  para `sdd:infra-architect`: `infra-engineering/references/<nuvem>.md`
+  (`aws`, `azure`, `gcp`; nuvem da seção `## Stack` do `CLAUDE.md`)
 - arquivos do plugin (skills e references, ex.: `sdd-rules/references/readme.md`): `${CLAUDE_PLUGIN_ROOT}/skills/`
 - sem referência para a stack: informar `referência: nenhuma`;
   o agente aplica os princípios gerais e declara a lacuna;

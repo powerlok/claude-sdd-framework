@@ -5,9 +5,10 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.3.0-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.4.0-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.0-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
+![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
 ![idioma](https://img.shields.io/badge/docs-pt--BR-555)
 
 [Início rápido](#-início-rápido) · [Como funciona](#-como-funciona) · [O time](#-o-time) · [Manual de uso](docs/manual-de-uso.html) · [Arquitetura](docs/arquitetura.md)
@@ -25,7 +26,7 @@ engenharia completo:
   delega aos especialistas e só encerra quando há evidência de que funciona.
 - **Nada de implementação sem spec.** Requisito, critério de aceite e forma de validar vêm antes do código.
 - **Agnóstico de linguagem.** Os agentes não têm stack fixa: a stack do projeto é declarada no
-  `CLAUDE.md` e o conhecimento específico vem de referências (.NET, Python, React, Angular).
+  `CLAUDE.md` e o conhecimento específico vem de referências (.NET, Python, React, Angular; infra: AWS, Azure, Google Cloud).
 - **Segurança e qualidade embutidas.** Revisão de segurança quando aplicável, validação independente,
   regras que nenhum projeto pode relaxar (segredos, SSL, ações irreversíveis, menor privilégio).
 
@@ -62,7 +63,7 @@ Estados de cada task: `TODO → IN_PROGRESS → IMPLEMENTED → SECURITY_REVIEW 
 | `sdd:frontend` | Interfaces, UX, acessibilidade e testes, na stack do projeto | sonnet |
 | `sdd:tests` | Validação independente: regressão, contratos, E2E, aceite | sonnet |
 | `sdd:security` | Revisão de segurança (AppSec, dependências, segredos), somente leitura | opus |
-| `sdd:infra-architect` | Decisões de infraestrutura, trade-offs e rollback | opus |
+| `sdd:infra-architect` | Arquitetura de infraestrutura na nuvem do projeto (AWS, Azure, Google Cloud), trade-offs e rollback; nunca aplica mudança | opus |
 
 ### Skills
 
@@ -74,6 +75,7 @@ Estados de cada task: `TODO → IN_PROGRESS → IMPLEMENTED → SECURITY_REVIEW 
 | `requirements-grilling` | Perguntas certas para fechar requisitos antes da spec |
 | `bug-diagnosis` | Diagnóstico de bugs em 5 fases, com teste de regressão |
 | `domain-modeling` | Glossário, modelo de domínio e registro de decisões (ADR) |
+| `infra-engineering` | Princípios de nuvem + referências **AWS**, **Azure** e **Google Cloud** (IaC só com prévia; mudança real exige confirmação) |
 
 Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, para criar novas skills e agentes.
 
