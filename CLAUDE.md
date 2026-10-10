@@ -12,7 +12,8 @@ Projeto novo: plugin e marketplace do Claude Code que distribuem o processo SDD
 
 ## Especificações
 
-Ficam em `.specs/<feature>/spec.md` e `tasks.md`. Feature atual: `.specs/sdd-plugin/`.
+Ativas em `.specs/<feature>/` (`spec.md`, `tasks.md`); concluídas em `.specs/done/<feature>/`;
+índice em `.specs/INDEX.md` (ler antes de varrer pastas).
 
 ## Comandos (verificados em 2026-10-09, Claude Code 2.1.288)
 
@@ -26,5 +27,5 @@ Ficam em `.specs/<feature>/spec.md` e `tasks.md`. Feature atual: `.specs/sdd-plu
 
 ## Arquitetura e decisões
 
-Ver `README.md` e `.specs/sdd-plugin/design.md`. Limitações confirmadas: `skills:` não pré-carrega
+Ver `README.md` e `.specs/done/sdd-plugin/design.md`. Limitações confirmadas: `skills:` não pré-carrega
 no agente da sessão principal; `${CLAUDE_PLUGIN_ROOT}` só é substituído no texto de agentes.

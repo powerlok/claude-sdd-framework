@@ -97,6 +97,8 @@ Uma task NÃO é concluída quando o código foi implementado. Só é concluída
 
 Somente o TecLeader encerra tasks.
 
+Feature encerrada: o TecLeader move `.specs/<feature>/` para `.specs/done/<feature>/`, atualiza links e `.specs/INDEX.md`.
+
 ---
 
 ## Controle de Estado

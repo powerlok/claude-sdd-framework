@@ -74,3 +74,7 @@ Não podem relaxar: segredos/credenciais, verificação SSL, confirmação de a�
 Jira somente leitura e menor privilégio.
 
 - <REGRA>
+
+## Specs
+
+- Arquivar specs concluídas: sim (padrão) | não

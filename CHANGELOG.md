@@ -1,6 +1,15 @@
 # Changelog
 
-Formato por versão (semver). Regras de versionamento: `.specs/sdd-plugin/design.md`, seção 6.
+Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
+
+## sdd 0.5.0 — 2026-10-10
+
+- Arquivamento de specs concluídas: no encerramento, o `tecleader` move `.specs/<feature>/` para
+  `.specs/done/<feature>/` (`git mv` quando houver git), atualiza referências e bloqueia o encerramento com link quebrado.
+- Novo `.specs/INDEX.md` (ativas e concluídas: estado, data, origem/ID, resumo); lido antes de varrer pastas.
+- Reabertura: mudança em feature concluída vira feature nova com `Relacionada a: done/<feature>`; `done/` não é editada.
+- `sdd-rules`: movimentação para `done/` pré-autorizada (reversível) e registrada no relatório.
+- Template `CLAUDE.md`: seção `## Specs` com `Arquivar specs concluídas: sim (padrão) | não`.
 
 ## sdd 0.4.0 — 2026-10-10
 

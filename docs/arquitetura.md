@@ -7,7 +7,7 @@ Público: devs do time que vão usar e manter o plugin.
 - Manual de uso com exemplos passo a passo: [manual-de-uso.html](manual-de-uso.html)
 - Instalação, atualização e comandos: [README](../README.md)
 - Histórico de versões: [CHANGELOG](../CHANGELOG.md)
-- Decisões de design: [.specs/sdd-plugin/design.md](../.specs/sdd-plugin/design.md)
+- Decisões de design: [.specs/done/sdd-plugin/design.md](../.specs/done/sdd-plugin/design.md)
 
 Os diagramas usam [Mermaid](https://mermaid.js.org/), que renderiza no GitHub, no Bitbucket e no preview de Markdown do VS Code.
 
@@ -68,7 +68,7 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.4.0 | padrão | 6 agentes, 8 skills, hook pós-compact |
+| `sdd` | 0.5.0 | padrão | 6 agentes, 8 skills, hook pós-compact |
 | `authoring` | 0.2.0 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
@@ -108,7 +108,7 @@ O projeto consumidor declara o marketplace e o agente da sessão no `.claude/set
 ```
 
 Os modelos também trazem `permissions.deny` (ver seção 9). Formato confirmado no spike
-([spike-result.md](../.specs/sdd-plugin/spike-result.md), item #6).
+([spike-result.md](../.specs/done/sdd-plugin/spike-result.md), item #6).
 
 ### Estrutura
 
@@ -344,7 +344,7 @@ Requisito sem teste é reportado pelo `sdd:tests` como lacuna de cobertura e imp
 | Credenciais do GitHub | README | nunca usuário/senha/token na URL; SSH ou gerenciador de credenciais do git |
 | Conteúdo de terceiros | rodapés das skills | origem `repo@commit` e licença SPDX; `authoring` reescrito com texto próprio |
 
-Revisão de segurança do plugin: [security-review.md](../.specs/sdd-plugin/security-review.md)
+Revisão de segurança do plugin: [security-review.md](../.specs/done/sdd-plugin/security-review.md)
 (volta 1 RISCO IDENTIFICADO, 1 MEDIUM e 4 LOW; volta 2 APROVADO).
 
 ### Integração com provedores de código
@@ -352,7 +352,7 @@ Revisão de segurança do plugin: [security-review.md](../.specs/sdd-plugin/secu
 Opcional e somente leitura (feature `vcs-integration`, `sdd` 0.2.0). Só vale se o `CLAUDE.md` do projeto tiver
 `## Repositório` (Provedor, Repositório, Acesso); sem a seção, o TecLeader não consulta nenhum provedor.
 Uso: issue → spec (ID registrado, ex.: `GH#42`) e status de PR/CI como evidência antes do `DONE`.
-Decisão e riscos: [design.md](../.specs/vcs-integration/design.md); pesquisa: [research-t000.md](../.specs/vcs-integration/research-t000.md).
+Decisão e riscos: [design.md](../.specs/done/vcs-integration/design.md); pesquisa: [research-t000.md](../.specs/done/vcs-integration/research-t000.md).
 
 **Camadas de proteção**
 
@@ -367,7 +367,7 @@ Decisão e riscos: [design.md](../.specs/vcs-integration/design.md); pesquisa: [
 
 | Provedor | Caminho padrão | Status |
 |---|---|---|
-| GitHub | `templates/mcp-github.json` (MCP oficial `/mcp/readonly`, `Authorization: Bearer ${GITHUB_PAT}`, `X-MCP-Toolsets: context,repos,issues,pull_requests,actions`) | suportado e validado (6/6 casos, [validation-report.md](../.specs/vcs-integration/validation-report.md)) |
+| GitHub | `templates/mcp-github.json` (MCP oficial `/mcp/readonly`, `Authorization: Bearer ${GITHUB_PAT}`, `X-MCP-Toolsets: context,repos,issues,pull_requests,actions`) | suportado e validado (6/6 casos, [validation-report.md](../.specs/done/vcs-integration/validation-report.md)) |
 | Bitbucket Cloud | MCP Atlassian (issues vêm do Jira); admin concede só `read_bitbucket` | experimental, não validado |
 | GitLab | `templates/mcp-gitlab.json` (`/api/v4/mcp`) | experimental, não validado |
 | Azure DevOps | `templates/mcp-azure-devops.json` (`X-MCP-Toolsets: wit,repos,pipelines`; exige app registration Entra ID) | experimental, não validado |
@@ -415,7 +415,7 @@ solicita complementação. Escrita (PR, comentário, merge, issue) não está li
 
 ## 11. Evidências de validação
 
-Resumo do [validation-report.md](../.specs/sdd-plugin/validation-report.md) (`sdd` 0.1.2, `authoring` 0.2.0,
+Resumo do [validation-report.md](../.specs/done/sdd-plugin/validation-report.md) (`sdd` 0.1.2, `authoring` 0.2.0,
 Claude Code 2.1.288):
 
 - `claude plugin validate` OK no marketplace e nos dois plugins; instalação limpa em projeto de teste.

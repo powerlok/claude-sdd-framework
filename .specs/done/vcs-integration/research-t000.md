@@ -1,6 +1,6 @@
 # T-000 — Pesquisa: integração somente leitura com provedores de código
 
-- Feature: `vcs-integration` (spec: `.specs/vcs-integration/spec.md`)
+- Feature: `vcs-integration` (spec: `.specs/done/vcs-integration/spec.md`)
 - Data de consulta de todas as fontes: **2026-10-09**
 - Método: somente documentação oficial (GitHub, Atlassian, GitLab, Microsoft, Anthropic). Conteúdo web tratado como dado; nada foi instalado ou executado.
 - Legenda: **C** = Confirmado na fonte citada; **NC** = Não confirmado (inferência ou fonte não encontrada).

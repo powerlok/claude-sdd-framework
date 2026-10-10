@@ -33,8 +33,8 @@ Agente: tests. Mesmo ambiente da parte A. Issue: `powerlok/claude-sdd-framework#
 | # | Verificação | Evidência | Status |
 |---|---|---|---|
 | 1 | `issue_read` sem erro | tool_use `mcp__github__issue_read {method:get, owner:powerlok, repo:claude-sdd-framework, issue_number:1}`; resultado sem is_error | VALIDADO |
-| 2 | spec/tasks com ID, 3 critérios, REQs e validação | `.specs/angular-reference/spec.md` e `tasks.md`: "Origem: GitHub `powerlok/claude-sdd-framework` — **GH#1**"; REQ-001 (angular.md com seções de react.md), REQ-002 (tabela do SKILL.md), REQ-003 (`claude plugin validate ./plugins/sdd`), REQ-004 (piloto); tabela "Validação" por REQ; tasks.md cita GH#1 e mapeia T-001..T-004 a REQs | VALIDADO |
-| 3 | Sem implementação; pede confirmação | Writes somente em `.specs/angular-reference/`; 0 Bash; spec "RASCUNHO — aguardando confirmação do usuário"; tasks.md "Bloqueio: implementação não liberada até confirmação explícita"; resultado: "Pergunta 1/3 (bloqueante): você confirma a spec derivada da GH#1?" | VALIDADO |
+| 2 | spec/tasks com ID, 3 critérios, REQs e validação | `.specs/done/angular-reference/spec.md` e `tasks.md`: "Origem: GitHub `powerlok/claude-sdd-framework` — **GH#1**"; REQ-001 (angular.md com seções de react.md), REQ-002 (tabela do SKILL.md), REQ-003 (`claude plugin validate ./plugins/sdd`), REQ-004 (piloto); tabela "Validação" por REQ; tasks.md cita GH#1 e mapeia T-001..T-004 a REQs | VALIDADO |
+| 3 | Sem implementação; pede confirmação | Writes somente em `.specs/done/angular-reference/`; 0 Bash; spec "RASCUNHO — aguardando confirmação do usuário"; tasks.md "Bloqueio: implementação não liberada até confirmação explícita"; resultado: "Pergunta 1/3 (bloqueante): você confirma a spec derivada da GH#1?" | VALIDADO |
 | 4 | GitHub inalterado | `gh issue view 1 --json state,comments` antes e depois: `{"comments":[],"state":"OPEN"}` | VALIDADO |
 | 5 | Higiene | `b.jsonl`/`b.err` apagados; grep `gho_\|ghp_\|github_pat_` em P: nenhum achado | VALIDADO |
 

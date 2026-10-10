@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.4.0-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.5.0-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.0-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -206,7 +206,7 @@ e repassa aos demais agentes apenas os requisitos validados.
 | [Manual de uso](docs/manual-de-uso.html) | 18 exemplos passo a passo, solução de problemas. Baixe e abra no navegador (funciona offline) |
 | [Arquitetura](docs/arquitetura.md) | Componentes, carregamento de skills, resolução da stack, segurança |
 | [CHANGELOG](CHANGELOG.md) | Histórico de versões |
-| [`.specs/`](.specs/) | Specs, design, decisões e evidências de validação deste projeto |
+| [`.specs/INDEX.md`](.specs/INDEX.md) | Índice das specs: ativas em `.specs/<feature>/`, concluídas arquivadas em `.specs/done/` |
 
 ## 🛠️ Desenvolvimento do framework
 
@@ -233,7 +233,7 @@ claude-sdd-framework/
 │   └── authoring/                    # catálogo opcional
 ├── templates/                        # settings (git/local), CLAUDE.md de projeto, .mcp.json (Jira, GitHub, GitLab, Azure)
 ├── docs/                             # manual de uso (HTML) e arquitetura
-├── .specs/                           # specs, design e evidências
+├── .specs/                           # specs ativas, INDEX.md e done/ (concluídas)
 ├── CHANGELOG.md
 └── CLAUDE.md
 ```

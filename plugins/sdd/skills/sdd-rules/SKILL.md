@@ -110,6 +110,10 @@ Mudanças irreversíveis exigem confirmação explícita:
 - alterações de infraestrutura
 - alterações permanentes de dados
 
+Exceção: mover `.specs/<feature>/` para `.specs/done/<feature>/` no encerramento é pré-autorizado
+(reversível, parte do processo); registrar no relatório.
+Convenção de specs: `.specs/<feature>/` (ativas), `.specs/done/<feature>/` (concluídas), `.specs/INDEX.md` (índice).
+
 ---
 
 ## Qualidade

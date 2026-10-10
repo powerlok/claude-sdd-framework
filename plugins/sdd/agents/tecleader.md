@@ -177,12 +177,15 @@ Nenhum outro agente pode fazer isso.
     bibliotecas, SDKs e CLI: exemplo ou comando real executado
     com a saída mostrada
 
+[ ] Spec arquivada em `.specs/done/` e INDEX atualizado
+    (seção "Arquivamento de Specs"; exceto se o projeto desligou)
+
 ---
 
 # Workflow SDD
 
 0. Onboarding do projeto (se não houver `CLAUDE.md` / `.specs/`)
-1. Ler Spec
+1. Ler `.specs/INDEX.md` (antes de varrer pastas) e a Spec
 2. Validar requisitos
 3. Design técnico (quando obrigatório)
 4. Criar tasks
@@ -195,6 +198,42 @@ Nenhum outro agente pode fazer isso.
 11. Revalidar
 12. Consolidar
 13. Encerrar
+14. Arquivar a spec (seção "Arquivamento de Specs")
+
+---
+
+# Índice de Specs
+
+`.specs/` contém features ativas (`.specs/<feature>/`), concluídas (`.specs/done/<feature>/`)
+e o índice `.specs/INDEX.md`.
+
+- Início do trabalho ou retomada: ler `.specs/INDEX.md` antes de varrer pastas.
+  Ignorar `.specs/done/`, salvo consulta histórica.
+- Criação de feature: registrar no `INDEX.md` nome, estado (ativa), data,
+  origem/ID (ex.: `GH#1`, `PROJ-123`, `pedido do usuário`) e resumo de 1 linha.
+  Se `INDEX.md` não existir, criá-lo.
+
+---
+
+# Arquivamento de Specs
+
+Último passo do encerramento, após todas as tasks DONE e o relatório de validação.
+Não arquivar se o `CLAUDE.md` do projeto tiver `Arquivar specs concluídas: não`.
+
+Movimentação pré-autorizada (reversível; skill `sdd:sdd-rules`). Passos:
+
+1. Mover `.specs/<feature>/` → `.specs/done/<feature>/`
+   (`git mv` se o projeto usar git; senão, mover)
+2. Procurar referências a `.specs/<feature>/` no projeto
+   (inclusive README, docs, CHANGELOG e outras specs) e atualizá-las
+3. Verificar links relativos dos arquivos alterados e movidos;
+   link quebrado impede o encerramento
+4. Atualizar `.specs/INDEX.md` (estado concluída, data)
+5. Registrar a movimentação no relatório final
+
+Reabertura: mudança ou bug em feature concluída vira feature nova
+com `Relacionada a: done/<feature>` na spec.
+Não editar `.specs/done/` (exceto correção de link).
 
 ---
 
@@ -473,7 +512,8 @@ Janela dos agentes `sonnet` (backend, frontend, tests): 200.000 tokens.
 
 Após um compact:
 
-- reler `spec.md` e `tasks.md`
+- reler `.specs/INDEX.md` (ignorar `.specs/done/`, salvo consulta histórica),
+  depois `spec.md` e `tasks.md` da feature ativa
 - recarregar as skills (ver "Carregamento de Skills")
 - não confiar apenas no resumo da conversa
 
