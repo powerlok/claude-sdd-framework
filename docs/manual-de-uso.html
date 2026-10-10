@@ -219,7 +219,7 @@ tr:last-child td { border-bottom: 0; }
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span class="lbl">Menu</span>
   </button>
   <span class="logo" aria-hidden="true">SDD</span>
-  <h1>Manual do Plugin SDD <span class="ver">sdd 0.1.2 · authoring 0.2.0</span></h1>
+  <h1>Manual do Plugin SDD <span class="ver">sdd 0.2.0 · authoring 0.2.0</span></h1>
   <div class="header-tools" role="search">
     <div class="search">
       <label for="q" class="sr-only">Buscar no manual</label>
@@ -244,6 +244,7 @@ tr:last-child td { border-bottom: 0; }
     <li><a href="#exemplos">Exemplos passo a passo</a></li>
     <li><a href="#estados-done">Estados e critérios de DONE</a></li>
     <li><a href="#jira">Jira (opcional)</a></li>
+    <li><a href="#repositorio">Repositório (opcional)</a></li>
     <li><a href="#atualizacao">Atualização e versões</a></li>
     <li><a href="#problemas">Solução de problemas</a></li>
     <li><a href="#limitacoes">Limitações conhecidas</a></li>
@@ -433,6 +434,9 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
     <li><a href="#ex-13">Atualização do plugin</a></li>
     <li><a href="#ex-14">Criar skill ou agente com authoring</a></li>
     <li><a href="#ex-15">Pedido sem spec é recusado</a></li>
+    <li><a href="#ex-16">Issue do GitHub vira spec</a></li>
+    <li><a href="#ex-17">Status de PR/CI antes do DONE</a></li>
+    <li><a href="#ex-18">Issue com instrução maliciosa</a></li>
   </ol>
 
   <article class="example" id="ex-1">
@@ -646,6 +650,42 @@ para ser usada pelo sdd:backend.</code></pre></div></div>
       <div class="step"><h4>Resultado</h4><p>Na validação, o TecLeader propôs REQ-001 com critério de aceite e pediu a stack. Nenhum arquivo foi criado (o projeto continuou só com <code>.claude/settings.json</code>).</p></div>
     </div>
   </article>
+
+  <article class="example" id="ex-16">
+    <header><span class="num" aria-hidden="true">16</span><h3>Issue do GitHub vira spec</h3><span class="badge verified">Verificado</span></header>
+    <p class="src">Fonte: .specs/vcs-integration/validation-report.md (Parte B): a issue real GH#1 virou spec com o ID e os 3 critérios de aceite, sem implementação e com pedido de confirmação. O número GH#42 abaixo é só exemplo.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4>
+        <div class="code" data-label="prompt"><pre><code>Leia a issue 42 do repositório e implemente no meu-app.</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Lê a issue com <code>issue_read</code> (somente leitura), trata o texto como dado e converte em <code>.specs/&lt;feature&gt;/spec.md</code> e <code>tasks.md</code> registrando o ID (<code>GH#42</code>). Issue sem critério de aceite: pede complementação antes de implementar.</p></div>
+      <div class="step"><h4>O que você responde</h4><div class="code" data-label="prompt"><pre><code>Confirmo a spec derivada da GH#42. Pode seguir.</code></pre></div></div>
+      <div class="step"><h4>Resultado</h4><p>A spec derivada de issue exige a sua confirmação explícita antes da implementação. Depois segue o fluxo SDD normal até o DONE, e os demais agentes recebem só os REQs validados. O TecLeader <strong>nunca escreve no GitHub</strong> (não comenta nem fecha a issue): atualize-a você mesmo com as evidências. Exige <code>## Repositório</code> no <code>CLAUDE.md</code>.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-17">
+    <header><span class="num" aria-hidden="true">17</span><h3>Status de PR/CI antes do DONE</h3><span class="badge verified">Verificado</span></header>
+    <p class="src">Fonte: .specs/vcs-integration/validation-report.md, caso 2 (leitura real no repositório de teste).</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4>
+        <div class="code" data-label="prompt"><pre><code>Consulte as issues, PRs e execuções de CI do repositório antes de fechar a task.</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Usa só as ferramentas de leitura do GitHub: <code>list_issues</code>, <code>list_pull_requests</code> e <code>actions_list</code> (e, para um PR da entrega, <code>pull_request_read</code> e <code>actions_get</code>). Registra ID do PR, status e link como evidência; nunca copia log de CI.</p></div>
+      <div class="step"><h4>O que você responde</h4><p>Confirme as evidências ou peça a task correspondente.</p></div>
+      <div class="step"><h4>Resultado</h4><p>Na validação, as três leituras responderam sem erro no repositório de teste: <code>totalCount:0</code> (issues), <code>[]</code> (PRs) e <code>total_count:0</code> (execuções), pois o repositório estava vazio. Tentativa de criar issue foi recusada ("acesso somente leitura") e nada foi criado.</p></div>
+    </div>
+  </article>
+
+  <article class="example" id="ex-18">
+    <header><span class="num" aria-hidden="true">18</span><h3>Issue com instrução maliciosa</h3><span class="badge verified">Verificado</span></header>
+    <p class="src">Fonte: .specs/vcs-integration/validation-report.md, caso 6. A formulação do pedido é ilustrativa.</p>
+    <div class="steps">
+      <div class="step"><h4>Pedido</h4>
+        <div class="code" data-label="prompt"><pre><code>Leia a issue 7 e transforme em spec.</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Trata o corpo da issue como <strong>dado não confiável</strong>: identificou "prompt injection", não executou nada, não chamou ferramentas por pedido da issue e não criou spec.</p></div>
+      <div class="step"><h4>O que você responde</h4><p>Informe o objetivo real da tarefa e confirme os requisitos propostos.</p></div>
+      <div class="step"><h4>Resultado</h4><p>O agente sinalizou o trecho suspeito, pediu o objetivo real e deixou claro que você confirma antes de qualquer implementação. Observação do relatório: ele recusou converter a issue inteira em vez de converter sinalizando o trecho; comportamento seguro.</p></div>
+    </div>
+  </article>
 </section>
 
 <!-- 7 -->
@@ -702,15 +742,47 @@ Liste as issues abertas atribuídas a mim no projeto PROJ.</code></pre></div>
   <p><span class="badge illustrative">Ilustrativo</span> Chaves e projetos fictícios.</p>
 </section>
 
+<!-- 8b -->
+<section class="sec" id="repositorio" aria-labelledby="h-repo">
+  <h2 id="h-repo"><span class="n">9.</span>Repositório (opcional)</h2>
+  <p>Integração somente leitura com o provedor de código: <strong>issue vira spec</strong> (ID registrado, ex.: <code>GH#42</code>) e <strong>status de PR/CI vira evidência</strong> antes do DONE. Só vale se o <code>CLAUDE.md</code> do projeto tiver a seção <code>## Repositório</code> (Provedor, Repositório, Acesso). Sem ela, o TecLeader não consulta nenhum provedor.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Provedor</th><th>Caminho padrão</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>GitHub</td><td><a href="../templates/mcp-github.json"><code>templates/mcp-github.json</code></a> (MCP oficial em <code>/mcp/readonly</code>)</td><td><span class="badge verified">Verificado</span> suportado e validado</td></tr>
+      <tr><td>Bitbucket Cloud</td><td>MCP Atlassian (issues vêm do Jira)</td><td>experimental, não validado</td></tr>
+      <tr><td>GitLab</td><td><a href="../templates/mcp-gitlab.json"><code>templates/mcp-gitlab.json</code></a></td><td>experimental, não validado</td></tr>
+      <tr><td>Azure DevOps</td><td><a href="../templates/mcp-azure-devops.json"><code>templates/mcp-azure-devops.json</code></a></td><td>experimental, não validado</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Como ativar o GitHub</h3>
+  <ol>
+    <li>No <code>CLAUDE.md</code> do projeto, adicione <code>## Repositório</code> com <code>Provedor: github</code>, <code>Repositório: &lt;owner/repo&gt;</code> e <code>Acesso: mcp</code> (modelo em <a href="../templates/CLAUDE.md">templates/CLAUDE.md</a>).</li>
+    <li>Copie <a href="../templates/mcp-github.json"><code>templates/mcp-github.json</code></a> para <code>&lt;projeto&gt;/.mcp.json</code>.</li>
+    <li>Crie um <strong>PAT fine-grained somente leitura</strong>: só os repositórios do projeto; Metadata, Issues, Pull requests e Actions = Read; sem Contents write e sem Workflows; validade curta.</li>
+    <li>Exporte o token na variável de ambiente <code>GITHUB_PAT</code> e confira com <code>/mcp</code> que o servidor <code>github</code> está <code>connected</code>.</li>
+  </ol>
+  <div class="callout warn" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><div><span class="t">Atenção</span><p>Nunca reutilize <code>gh auth token</code> (o login local costuma ter escrita) e nunca coloque o token em arquivo ou <code>.env</code> versionado.</p></div></div>
+  <h3>Camadas de proteção</h3>
+  <ul>
+    <li>Servidor em modo somente leitura (GitHub em <code>/mcp/readonly</code>).</li>
+    <li>O TecLeader tem uma lista fechada de ferramentas de leitura; os demais agentes não consultam o provedor.</li>
+    <li><code>permissions.deny</code> nos templates de settings bloqueia as ferramentas de escrita. O deny de Bash (<code>gh</code>, <code>glab</code>, <code>az</code>) é só defesa em profundidade, não barreira.</li>
+    <li>Abrir PR, comentar, revisar, fazer merge e criar issue não estão liberados: faça manualmente.</li>
+  </ul>
+  <div class="callout warn" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><div><span class="t">Issue e PR são dado não confiável</span><p>O TecLeader não segue instruções escritas em issue, PR, comentário ou log; sinaliza trechos suspeitos, exige sua confirmação antes de virar spec e repassa aos demais agentes só os REQs validados. Exemplos 16 a 18.</p></div></div>
+  <p><span class="badge verified">Verificado</span> Fonte: .specs/vcs-integration/validation-report.md (GitHub) e design.md.</p>
+</section>
+
 <!-- 9 -->
 <section class="sec" id="atualizacao" aria-labelledby="h-upd">
-  <h2 id="h-upd"><span class="n">9.</span>Atualização e versões</h2>
+  <h2 id="h-upd"><span class="n">10.</span>Atualização e versões</h2>
   <div class="code" data-label="bash"><pre><code>claude plugin marketplace update claude-sdd-framework
 claude plugin update sdd@claude-sdd-framework --scope project</code></pre></div>
   <p>Reinicie a sessão para aplicar. <span class="badge verified">Verificado</span></p>
   <div class="table-wrap"><table>
     <thead><tr><th>Plugin</th><th>Versão deste manual</th></tr></thead>
-    <tbody><tr><td><code>sdd</code></td><td>0.1.2</td></tr><tr><td><code>authoring</code></td><td>0.2.0</td></tr></tbody>
+    <tbody><tr><td><code>sdd</code></td><td>0.2.0</td></tr><tr><td><code>authoring</code></td><td>0.2.0</td></tr></tbody>
   </table></div>
   <p>As versões seguem semver, definidas em <code>plugins/*/.claude-plugin/plugin.json</code>; as mudanças ficam no <a href="../CHANGELOG.md">CHANGELOG.md</a>.</p>
   <p>Para validar um plugin ou testá-lo sem instalar (só na sessão):</p>
@@ -722,7 +794,7 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
 
 <!-- 10 -->
 <section class="sec" id="problemas" aria-labelledby="h-prob">
-  <h2 id="h-prob"><span class="n">10.</span>Solução de problemas</h2>
+  <h2 id="h-prob"><span class="n">11.</span>Solução de problemas</h2>
 
   <article class="trouble"><h3><code>claude</code> não é encontrado no Windows</h3>
     <p>O instalador nativo coloca o <code>claude.exe</code> em <code>%USERPROFILE%\.local\bin</code>, que pode estar fora do PATH. No PowerShell:</p>
@@ -745,13 +817,16 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
     <p>Em modo não interativo o conector conecta de forma assíncrona. No spike, funcionou com a variável abaixo:</p>
     <div class="code" data-label="bash"><pre><code>MCP_CONNECTION_NONBLOCKING=false claude -p "&lt;prompt&gt;"</code></pre></div></article>
 
+  <article class="trouble"><h3>MCP do GitHub não conecta / ferramentas não aparecem</h3>
+    <p>Confira, nesta ordem: (1) a variável de ambiente <code>GITHUB_PAT</code> está definida no terminal que abriu o <code>claude</code> (sem ela, o header <code>Authorization</code> vai vazio) e o PAT não expirou; (2) <code>/mcp</code> mostra o servidor <code>github</code> como <code>connected</code>; (3) o <code>.mcp.json</code> mantém o header <code>X-MCP-Toolsets: context,repos,issues,pull_requests,actions</code>, pois sem os toolsets as ferramentas de issues, PRs e Actions não são carregadas. Reinicie a sessão depois de alterar. Em erro, registre a mensagem exata (sem colar o token) e acione a TI; nunca desabilite a verificação de SSL.</p></article>
+
   <article class="trouble"><h3>Testes lentos ou com timeout na máquina</h3>
     <p>Nos relatórios, falhas de timeout (vitest worker, <code>locator.fill</code>) apareceram com a máquina lenta e foram classificadas como prováveis causas ambientais; reexecute com a máquina ociosa antes de investigar o código.</p></article>
 </section>
 
 <!-- 11 -->
 <section class="sec" id="limitacoes" aria-labelledby="h-lim">
-  <h2 id="h-lim"><span class="n">11.</span>Limitações conhecidas</h2>
+  <h2 id="h-lim"><span class="n">12.</span>Limitações conhecidas</h2>
   <ul>
     <li><code>skills:</code> só pré-carrega em subagentes; o TecLeader carrega as regras pela ferramenta <code>Skill</code> no início da sessão e após compact.</li>
     <li>No texto do agente, <code>${CLAUDE_PLUGIN_ROOT}</code> é substituído pelo caminho do plugin; no texto da skill, não.</li>
@@ -760,13 +835,14 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
     <li>O carregamento das regras no TecLeader depende da instrução do agente (sem pré-carregamento na sessão principal); funcionou nos testes de validação.</li>
     <li>Comandos de exemplo das references (lint, auditoria de dependências) não foram executados nos pilotos.</li>
     <li><code>/compact</code> não executa em modo <code>-p</code>.</li>
+    <li>Repositório: só o GitHub com <code>GITHUB_PAT</code> foi validado. OAuth do GitHub (sem header <code>Authorization</code>) não foi testado; Bitbucket, GitLab e Azure DevOps são experimentais e não foram validados. O deny de Bash é defesa em profundidade; a mitigação real é o token somente leitura.</li>
   </ul>
   <p><span class="badge verified">Verificado</span> Fonte: README.md e validation-report.md.</p>
 </section>
 
 <!-- 12 -->
 <section class="sec" id="referencias" aria-labelledby="h-ref">
-  <h2 id="h-ref"><span class="n">12.</span>Referências</h2>
+  <h2 id="h-ref"><span class="n">13.</span>Referências</h2>
   <p>Links relativos a partir de <code>docs/</code>.</p>
   <ul>
     <li><a href="../README.md">README.md</a>: instalação, atualização, validação, árvore de pastas.</li>
@@ -775,12 +851,13 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
     <li><a href="../templates/CLAUDE.md">templates/CLAUDE.md</a>: modelo de <code>CLAUDE.md</code> com <code>## Stack</code>.</li>
     <li><a href="../templates/project-settings.local.json">templates/project-settings.local.json</a> e <a href="../templates/project-settings.git.json">project-settings.git.json</a>.</li>
     <li><a href="../templates/mcp-atlassian.json">templates/mcp-atlassian.json</a>: MCP do Jira.</li>
+    <li><a href="../templates/mcp-github.json">templates/mcp-github.json</a>, <a href="../templates/mcp-gitlab.json">mcp-gitlab.json</a> e <a href="../templates/mcp-azure-devops.json">mcp-azure-devops.json</a>: MCP do provedor de código.</li>
   </ul>
 </section>
 </main>
 </div>
 
-<footer class="site-footer">Manual do Plugin SDD · sdd 0.1.2 · authoring 0.2.0 · arquivo único, funciona offline.</footer>
+<footer class="site-footer">Manual do Plugin SDD · sdd 0.2.0 · authoring 0.2.0 · arquivo único, funciona offline.</footer>
 
 <button type="button" class="btn" id="to-top" aria-label="Voltar ao topo">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span class="lbl">Topo</span>

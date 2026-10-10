@@ -2,6 +2,24 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.2.0 — 2026-10-09
+
+- Integração opcional, somente leitura, com o provedor de código (feature `vcs-integration`):
+  issue → spec (ID registrado, ex.: `GH#42`) e status de PR/CI como evidência antes do DONE.
+  Ativada só se o `CLAUDE.md` do projeto tiver `## Repositório`.
+- `tecleader`: `tools:` com ferramentas de leitura GitHub (`mcp__github__*`, verificadas na sessão) e
+  Bitbucket (Atlassian, dois prefixos); nova seção "Repositório". Escrita (PR, comentário, merge, issue) proibida.
+- `sdd-governance`: seção "Integrações externas (Jira e repositório)".
+- Templates: `mcp-github.json` (`/mcp/readonly`); `mcp-gitlab.json` e `mcp-azure-devops.json` (experimentais);
+  `permissions.deny` ampliado (escrita do GitHub MCP e prefixos Bash de `gh`/`glab`/`az`, defesa em profundidade);
+  `CLAUDE.md` com seção opcional `## Repositório`.
+- Correções da revisão de segurança (T-003): conteúdo de issue/PR/comentário/work item/log tratado como
+  dado não confiável (sem seguir instruções; spec de issue exige confirmação do usuário; subagentes recebem só REQs);
+  `GITHUB_PAT` fine-grained somente leitura (proibido `gh auth token`); Bitbucket rebaixado para experimental;
+  `get_job_logs` e `getBitbucketRepoPipelineStepLog` removidos do `tools:`; deny das ferramentas de escrita
+  GitLab e Azure DevOps por nome e de mais prefixos Bash (`gh auth token`, `gh secret`, `glab api`, `az devops invoke` etc.);
+  Azure com `X-MCP-Toolsets: wit,repos,pipelines`; riscos residuais documentados (`curl`/PowerShell, `gh` logado, Zscaler, OAuth).
+
 ## marketplace — 2026-10-09 — renomeado para `claude-sdd-framework`
 
 - Marketplace `engineering-workflow` → `claude-sdd-framework` (repositório GitHub `powerlok/claude-sdd-framework`).

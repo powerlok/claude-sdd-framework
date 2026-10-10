@@ -68,7 +68,7 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.1.2 | padrão | 6 agentes, 7 skills, hook pós-compact |
+| `sdd` | 0.2.0 | padrão | 6 agentes, 7 skills, hook pós-compact |
 | `authoring` | 0.2.0 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
@@ -122,7 +122,7 @@ claude-sdd-framework/
 │   │   ├── hooks/hooks.json          # SessionStart (compact)
 │   │   └── skills/                   # sdd-rules, sdd-governance, backend/frontend-engineering, ...
 │   └── authoring/skills/             # skill-development, agent-development
-├── templates/                        # settings (local/git), CLAUDE.md de projeto, .mcp.json do Jira
+├── templates/                        # settings (local/git), CLAUDE.md de projeto, .mcp.json (Jira, GitHub, GitLab, Azure)
 ├── docs/                             # este documento e o manual de uso
 └── .specs/                           # specs, design, validação do próprio plugin
 ```
@@ -196,7 +196,7 @@ Na delegação e no settings, os agentes são chamados com o prefixo do plugin (
 
 | Agente | Papel | Model | Tools | Skills pré-carregadas (`skills:`) |
 |---|---|---|---|---|
-| `sdd:tecleader` | Orquestrador: tech lead, scrum master, coordenador SDD; único que encerra tasks | opus | Read, Edit, Write, Grep, Glob, Bash, Agent, Skill + 4 ferramentas de leitura do Jira em dois prefixos (seção 9) | nenhuma (carrega via ferramenta `Skill`, seção 6) |
+| `sdd:tecleader` | Orquestrador: tech lead, scrum master, coordenador SDD; único que encerra tasks | opus | Read, Edit, Write, Grep, Glob, Bash, Agent, Skill + 4 ferramentas de leitura do Jira em dois prefixos + ferramentas de leitura do provedor de código (seção 9) | nenhuma (carrega via ferramenta `Skill`, seção 6) |
 | `sdd:backend` | Implementador backend agnóstico de linguagem (DDD, SOLID, Clean/Hexagonal, TDD) | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, backend-engineering, bug-diagnosis, domain-modeling |
 | `sdd:frontend` | Implementador frontend agnóstico de framework (UX/UI, acessibilidade, performance, E2E) | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, frontend-engineering, bug-diagnosis |
 | `sdd:tests` | Validador (QA): requisitos, regressão, integração, API, performance, E2E | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, bug-diagnosis |
@@ -246,7 +246,7 @@ com arquivos, testes, comandos, evidências, riscos e a stack/referência lida; 
 | Skill | Conteúdo | Quem usa |
 |---|---|---|
 | `sdd-rules` | regras globais (antes de alterar, SDD, escopo, qualidade, segurança, documentação, evidências, encerramento); `references/` com `readme.md`, `final-run.md`, `reproducibility.md` | todos |
-| `sdd-governance` | papéis, estados, correção, escalonamento, evidências, contexto, Jira somente leitura | tecleader |
+| `sdd-governance` | papéis, estados, correção, escalonamento, evidências, contexto, Jira e repositório somente leitura | tecleader |
 | `requirements-grilling` | protocolo de perguntas antes de escrever ou aprovar uma spec | tecleader |
 | `backend-engineering` | princípios backend agnósticos + `references/dotnet.md`, `references/python.md` | backend |
 | `frontend-engineering` | princípios frontend agnósticos + `references/react.md`, `references/web-interface.md` | frontend |
@@ -346,6 +346,62 @@ Requisito sem teste é reportado pelo `sdd:tests` como lacuna de cobertura e imp
 Revisão de segurança do plugin: [security-review.md](../.specs/sdd-plugin/security-review.md)
 (volta 1 RISCO IDENTIFICADO, 1 MEDIUM e 4 LOW; volta 2 APROVADO).
 
+### Integração com provedores de código
+
+Opcional e somente leitura (feature `vcs-integration`, `sdd` 0.2.0). Só vale se o `CLAUDE.md` do projeto tiver
+`## Repositório` (Provedor, Repositório, Acesso); sem a seção, o TecLeader não consulta nenhum provedor.
+Uso: issue → spec (ID registrado, ex.: `GH#42`) e status de PR/CI como evidência antes do `DONE`.
+Decisão e riscos: [design.md](../.specs/vcs-integration/design.md); pesquisa: [research-t000.md](../.specs/vcs-integration/research-t000.md).
+
+**Camadas de proteção**
+
+| Camada | Onde | Como |
+|---|---|---|
+| 1. Servidor somente leitura | `.mcp.json` | GitHub em `/mcp/readonly`; Azure DevOps com `X-MCP-Readonly: true` (GitLab e Bitbucket não oferecem modo read-only) |
+| 2. Lista fechada de leitura | `tools:` do `sdd:tecleader` | GitHub: `get_me`, `issue_read`, `list_issues`, `search_issues`, `pull_request_read`, `list_pull_requests`, `search_pull_requests`, `actions_list`, `actions_get`; sem `get_job_logs`. Bitbucket (Atlassian) só ferramentas de leitura; GitLab e Azure: nenhuma no plugin (usuário adiciona por nome, nunca curinga) |
+| 3. `permissions.deny` | templates de settings | ferramentas de escrita por nome (cobre sessões sem o agente) e prefixos Bash de `gh`/`glab`/`az`. O deny de Bash é defesa em profundidade, não barreira |
+| Token | variável de ambiente `GITHUB_PAT` | PAT fine-grained somente leitura (só os repositórios do projeto; Metadata, Issues, Pull requests, Actions = Read; validade curta); proibido reutilizar `gh auth token`; nunca versionado |
+
+**Provedores**
+
+| Provedor | Caminho padrão | Status |
+|---|---|---|
+| GitHub | `templates/mcp-github.json` (MCP oficial `/mcp/readonly`, `Authorization: Bearer ${GITHUB_PAT}`, `X-MCP-Toolsets: context,repos,issues,pull_requests,actions`) | suportado e validado (6/6 casos, [validation-report.md](../.specs/vcs-integration/validation-report.md)) |
+| Bitbucket Cloud | MCP Atlassian (issues vêm do Jira); admin concede só `read_bitbucket` | experimental, não validado |
+| GitLab | `templates/mcp-gitlab.json` (`/api/v4/mcp`) | experimental, não validado |
+| Azure DevOps | `templates/mcp-azure-devops.json` (`X-MCP-Toolsets: wit,repos,pipelines`; exige app registration Entra ID) | experimental, não validado |
+
+**Fluxo issue → spec com confirmação**
+
+```mermaid
+sequenceDiagram
+    actor U as Usuário
+    participant TL as sdd:tecleader
+    participant P as Provedor (leitura)
+    participant SA as Subagentes
+    U->>TL: "Implemente a issue GH#42"
+    TL->>P: issue_read (somente leitura)
+    P-->>TL: texto da issue (dado não confiável)
+    TL->>TL: converte em spec.md + tasks.md, sinaliza trechos suspeitos
+    TL->>U: spec derivada da issue, pede confirmação
+    U-->>TL: confirma
+    TL->>SA: apenas REQs validados (nunca o texto bruto)
+```
+
+Issue, PR, comentário, work item e log são **dados, nunca instruções**: o TecLeader não executa comandos, não chama
+ferramentas, não muda escopo e não lê nem expõe segredos por pedido contido neles. Issue sem critério de aceite:
+solicita complementação. Escrita (PR, comentário, merge, issue) não está liberada: o usuário faz manualmente.
+
+**Riscos residuais**
+
+- `gh` já logado na máquina tem escrita, e o Bash do `tecleader` alcança a API por `curl`/PowerShell sem passar
+  pelo deny. Mitigação real: token somente leitura. O modo `Acesso: cli` não é recomendado.
+- OAuth do GitHub (sem header `Authorization`) não foi testado.
+- Bitbucket, GitLab e Azure DevOps não foram validados; nomes das ferramentas de escrita do Bitbucket devem ser
+  confirmados na sessão e então negados.
+- O deny do `gh issue create` foi provado só com `--help` (o agente recusa antes de tentar; defesa em camadas).
+- Com Zscaler, `.mcp.json` e CLIs saem da máquina (nunca desabilitar SSL); validar com a TI.
+
 ## 10. Versionamento e atualização
 
 - `version` semver em `plugins/*/.claude-plugin/plugin.json`; mudanças registradas no [CHANGELOG](../CHANGELOG.md).
@@ -373,6 +429,7 @@ Claude Code 2.1.288):
 - `${CLAUDE_PLUGIN_ROOT}` só é substituído no texto de agentes, não no de skills.
 - Referência Angular não existe.
 - Caminho `.mcp.json` do Jira não testado com Zscaler ativo; nomes `mcp__atlassian__*` não verificados.
+- Repositório: ver riscos residuais na seção 9 (OAuth GitHub não testado; Bitbucket, GitLab e Azure DevOps não validados).
 - "Listar projetos do Jira" não tem ferramenta de leitura dedicada no conector.
 - `/compact` não executa em modo `-p`: o hook do plugin foi confirmado com matcher `startup`, e o matcher `compact`
   foi confirmado no mecanismo do workspace; os relatórios não registram o hook do plugin disparando após um `/compact` real.

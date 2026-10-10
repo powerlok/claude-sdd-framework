@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.1.2-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.2.0-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.0-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React-0F766E)
 ![idioma](https://img.shields.io/badge/docs-pt--BR-555)
@@ -165,11 +165,43 @@ Reinicie a sessão para aplicar. Versões seguem semver; veja o [CHANGELOG](CHAN
   `.mcp.json` (MCP remoto oficial da Atlassian, OAuth, sem token em arquivo).
 - Ferramentas de escrita (criar, editar, comentar, transicionar) ficam bloqueadas nos templates.
 
+## 🔗 Repositório: GitHub, Bitbucket, GitLab, Azure DevOps (opcional, somente leitura)
+
+Serve para duas coisas: **issue → spec** (o ID fica registrado, ex.: `GH#42`) e **status de PR/CI como evidência**
+antes do DONE. Só o TecLeader consulta o provedor, e só se o `CLAUDE.md` do projeto tiver a seção `## Repositório`.
+
+| Provedor | Caminho padrão | Status |
+|---|---|---|
+| GitHub | [`templates/mcp-github.json`](templates/mcp-github.json) (MCP oficial em `/mcp/readonly`) | **suportado e validado** |
+| Bitbucket Cloud | MCP Atlassian (issues vêm do Jira) | experimental |
+| GitLab | [`templates/mcp-gitlab.json`](templates/mcp-gitlab.json) | experimental |
+| Azure DevOps | [`templates/mcp-azure-devops.json`](templates/mcp-azure-devops.json) | experimental |
+
+**Como ativar (GitHub):**
+
+1. No `CLAUDE.md` do projeto, adicione a seção `## Repositório` (modelo em [`templates/CLAUDE.md`](templates/CLAUDE.md)):
+   `Provedor: github`, `Repositório: <owner/repo>`, `Acesso: mcp`.
+2. Copie [`templates/mcp-github.json`](templates/mcp-github.json) para `.mcp.json` na raiz do projeto.
+3. Crie um **PAT fine-grained somente leitura** no GitHub: só os repositórios do projeto; permissões
+   Metadata, Issues, Pull requests e Actions = **Read**; sem Contents write e sem Workflows; validade curta.
+4. Exporte o token na variável de ambiente `GITHUB_PAT` (nunca em arquivo versionado nem `.env` versionado)
+   e confira com `/mcp` que o servidor `github` está `connected`.
+
+Nunca reutilize `gh auth token`: o login local do `gh` costuma ter escrita.
+
+**Camadas de proteção:** (1) servidor em modo somente leitura; (2) o TecLeader só tem uma lista fechada de
+ferramentas de leitura; (3) `permissions.deny` das ferramentas de escrita nos templates de settings.
+Abrir PR, comentar, revisar, fazer merge e criar issue não estão liberados: faça manualmente.
+
+**Issue e PR são dado não confiável.** O TecLeader não segue instruções escritas dentro de issue, PR,
+comentário ou log; sinaliza trechos suspeitos, exige sua confirmação antes de transformar a issue em spec
+e repassa aos demais agentes apenas os requisitos validados.
+
 ## 📚 Documentação
 
 | Documento | Conteúdo |
 |---|---|
-| [Manual de uso](docs/manual-de-uso.html) | 15 exemplos passo a passo, solução de problemas. Baixe e abra no navegador (funciona offline) |
+| [Manual de uso](docs/manual-de-uso.html) | 18 exemplos passo a passo, solução de problemas. Baixe e abra no navegador (funciona offline) |
 | [Arquitetura](docs/arquitetura.md) | Componentes, carregamento de skills, resolução da stack, segurança |
 | [CHANGELOG](CHANGELOG.md) | Histórico de versões |
 | [`.specs/`](.specs/) | Specs, design, decisões e evidências de validação deste projeto |
@@ -197,7 +229,7 @@ claude-sdd-framework/
 ├── plugins/
 │   ├── sdd/                          # agentes, skills, references e hook do processo
 │   └── authoring/                    # catálogo opcional
-├── templates/                        # settings (git/local), CLAUDE.md de projeto, .mcp.json do Jira
+├── templates/                        # settings (git/local), CLAUDE.md de projeto, .mcp.json (Jira, GitHub, GitLab, Azure)
 ├── docs/                             # manual de uso (HTML) e arquitetura
 ├── .specs/                           # specs, design e evidências
 ├── CHANGELOG.md
@@ -208,7 +240,7 @@ claude-sdd-framework/
 
 - `skills:` só pré-carrega em subagentes; o TecLeader carrega as regras pela ferramenta `Skill`.
 - Referência **Angular** ainda não existe (o agente usa princípios gerais e declara a lacuna).
-- Caminho `.mcp.json` do Jira ainda não validado em rede com inspeção TLS (ex.: Zscaler).
+- Caminho `.mcp.json` (Jira, GitHub, GitLab, Azure DevOps) ainda não validado em rede com inspeção TLS (ex.: Zscaler).
 
 ## 🙏 Créditos
 

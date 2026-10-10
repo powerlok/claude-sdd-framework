@@ -53,6 +53,16 @@ Registrar apenas comandos executados com sucesso neste projeto.
 <ÁRVORE DE PASTAS RELEVANTES COM A RESPONSABILIDADE DE CADA UMA>
 ```
 
+## Repositório
+
+Opcional. Somente leitura (issue → spec; status de PR/CI como evidência).
+Se o projeto não usa integração com o provedor de código, remover esta seção inteira:
+sem ela, o `sdd:tecleader` não consulta nenhum provedor.
+
+- Provedor: <github | bitbucket | gitlab | azure-devops>
+- Repositório: <owner/repo | workspace/repo | group/project | org/project/repo>
+- Acesso: <mcp (padrão, recomendado) | cli (não recomendado: usa o login do `gh`/`glab`/`az`, que costuma ter escrita; só com token somente leitura, ex.: `GH_TOKEN` = PAT fine-grained read-only)>
+
 ## Regras específicas do projeto
 
 Complementam as regras do plugin `sdd` e prevalecem sobre elas quando mais específicas.
