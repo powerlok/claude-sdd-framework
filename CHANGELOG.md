@@ -2,6 +2,39 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.6.2 — 2026-10-10
+
+Camadas do `CLAUDE.md` e migração com padrões, sem perguntas (`.specs/done/claude-md-layers/spec.md`).
+
+- `sdd-rules` (REQ-001/REQ-003): camadas pessoal, workspace (fora do git), projeto (versionado) e processo (plugin),
+  sem duplicação, mais específico prevalece (exceto controles não relaxáveis); opção `Versionar artefatos SDD:
+  sim (padrão) | não` (`não` → `.claude/settings.local.json` + exclude (`git rev-parse --git-path info/exclude`), `.gitignore`
+  intocado).
+  Detalhes em `references/claude-md-layers.md`.
+- `tecleader` (REQ-002/REQ-003/REQ-004): nova seção "Migração para a raiz do projeto" — plano padrão com UMA
+  confirmação (mesclar `CLAUDE.md` com diff, `.specs/` por feature com parada em conflito, settings a partir do modelo (chaves permitidas, deny = união), renomeação
+  do `.claude/` do workspace para `.claude.bak-<data>` após verificação, `## Stack` do workspace movida para o
+  projeto, nunca commit, `git status` ao final); com vários repositórios, só pergunta qual é o projeto. Início de sessão (`git=none`, `subrepos>0`) propõe o
+  plano quando há artefatos na pasta; onboarding aplica `Versionar artefatos SDD` sem perguntar.
+- Templates (REQ-005): `templates/CLAUDE.md` troca `## Specs` por `## SDD` (Arquivar specs concluídas; Versionar
+  artefatos SDD); novo `templates/CLAUDE.workspace.md`.
+- Revisão de segurança (T-002, volta 1): `.claude/` do workspace item a item (migrado | mesclado | mantido), renomeado
+  para `.claude.bak-<AAAA-MM-DD>` em vez de apagado; modelo de settings só do clone do marketplace (`installLocation`),
+  deny = união (nunca remove); `allow`/`env`/`apiKeyHelper` etc. fora do settings versionável (`env` mascarado).
+- Com `Versionar artefatos SDD: não`: `git ls-files` antes de escrever (rastreado → pede decisão; proibidos
+  `git rm --cached`, `--assume-unchanged`/`--skip-worktree`); exclude via `git rev-parse --git-path info/exclude`,
+  só acrescentado; git só leitura.
+- Migração: sem seguir symlinks, destinos dentro do repositório, nomes de feature simples, conflitos verificados antes
+  de qualquer escrita; "sem perguntar" = sem pergunta separada (settings/exclude entram no plano confirmado).
+- Revisão de segurança (T-002, volta 2): `git check-ignore` antes de escrever `.claude/settings.local.json` (não
+  ignorado → `/.claude/settings.local.json` no exclude dentro do plano, ou `env`/`apiKeyHelper`/`allow` não migrados);
+  origens renomeadas para `.specs.bak-<data>` e `CLAUDE.md.bak-<data>` (nunca apagadas); modelo localizado pela chave
+  `claude-sdd-framework` em `known_marketplaces.json`, tratado como dado, só chaves permitidas copiadas; aviso de que
+  sessões no workspace perdem o deny e o agente após a migração.
+- Validação (D-001, O-001, O-1): settings do projeto sempre criado/mesclado do modelo no onboarding e na migração;
+  `allow`/`env`/`apiKeyHelper` etc. ficam na origem, só listados (sem pergunta); `git -C <repo> ls-files` também
+  para `.claude/settings*.json` em qualquer valor.
+
 ## sdd 0.6.1 — 2026-10-10
 
 - Segurança APROVADA: hook não executa `git` (verificado com `git` falso no PATH); subida limitada a 20 níveis;

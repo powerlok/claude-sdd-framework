@@ -219,7 +219,7 @@ tr:last-child td { border-bottom: 0; }
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span class="lbl">Menu</span>
   </button>
   <span class="logo" aria-hidden="true">SDD</span>
-  <h1>Manual do Plugin SDD <span class="ver">sdd 0.6.1 · authoring 0.2.0</span></h1>
+  <h1>Manual do Plugin SDD <span class="ver">sdd 0.6.2 · authoring 0.2.0</span></h1>
   <div class="header-tools" role="search">
     <div class="search">
       <label for="q" class="sr-only">Buscar no manual</label>
@@ -344,6 +344,20 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
 - Referência do plugin: `backend-engineering/references/&lt;stack&gt;.md` &lt;OU "SEM REFERÊNCIA"&gt;</code></pre></div>
   <div class="callout warn" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><div><span class="t">Atenção</span><p>Preencha apenas com informação verificada (código, arquivos de configuração, comandos executados). O que não for conhecido fica como <code>&lt;A DEFINIR&gt;</code>. Registre na tabela de comandos somente comandos que já rodaram com sucesso.</p></div></div>
   <p>Regras do projeto no <code>CLAUDE.md</code> complementam as do plugin e prevalecem quando mais específicas, mas <strong>não podem relaxar</strong>: segredos/credenciais, verificação SSL, confirmação de ações irreversíveis, Jira somente leitura e menor privilégio.</p>
+
+  <h3>Camadas do <code>CLAUDE.md</code></h3>
+  <p>O Claude Code carrega o <code>CLAUDE.md</code> da pasta aberta, dos diretórios pais e o pessoal. Cada camada tem um papel; nada é duplicado e o mais específico prevalece (exceto os controles não relaxáveis).</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Camada</th><th>Onde</th><th>O que vai</th><th>Versionado</th></tr></thead>
+    <tbody>
+      <tr><td>Pessoal</td><td><code>~/.claude/CLAUDE.md</code></td><td>preferências pessoais</td><td>não</td></tr>
+      <tr><td>Workspace</td><td>pasta-mãe dos repositórios</td><td>lista de projetos, convenções comuns (<a href="../templates/CLAUDE.workspace.md"><code>CLAUDE.workspace.md</code></a>)</td><td>não</td></tr>
+      <tr><td><strong>Projeto</strong></td><td>raiz do repositório</td><td><code>## Stack</code>, comandos, arquitetura, <code>## Repositório</code>, <code>## SDD</code></td><td>sim (padrão)</td></tr>
+      <tr><td>Processo</td><td>plugin <code>sdd</code></td><td>regras, governança, fluxo</td><td>no framework</td></tr>
+    </tbody>
+  </table></div>
+  <p>Na seção <code>## SDD</code> do projeto, <code>Versionar artefatos SDD: não</code> faz o TecLeader usar <code>.claude/settings.local.json</code> e o exclude local do git (<code>git rev-parse --git-path info/exclude</code>), sem tocar no <code>.gitignore</code>.</p>
+  <div class="callout" role="note"><div><span class="t">Migração sem perguntas</span><p>Se encontrar <code>CLAUDE.md</code>, <code>.specs/</code> ou <code>.claude/</code> fora do repositório, o TecLeader propõe o plano padrão com <strong>uma única confirmação</strong>: mescla sem sobrescrever (mostrando o diff), renomeia as origens para <code>.bak-&lt;data&gt;</code> (nunca apaga), não leva <code>allow</code>/<code>env</code> para arquivo versionável e nunca faz commit. Ele não pergunta onde fica o <code>.specs/</code>, se move o <code>CLAUDE.md</code> nem se versiona. Com vários repositórios, a única pergunta extra é qual é o projeto.</p></div></div>
 
   <h3>Settings</h3>
   <div class="table-wrap"><table>
@@ -783,7 +797,7 @@ claude plugin update sdd@claude-sdd-framework --scope project</code></pre></div>
   <p>Reinicie a sessão para aplicar. <span class="badge verified">Verificado</span></p>
   <div class="table-wrap"><table>
     <thead><tr><th>Plugin</th><th>Versão deste manual</th></tr></thead>
-    <tbody><tr><td><code>sdd</code></td><td>0.6.1</td></tr><tr><td><code>authoring</code></td><td>0.2.0</td></tr></tbody>
+    <tbody><tr><td><code>sdd</code></td><td>0.6.2</td></tr><tr><td><code>authoring</code></td><td>0.2.0</td></tr></tbody>
   </table></div>
   <p>As versões seguem semver, definidas em <code>plugins/*/.claude-plugin/plugin.json</code>; as mudanças ficam no <a href="../CHANGELOG.md">CHANGELOG.md</a>.</p>
   <p>Para validar um plugin ou testá-lo sem instalar (só na sessão):</p>
@@ -857,7 +871,7 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
 </main>
 </div>
 
-<footer class="site-footer">Manual do Plugin SDD · sdd 0.6.1 · authoring 0.2.0 · arquivo único, funciona offline.</footer>
+<footer class="site-footer">Manual do Plugin SDD · sdd 0.6.2 · authoring 0.2.0 · arquivo único, funciona offline.</footer>
 
 <button type="button" class="btn" id="to-top" aria-label="Voltar ao topo">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span class="lbl">Topo</span>

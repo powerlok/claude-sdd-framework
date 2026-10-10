@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.6.1-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.6.2-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.0-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -155,6 +155,25 @@ O instalador nativo coloca o `claude.exe` em `%USERPROFILE%\.local\bin`. No Powe
 $env:Path += ";$HOME\.local\bin"
 ```
 </details>
+
+## 🗂️ Camadas do CLAUDE.md
+
+O Claude Code carrega o `CLAUDE.md` da pasta aberta, dos diretórios pais e o pessoal. Cada camada tem um papel:
+
+| Camada | Onde | O que vai | Versionado |
+|---|---|---|---|
+| Pessoal | `~/.claude/CLAUDE.md` | preferências suas (idioma, estilo) | não |
+| Workspace | pasta-mãe dos repositórios | só o comum a todos: lista de projetos, convenções ([modelo](templates/CLAUDE.workspace.md)) | não |
+| **Projeto** | raiz do repositório | `## Stack`, comandos, arquitetura, `## Repositório`, `## SDD` ([modelo](templates/CLAUDE.md)) | sim (padrão) |
+| Processo | plugin `sdd` | regras, governança, fluxo | no repositório do framework |
+
+- Nada duplicado entre camadas; o mais específico prevalece (exceto os controles de segurança não relaxáveis).
+- `Versionar artefatos SDD: não` (seção `## SDD` do projeto), para repositórios que não aceitam esses arquivos:
+  `.claude/settings.local.json` + exclude local do git (`git rev-parse --git-path info/exclude`); `.gitignore` intocado.
+- **Artefatos fora do repositório** (ex.: `CLAUDE.md`, `.specs/` e `.claude/` na pasta-mãe): o TecLeader propõe o plano
+  padrão de migração com **uma única confirmação** — mescla sem sobrescrever (com diff), renomeia as origens para
+  `.bak-<data>` (nunca apaga), não copia `allow`/`env` para arquivo versionável e **nunca faz commit**.
+  Ele não pergunta onde fica `.specs/`, se move o `CLAUDE.md` nem se versiona: esses padrões são regra.
 
 ## 🔁 Atualização
 

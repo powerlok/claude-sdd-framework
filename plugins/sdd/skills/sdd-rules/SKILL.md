@@ -18,6 +18,7 @@ Detalhes sob demanda (ler quando o assunto se aplicar):
 - [references/readme.md](references/readme.md): regra do `README.md` do projeto e idioma
 - [references/final-run.md](references/final-run.md): execução final (demonstração ao usuário)
 - [references/reproducibility.md](references/reproducibility.md): reprodutibilidade e o que nunca versionar
+- [references/claude-md-layers.md](references/claude-md-layers.md): camadas do `CLAUDE.md` e versionamento dos artefatos SDD
 
 ---
 
@@ -113,9 +114,16 @@ Mudanças irreversíveis exigem confirmação explícita:
 Exceção: mover `.specs/<feature>/` para `.specs/done/<feature>/` no encerramento é pré-autorizado
 (reversível, parte do processo); registrar no relatório.
 Convenção de specs: `.specs/<feature>/` (ativas), `.specs/done/<feature>/` (concluídas), `.specs/INDEX.md` (índice).
-Local: `.specs/`, `CLAUDE.md` do projeto e `.claude/settings.json` ficam na **raiz do projeto** (raiz do repositório
-git; em monorepo, a pasta do projeto dentro do repositório). Workspace com vários projetos: um `.specs/` por projeto;
-**nunca** no diretório pai/workspace fora do git.
+Local: `.specs/`, `CLAUDE.md` do projeto e `.claude/settings.json` (ou `settings.local.json` com `Versionar artefatos
+SDD: não`) ficam na **raiz do projeto** (raiz do repositório git; em monorepo, a pasta do projeto dentro do
+repositório). Workspace com vários projetos: um `.specs/` por projeto; **nunca** no diretório pai/workspace fora do git.
+
+Camadas do `CLAUDE.md`: pessoal (`~/.claude/`), workspace (fora do git: lista de projetos, convenções comuns) e
+**projeto** (versionado: `## Stack`, comandos, arquitetura, `## Repositório`, `## SDD`, regras); processo fica no plugin,
+nunca copiado. Nada duplicado; o mais específico prevalece (exceto controles não relaxáveis). `## SDD` do projeto:
+`Versionar artefatos SDD: sim (padrão) | não` (`não` → `.claude/settings.local.json` + exclude via
+`git rev-parse --git-path info/exclude`, `.gitignore` intocado; nada rastreado é tirado do git).
+Detalhes: [references/claude-md-layers.md](references/claude-md-layers.md).
 
 ---
 

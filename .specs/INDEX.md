@@ -8,7 +8,7 @@ com `Relacionada a: done/<feature>`).
 
 | Feature | Estado | Início | Origem | Resumo |
 |---|---|---|---|---|
-| — | — | — | — | nenhuma feature ativa |
+| — | — | — | — | nenhuma |
 
 ## Concluídas
 
@@ -22,3 +22,4 @@ com `Relacionada a: done/<feature>`).
 | [specs-done-archive](done/specs-done-archive/spec.md) | 2026-10-10 | pedido do usuário | Arquivar specs concluídas em `.specs/done/` e manter este índice (`sdd` 0.5.0) |
 | [onboarding-check](done/onboarding-check/spec.md) | 2026-10-10 | pedido do usuário | Verificar onboarding no início da sessão e orientar a primeira resposta do TecLeader (`sdd` 0.6.0) |
 | [specs-location](done/specs-location/spec.md) | 2026-10-10 | pedido do usuário | `.specs/` sempre na raiz do projeto (repositório git); hook detecta git sem executá-lo (`sdd` 0.6.1) |
+| [claude-md-layers](done/claude-md-layers/spec.md) | 2026-10-10 | pedido do usuário | Camadas do CLAUDE.md; migração com plano padrão e uma confirmação; `Versionar artefatos SDD` (`sdd` 0.6.2) |

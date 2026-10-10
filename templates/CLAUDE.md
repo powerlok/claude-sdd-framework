@@ -75,6 +75,10 @@ Jira somente leitura e menor privilégio.
 
 - <REGRA>
 
-## Specs
+## SDD
+
+Opções do processo SDD neste projeto (ausente = padrão).
 
 - Arquivar specs concluídas: sim (padrão) | não
+- Versionar artefatos SDD: sim (padrão) | não
+  (`não`: `.claude/settings.local.json` + exclude (`git rev-parse --git-path info/exclude`) com `/CLAUDE.md`, `/.specs/`, `/.claude/`; `.gitignore` intocado)
