@@ -17,7 +17,7 @@ Ler somente a referência da stack informada.
 |---|---|---|
 | React (Vite ou similar) | [react.md](references/react.md) | Implementar, otimizar ou testar componentes React |
 | Qualquer (revisão de interface) | [web-interface.md](references/web-interface.md) | Revisar UI: acessibilidade, foco, formulários, estados, responsividade |
-| Angular | ainda não disponível | Aplicar os princípios gerais abaixo e declarar a lacuna no relato |
+| Angular | [angular.md](references/angular.md) | Implementar, otimizar ou testar componentes Angular (identificar a versão do projeto primeiro) |
 
 Stack sem referência: seguir as convenções já presentes no código e declarar a lacuna.
 

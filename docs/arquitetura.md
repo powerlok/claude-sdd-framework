@@ -68,7 +68,7 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.2.0 | padrão | 6 agentes, 7 skills, hook pós-compact |
+| `sdd` | 0.3.0 | padrão | 6 agentes, 7 skills, hook pós-compact |
 | `authoring` | 0.2.0 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
@@ -260,7 +260,7 @@ Referências de stack existentes:
 | Backend | `.NET` (`dotnet.md`), Python (`python.md`) | exercitadas nos pilotos (ASP.NET Core e FastAPI) |
 | Frontend | React (`react.md`) | SPA em React (sem renderização no servidor) |
 | Frontend | `web-interface.md` | checklist de revisão de interface, para qualquer stack |
-| Frontend | Angular | **não existe**; o agente aplica os princípios gerais e declara a lacuna |
+| Frontend | Angular | `references/angular.md` (adapta-se à versão do projeto: v20, v21, v22) |
 
 As `references/` **não** são pré-carregadas: o agente lê só a da stack informada.
 
@@ -427,7 +427,7 @@ Claude Code 2.1.288):
 - `skills:` só pré-carrega em subagentes; o carregamento das regras no TecLeader depende da instrução de usar a
   ferramenta `Skill` (observado funcionando na validação).
 - `${CLAUDE_PLUGIN_ROOT}` só é substituído no texto de agentes, não no de skills.
-- Referência Angular não existe.
+- Stacks sem referência (ex.: Vue) usam os princípios gerais e o agente declara a lacuna.
 - Caminho `.mcp.json` do Jira não testado com Zscaler ativo; nomes `mcp__atlassian__*` não verificados.
 - Repositório: ver riscos residuais na seção 9 (OAuth GitHub não testado; Bitbucket, GitLab e Azure DevOps não validados).
 - "Listar projetos do Jira" não tem ferramenta de leitura dedicada no conector.

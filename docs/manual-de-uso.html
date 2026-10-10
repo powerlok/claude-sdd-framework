@@ -219,7 +219,7 @@ tr:last-child td { border-bottom: 0; }
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span class="lbl">Menu</span>
   </button>
   <span class="logo" aria-hidden="true">SDD</span>
-  <h1>Manual do Plugin SDD <span class="ver">sdd 0.2.0 · authoring 0.2.0</span></h1>
+  <h1>Manual do Plugin SDD <span class="ver">sdd 0.3.0 · authoring 0.2.0</span></h1>
   <div class="header-tools" role="search">
     <div class="search">
       <label for="q" class="sr-only">Buscar no manual</label>
@@ -394,7 +394,7 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
       <tr><td>Frontend</td><td>React</td><td><code>frontend-engineering/references/react.md</code> (e <code>web-interface.md</code>)</td></tr>
     </tbody>
   </table></div>
-  <p>Outras stacks usam os princípios gerais e o agente declara a lacuna no relato. Ainda não existe referência Angular. <span class="badge verified">Verificado</span></p>
+  <p>Outras stacks usam os princípios gerais e o agente declara a lacuna no relato. Referências disponíveis: backend .NET e Python; frontend React e Angular. <span class="badge verified">Verificado</span></p>
 </section>
 
 <!-- 5 -->
@@ -605,8 +605,8 @@ Qual o estado das tasks?</code></pre></div></div>
     <p class="src">Fonte: agents/tecleader.md (campo Stack) e README.md (Stacks com referência). Diálogo ilustrativo.</p>
     <div class="steps">
       <div class="step"><h4>Pedido</h4>
-        <div class="code" data-label="prompt"><pre><code>No meu-portal (Angular), crie a tela de listagem de pedidos.</code></pre></div></div>
-      <div class="step"><h4>O que o TecLeader faz</h4><p>Delega a <code>sdd:frontend</code> com <code>referência: nenhuma</code> no campo Stack e registra a lacuna como observação em <code>tasks.md</code>. Não existe referência Angular.</p></div>
+        <div class="code" data-label="prompt"><pre><code>No meu-portal (Vue), crie a tela de listagem de pedidos.</code></pre></div></div>
+      <div class="step"><h4>O que o TecLeader faz</h4><p>Delega a <code>sdd:frontend</code> com <code>referência: nenhuma</code> no campo Stack e registra a lacuna como observação em <code>tasks.md</code>. Não existe referência Vue.</p></div>
       <div class="step"><h4>O que você responde</h4><p>Preencha bem a <code>## Stack</code> do <code>CLAUDE.md</code> (versão, build, comandos) e, se quiser, peça uma referência da stack com o catálogo <code>authoring</code> (exemplo 14).</p></div>
       <div class="step"><h4>Resultado</h4><p>O agente aplica os princípios gerais de <code>frontend-engineering</code> e declara a lacuna no relato; a entrega continua passando por testes e validação.</p></div>
     </div>
@@ -782,7 +782,7 @@ claude plugin update sdd@claude-sdd-framework --scope project</code></pre></div>
   <p>Reinicie a sessão para aplicar. <span class="badge verified">Verificado</span></p>
   <div class="table-wrap"><table>
     <thead><tr><th>Plugin</th><th>Versão deste manual</th></tr></thead>
-    <tbody><tr><td><code>sdd</code></td><td>0.2.0</td></tr><tr><td><code>authoring</code></td><td>0.2.0</td></tr></tbody>
+    <tbody><tr><td><code>sdd</code></td><td>0.3.0</td></tr><tr><td><code>authoring</code></td><td>0.2.0</td></tr></tbody>
   </table></div>
   <p>As versões seguem semver, definidas em <code>plugins/*/.claude-plugin/plugin.json</code>; as mudanças ficam no <a href="../CHANGELOG.md">CHANGELOG.md</a>.</p>
   <p>Para validar um plugin ou testá-lo sem instalar (só na sessão):</p>
@@ -830,7 +830,6 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
   <ul>
     <li><code>skills:</code> só pré-carrega em subagentes; o TecLeader carrega as regras pela ferramenta <code>Skill</code> no início da sessão e após compact.</li>
     <li>No texto do agente, <code>${CLAUDE_PLUGIN_ROOT}</code> é substituído pelo caminho do plugin; no texto da skill, não.</li>
-    <li>Referência Angular ainda não existe; stacks sem referência usam princípios gerais e o agente declara a lacuna.</li>
     <li>O caminho <code>.mcp.json</code> do Jira não foi validado com Zscaler ativo, e os nomes <code>mcp__atlassian__*</code> não foram verificados.</li>
     <li>O carregamento das regras no TecLeader depende da instrução do agente (sem pré-carregamento na sessão principal); funcionou nos testes de validação.</li>
     <li>Comandos de exemplo das references (lint, auditoria de dependências) não foram executados nos pilotos.</li>
@@ -857,7 +856,7 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
 </main>
 </div>
 
-<footer class="site-footer">Manual do Plugin SDD · sdd 0.2.0 · authoring 0.2.0 · arquivo único, funciona offline.</footer>
+<footer class="site-footer">Manual do Plugin SDD · sdd 0.3.0 · authoring 0.2.0 · arquivo único, funciona offline.</footer>
 
 <button type="button" class="btn" id="to-top" aria-label="Voltar ao topo">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span class="lbl">Topo</span>

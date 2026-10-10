@@ -5,9 +5,9 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.2.0-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.3.0-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.0-7C3AED)
-![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React-0F766E)
+![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![idioma](https://img.shields.io/badge/docs-pt--BR-555)
 
 [Início rápido](#-início-rápido) · [Como funciona](#-como-funciona) · [O time](#-o-time) · [Manual de uso](docs/manual-de-uso.html) · [Arquitetura](docs/arquitetura.md)
@@ -25,7 +25,7 @@ engenharia completo:
   delega aos especialistas e só encerra quando há evidência de que funciona.
 - **Nada de implementação sem spec.** Requisito, critério de aceite e forma de validar vêm antes do código.
 - **Agnóstico de linguagem.** Os agentes não têm stack fixa: a stack do projeto é declarada no
-  `CLAUDE.md` e o conhecimento específico vem de referências (.NET, Python, React).
+  `CLAUDE.md` e o conhecimento específico vem de referências (.NET, Python, React, Angular).
 - **Segurança e qualidade embutidas.** Revisão de segurança quando aplicável, validação independente,
   regras que nenhum projeto pode relaxar (segredos, SSL, ações irreversíveis, menor privilégio).
 
@@ -70,7 +70,7 @@ Estados de cada task: `TODO → IN_PROGRESS → IMPLEMENTED → SECURITY_REVIEW 
 |---|---|
 | `sdd-rules` · `sdd-governance` | Regras globais, papéis, estados, escalonamento |
 | `backend-engineering` | Princípios + referências **.NET** e **Python** |
-| `frontend-engineering` | Princípios + referências **React** e checklist de interface web |
+| `frontend-engineering` | Princípios + referências **React** e **Angular** e checklist de interface web |
 | `requirements-grilling` | Perguntas certas para fechar requisitos antes da spec |
 | `bug-diagnosis` | Diagnóstico de bugs em 5 fases, com teste de regressão |
 | `domain-modeling` | Glossário, modelo de domínio e registro de decisões (ADR) |
@@ -239,7 +239,7 @@ claude-sdd-framework/
 ## ⚠️ Limitações conhecidas
 
 - `skills:` só pré-carrega em subagentes; o TecLeader carrega as regras pela ferramenta `Skill`.
-- Referência **Angular** ainda não existe (o agente usa princípios gerais e declara a lacuna).
+- Stacks sem referência (ex.: Vue, Java, Go) usam os princípios gerais; o agente declara a lacuna.
 - Caminho `.mcp.json` (Jira, GitHub, GitLab, Azure DevOps) ainda não validado em rede com inspeção TLS (ex.: Zscaler).
 
 ## 🙏 Créditos

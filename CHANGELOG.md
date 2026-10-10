@@ -2,6 +2,13 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.3.0 — 2026-10-10
+
+- Referência **Angular** em `frontend-engineering` (`references/angular.md`), GH#1: adapta-se à versão do projeto
+  (v20 standalone, v21 zoneless, v22 OnPush/`@Service()`/Signal Forms/`resource`), sem migrar por conta própria.
+  Texto próprio baseado em angular.dev (CC BY 4.0) e inspirado em angular/skills@ff69483 (MIT).
+- Revisão de segurança APROVADA (2 voltas); piloto `sdd:frontend` com Stack Angular 21 validado.
+
 ## sdd 0.2.0 — 2026-10-09
 
 - Integração opcional, somente leitura, com o provedor de código (feature `vcs-integration`):
