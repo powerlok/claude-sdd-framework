@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # sdd: verificação de onboarding no início da sessão (SessionStart, matcher "startup").
-# REQ-001 (.specs/done/onboarding-check/spec.md); git/subrepos: REQ-002 (.specs/done/specs-location/spec.md).
+# REQ-001 (.specs/done/onboarding-check/spec.md); git/subrepos: REQ-002 (.specs/done/specs-location/spec.md);
+# claude_dir/specs_dir: REQ-001 (.specs/done/workspace-multi-project/spec.md).
 # SOMENTE LEITURA: sem rede, sem escrita, sem eval, não executa nada do projeto.
 # Só testa existência de arquivos no nível raiz e lê CLAUDE.md com grep -q (nada é ecoado).
 # Para git/subrepos só testa existência de ".git" (pasta, ancestrais até 20 níveis, subpastas diretas); nunca executa o git.
@@ -108,6 +109,17 @@ else
   done
 fi
 
+# claude_dir/specs_dir: so existencia de pasta no nivel raiz (sem ler conteudo); symlink conta como "no" (nao seguir).
+# REQ-001 (.specs/done/workspace-multi-project/spec.md).
+claude_dir=no
+if [ -d "$base/.claude" ] && [ ! -L "$base/.claude" ]; then
+  claude_dir=yes
+fi
+specs_dir=no
+if [ -d "$base/.specs" ] && [ ! -L "$base/.specs" ]; then
+  specs_dir=yes
+fi
+
 # subrepos: subpastas DIRETAS com .git (sem recursao, sem seguir symlink; so a contagem, nunca nomes).
 subrepos=0
 for entry in "$base"/* "$base"/.[!.]* "$base"/..?*; do
@@ -119,6 +131,6 @@ for entry in "$base"/* "$base"/.[!.]* "$base"/..?*; do
   has_git "$entry" && subrepos=$((subrepos + 1))
 done
 
-printf '%s\n' "[sdd:onboarding] claude_md=$claude_md stack=$stack specs_index=$specs_index empty=$empty manifests=$manifests git=$git subrepos=$subrepos"
+printf '%s\n' "[sdd:onboarding] claude_md=$claude_md stack=$stack specs_index=$specs_index empty=$empty manifests=$manifests git=$git subrepos=$subrepos claude_dir=$claude_dir specs_dir=$specs_dir"
 printf '%s\n' "TecLeader: trate este diagnostico na primeira resposta (secao 'Inicio de sessao' do agente)."
 exit 0

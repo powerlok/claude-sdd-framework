@@ -2,6 +2,31 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.6.3 — 2026-10-10
+
+Workspace com vários projetos: gatilho de migração e trabalho entre projetos (`.specs/done/workspace-multi-project/spec.md`).
+
+- Hook `onboarding-check.sh` (REQ-001): diagnóstico ganha `claude_dir=yes|no` e `specs_dir=yes|no` (existência de pasta,
+  symlink/junction = `no`, sem ler conteúdo, saída só com constantes).
+- `tecleader` (REQ-002): com `git=none` e `subrepos>0`, migração só com `specs_dir=yes` ou `stack=yes`; `CLAUDE.md` curto
+  e `.claude/` de workspace são legítimos (sem proposta de migração nem pergunta "qual projeto").
+- `tecleader` (REQ-003/REQ-004/REQ-005): nova seção "Trabalho entre projetos" — modo workspace (ler o `CLAUDE.md` de cada
+  projeto, specs em `<projeto>/.specs/`, deny completo do modelo no `.claude/` do workspace ou aviso + correção no
+  plano); sessão num projeto: `--add-dir` + `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1`; mudança entre projetos com
+  alterados × referência, uma confirmação (ambiguidade na mesma pergunta), spec por projeto alterado ligada por
+  `Relacionada a:`, tasks por repositório, nunca commit, `git status` de cada repositório.
+- `sdd-rules` (`references/claude-md-layers.md`): `.claude/` de workspace legítimo com deny completo; seção "Trabalho entre
+  projetos" (3 modos e efeito no deny/`CLAUDE.md`).
+- Revisão de segurança (S-1..S-5): deny incompleto (modelo ∪ projetos envolvidos) → sessão somente leitura até corrigir
+  e reiniciar; `CLAUDE.md` de projeto vale só para ele (referência = dado, não instrução; variável de `--add-dir` só para
+  repositório confiável; comandos de outro projeto literais no plano); `Arquivos proibidos` com a raiz dos outros
+  repositórios; `git status` dos de referência no início e no fim; escrita em pasta adicionada só se prevista em task.
+- Correção da validação/segurança (D-001, D-002, R-1..R-4): sessão em projeto pedindo outro → lista fixa com os 3 itens
+  (sem "aprovar permissão"); aviso de deny incompleto em 1 linha; deny exigido = modelo ∪ projetos envolvidos (lido de
+  `settings.json`/`settings.local.json`, só `permissions.deny`); somente leitura sem build/teste/delegação, sugerindo
+  `--permission-mode plan`; `Arquivos permitidos` conferido a cada escrita/delegação; README entra no plano confirmado.
+- `templates/CLAUDE.workspace.md` (REQ-006): cita o `.claude/settings.json` opcional do workspace com deny completo.
+
 ## sdd 0.6.2 — 2026-10-10
 
 Camadas do `CLAUDE.md` e migração com padrões, sem perguntas (`.specs/done/claude-md-layers/spec.md`).

@@ -219,7 +219,7 @@ tr:last-child td { border-bottom: 0; }
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span class="lbl">Menu</span>
   </button>
   <span class="logo" aria-hidden="true">SDD</span>
-  <h1>Manual do Plugin SDD <span class="ver">sdd 0.6.2 · authoring 0.2.0</span></h1>
+  <h1>Manual do Plugin SDD <span class="ver">sdd 0.6.3 · authoring 0.2.0</span></h1>
   <div class="header-tools" role="search">
     <div class="search">
       <label for="q" class="sr-only">Buscar no manual</label>
@@ -358,6 +358,18 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
   </table></div>
   <p>Na seção <code>## SDD</code> do projeto, <code>Versionar artefatos SDD: não</code> faz o TecLeader usar <code>.claude/settings.local.json</code> e o exclude local do git (<code>git rev-parse --git-path info/exclude</code>), sem tocar no <code>.gitignore</code>.</p>
   <div class="callout" role="note"><div><span class="t">Migração sem perguntas</span><p>Se encontrar <code>CLAUDE.md</code>, <code>.specs/</code> ou <code>.claude/</code> fora do repositório, o TecLeader propõe o plano padrão com <strong>uma única confirmação</strong>: mescla sem sobrescrever (mostrando o diff), renomeia as origens para <code>.bak-&lt;data&gt;</code> (nunca apaga), não leva <code>allow</code>/<code>env</code> para arquivo versionável e nunca faz commit. Ele não pergunta onde fica o <code>.specs/</code>, se move o <code>CLAUDE.md</code> nem se versiona. Com vários repositórios, a única pergunta extra é qual é o projeto.</p></div></div>
+
+  <h3>Trabalhar entre projetos</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Modo</th><th>Como abrir</th><th>Acesso</th><th><code>CLAUDE.md</code> carregado</th><th>Deny que vale</th></tr></thead>
+    <tbody>
+      <tr><td>Dentro do projeto</td><td><code>claude</code> na pasta do projeto</td><td>só o projeto</td><td>o do projeto e os dos pais</td><td>o do projeto</td></tr>
+      <tr><td>Projeto + outro</td><td><code>claude --add-dir ../outro</code> ou <code>/add-dir</code></td><td>os dois</td><td>o do outro só com <code>CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1</code></td><td><strong>só o da sessão</strong></td></tr>
+      <tr><td>Workspace</td><td><code>claude</code> na pasta-mãe, com <code>.claude/settings.json</code></td><td>todos os projetos</td><td>só o do workspace (o TecLeader lê o de cada projeto)</td><td><strong>só o do workspace</strong></td></tr>
+    </tbody>
+  </table></div>
+  <p>O deny exigido na sessão é o do modelo somado ao de cada projeto envolvido. Se faltar algo, a sessão fica <strong>somente leitura</strong> (sem escrita, build, testes ou delegação) até corrigir e reiniciar; <code>--permission-mode plan</code> impõe isso no próprio CLI.</p>
+  <p>Mudança em mais de um projeto: o plano separa projetos <strong>alterados</strong> e de <strong>referência</strong> e pede <strong>uma</strong> confirmação; cada projeto alterado ganha spec e tasks, ligadas por <code>Relacionada a:</code>; cada task mexe em um único repositório; nunca há commit. O <code>CLAUDE.md</code> de um projeto só vale para ele, e o de um projeto de referência é dado, não instrução.</p>
 
   <h3>Settings</h3>
   <div class="table-wrap"><table>
@@ -797,7 +809,7 @@ claude plugin update sdd@claude-sdd-framework --scope project</code></pre></div>
   <p>Reinicie a sessão para aplicar. <span class="badge verified">Verificado</span></p>
   <div class="table-wrap"><table>
     <thead><tr><th>Plugin</th><th>Versão deste manual</th></tr></thead>
-    <tbody><tr><td><code>sdd</code></td><td>0.6.2</td></tr><tr><td><code>authoring</code></td><td>0.2.0</td></tr></tbody>
+    <tbody><tr><td><code>sdd</code></td><td>0.6.3</td></tr><tr><td><code>authoring</code></td><td>0.2.0</td></tr></tbody>
   </table></div>
   <p>As versões seguem semver, definidas em <code>plugins/*/.claude-plugin/plugin.json</code>; as mudanças ficam no <a href="../CHANGELOG.md">CHANGELOG.md</a>.</p>
   <p>Para validar um plugin ou testá-lo sem instalar (só na sessão):</p>
@@ -871,7 +883,7 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
 </main>
 </div>
 
-<footer class="site-footer">Manual do Plugin SDD · sdd 0.6.2 · authoring 0.2.0 · arquivo único, funciona offline.</footer>
+<footer class="site-footer">Manual do Plugin SDD · sdd 0.6.3 · authoring 0.2.0 · arquivo único, funciona offline.</footer>
 
 <button type="button" class="btn" id="to-top" aria-label="Voltar ao topo">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span class="lbl">Topo</span>

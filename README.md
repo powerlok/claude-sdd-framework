@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.6.2-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.6.3-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.0-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -174,6 +174,23 @@ O Claude Code carrega o `CLAUDE.md` da pasta aberta, dos diretórios pais e o pe
   padrão de migração com **uma única confirmação** — mescla sem sobrescrever (com diff), renomeia as origens para
   `.bak-<data>` (nunca apaga), não copia `allow`/`env` para arquivo versionável e **nunca faz commit**.
   Ele não pergunta onde fica `.specs/`, se move o `CLAUDE.md` nem se versiona: esses padrões são regra.
+
+## 🔀 Trabalhar entre projetos
+
+Três modos, com efeitos diferentes (verificados na documentação oficial e em testes):
+
+| Modo | Como abrir | Acesso | `CLAUDE.md` carregado | Deny que vale |
+|---|---|---|---|---|
+| Dentro do projeto | `claude` em `ict_app/` | só o projeto | o do projeto + pais (workspace) | o do projeto |
+| Projeto + outro | `claude --add-dir ../outro` (ou `/add-dir`) | os dois | o do outro só com `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1` | **só o da sessão** |
+| Workspace | `claude` na pasta-mãe, com `.claude/settings.json` | todos os projetos abaixo | só o do workspace (o TecLeader lê o de cada projeto) | **só o do workspace** |
+
+- Deny exigido na sessão = deny do modelo ∪ deny dos projetos envolvidos. Faltando, a sessão fica **somente leitura**
+  (sem escrita, build, testes ou delegação) até corrigir e reiniciar; dica: `--permission-mode plan`.
+- Mudança em mais de um projeto: plano com projetos **alterados** e de **referência**, **uma** confirmação; spec + tasks
+  em cada projeto alterado, ligadas por `Relacionada a:`; cada task mexe em um único repositório; nunca commit.
+- O `CLAUDE.md` de um projeto só vale para ele; o de um projeto de referência é dado, não instrução. Use a variável
+  acima só para repositórios confiáveis.
 
 ## 🔁 Atualização
 
