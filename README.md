@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.5.0-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.6.0-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.0-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -110,7 +110,8 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
 3. Copie [`templates/CLAUDE.md`](templates/CLAUDE.md) para a raiz do projeto e preencha a seção
    **`## Stack`** e os comandos (sem `CLAUDE.md`, o TecLeader faz o onboarding).
 
-4. Abra `claude` no projeto. A sessão já começa com o **TecLeader**:
+4. Abra `claude` no projeto. A sessão já começa com o **TecLeader**, que na primeira resposta verifica o
+   onboarding (`CLAUDE.md`, `## Stack`, `.specs/INDEX.md`) e oferece o que faltar — nada é alterado sem confirmação:
 
    ```text
    Crie um endpoint POST /todos que cadastra tarefas com título obrigatório
@@ -241,6 +242,8 @@ claude-sdd-framework/
 ## ⚠️ Limitações conhecidas
 
 - `skills:` só pré-carrega em subagentes; o TecLeader carrega as regras pela ferramenta `Skill`.
+- A verificação de onboarding no início da sessão é um hook em bash (no Windows, requer Git Bash no PATH);
+  sem ele, o TecLeader faz a mesma verificação lendo os arquivos.
 - Stacks sem referência (ex.: Vue, Java, Go) usam os princípios gerais; o agente declara a lacuna.
 - Caminho `.mcp.json` (Jira, GitHub, GitLab, Azure DevOps) ainda não validado em rede com inspeção TLS (ex.: Zscaler).
 

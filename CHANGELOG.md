@@ -2,6 +2,20 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.6.0 — 2026-10-10
+
+- Segurança (2 voltas, APROVADO): a saída do hook contém só constantes e contagens — nomes de arquivo vindos de glob
+  nunca são impressos (um nome com quebra de linha forjava o diagnóstico); `CLAUDE.md` symlink não é lido; leitura
+  limitada a 1 MiB; `grep --`; timeout de 10 s; texto ASCII.
+- Validação: 6 cenários (vazio, código sem CLAUDE.md, CLAUDE.md sem Stack, pronto, tarefa direta, hook desligado).
+- Novo hook `SessionStart` (matcher `startup`): `hooks/onboarding-check.sh`, somente leitura (sem rede, sem escrita,
+  sem `eval`, sempre `exit 0`), imprime `[sdd:onboarding] claude_md= stack= specs_index= empty= manifests=` com base
+  no nível raiz do projeto. Hook `compact` mantido.
+- `tecleader`: nova seção "Início de sessão (verificação de onboarding)": trata o diagnóstico na primeira resposta
+  (pasta vazia, código sem `CLAUDE.md`, `CLAUDE.md` sem `## Stack`/INDEX, tudo pronto); fallback com Read/Glob se o
+  hook não rodar; nada alterado sem confirmação; recusa não é reapresentada na sessão.
+- Onboarding passa a criar também `.specs/INDEX.md`.
+
 ## sdd 0.5.0 — 2026-10-10
 
 - Arquivamento de specs concluídas: no encerramento, o `tecleader` move `.specs/<feature>/` para

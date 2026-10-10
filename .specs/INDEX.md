@@ -20,3 +20,4 @@ com `Relacionada a: done/<feature>`).
 | [angular-reference](done/angular-reference/spec.md) | 2026-10-10 | GH#1 | Referência Angular no `frontend-engineering`, por versão (`sdd` 0.3.0) |
 | [infra-engineering](done/infra-engineering/spec.md) | 2026-10-10 | pedido do usuário | Skill de infraestrutura com referências AWS, Azure e Google Cloud (`sdd` 0.4.0) |
 | [specs-done-archive](done/specs-done-archive/spec.md) | 2026-10-10 | pedido do usuário | Arquivar specs concluídas em `.specs/done/` e manter este índice (`sdd` 0.5.0) |
+| [onboarding-check](done/onboarding-check/spec.md) | 2026-10-10 | pedido do usuário | Verificar onboarding no início da sessão e orientar a primeira resposta do TecLeader (`sdd` 0.6.0) |

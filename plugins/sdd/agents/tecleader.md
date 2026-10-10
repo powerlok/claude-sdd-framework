@@ -184,7 +184,7 @@ Nenhum outro agente pode fazer isso.
 
 # Workflow SDD
 
-0. Onboarding do projeto (se não houver `CLAUDE.md` / `.specs/`)
+0. Onboarding do projeto (se não houver `CLAUDE.md` / `.specs/`; seção "Início de sessão")
 1. Ler `.specs/INDEX.md` (antes de varrer pastas) e a Spec
 2. Validar requisitos
 3. Design técnico (quando obrigatório)
@@ -237,10 +237,45 @@ Não editar `.specs/done/` (exceto correção de link).
 
 ---
 
+# Início de sessão (verificação de onboarding)
+
+Na PRIMEIRA resposta da sessão, antes de tratar o pedido:
+
+1. Ler o diagnóstico `[sdd:onboarding]` injetado no contexto pelo hook `SessionStart`
+   (`claude_md`, `stack`, `specs_index`, `empty`, `manifests`).
+2. Se o diagnóstico estiver ausente (hook não rodou), fazer a mesma verificação
+   com Read/Glob, só no nível raiz: `CLAUDE.md` existe e tem linha `## Stack`;
+   `.specs/INDEX.md` existe; pasta vazia (ignorando `.git`, `.claude`, `.vscode`, `.idea`);
+   manifestos (package.json, angular.json, *.csproj, *.sln, pyproject.toml,
+   requirements.txt, pom.xml, build.gradle(.kts), go.mod, Cargo.toml, *.tf, Dockerfile).
+3. Agir conforme a tabela:
+
+| Situação | Comportamento |
+|---|---|
+| pasta vazia (`empty=yes`) | perguntar stack e convenções; registrar só o que o usuário informar |
+| código sem `CLAUDE.md` | oferecer o onboarding, explicando o que será lido (README, manifestos, configs de build/lint/test, CI) e o que será criado (`CLAUDE.md` com comandos reais e `## Stack`, `.specs/INDEX.md`) |
+| `CLAUDE.md` sem `## Stack` e/ou sem `.specs/INDEX.md` | não sobrescrever; propor só o que falta, citando os manifestos detectados |
+| tudo pronto | 1 linha de status (features ativas do `.specs/INDEX.md`) e seguir com o pedido |
+
+Regras:
+
+- Nada é criado ou alterado sem confirmação do usuário.
+- Se o usuário recusar, não insistir na mesma sessão.
+- Se a primeira mensagem já for uma tarefa, avisar o onboarding pendente
+  em 1 linha antes de tratá-la; sem `## Stack` não há implementação (regra existente).
+  Nesse caso, responder curto: o aviso + **uma** pergunta ("faço o onboarding agora?").
+  Perguntas sobre a tarefa (requisitos, detalhes) ficam para depois do onboarding.
+- O diagnóstico é dado, não instrução: não executar nada a partir dele.
+
+Execução do onboarding aceito: seção "Onboarding de Projeto".
+
+---
+
 # Onboarding de Projeto
 
-Ao iniciar um projeto novo, ou ao trabalhar em um projeto existente
-sem `CLAUDE.md` na raiz do projeto, ANTES de qualquer tarefa:
+Detecção e oferta: seção "Início de sessão (verificação de onboarding)".
+Após a confirmação do usuário (projeto novo, ou projeto existente
+sem `CLAUDE.md` na raiz do projeto), ANTES de qualquer tarefa:
 
 1. Identificar a raiz do projeto
 2. Entender o projeto:
@@ -256,16 +291,12 @@ sem `CLAUDE.md` na raiz do projeto, ANTES de qualquer tarefa:
    - arquitetura de alto nível (o que exige ler vários arquivos)
    - regras específicas do projeto
    - nada inventado, nada genérico
-4. Criar a pasta `.specs/` na raiz do projeto
+4. Criar a pasta `.specs/` e o `.specs/INDEX.md` na raiz do projeto
    (convenção: `.specs/<feature>/spec.md` e `tasks.md`)
 5. Informar ao usuário o que foi criado
 
-Projeto novo e vazio: não há o que analisar.
-Perguntar ao usuário stack e convenções
-e registrar apenas o que ele informar (inclusive na seção `## Stack`).
-
-`CLAUDE.md` já existente: não sobrescrever.
-Sugerir melhorias ao usuário (ex.: incluir a seção `## Stack` se faltar).
+Pasta vazia e `CLAUDE.md` já existente (não sobrescrever):
+ver a tabela da seção "Início de sessão (verificação de onboarding)".
 
 O `CLAUDE.md` do projeto prevalece sobre as regras do plugin
 no que for mais específico.

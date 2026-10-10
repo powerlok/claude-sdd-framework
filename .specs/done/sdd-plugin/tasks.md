@@ -13,7 +13,7 @@
 | T-008 | Validação: instalação local, piloto Python e .NET, regressão `app-workshop` | todos | tests | T-007 | DONE (T-008a 5/5 + regressão app-workshop 9/9 unit, build OK, 6/6 e2e em porta isolada; T-008b Python 13/13; T-008c .NET 12/12; ver validation/t008{a,b,c}.md; D-001 corrigido e reverificado; D-003 ambiental) |
 | T-009 | README do projeto | REQ-009 | tecleader | T-008 | DONE (README.md; comandos executados: validate, install sdd/authoring, update) |
 | T-010 | Reescrever skills `skill-development` e `agent-development` do `authoring` com texto próprio (doc oficial + convenções do spike); remover cópias proprietárias de anthropics/claude-code | REQ-007, REQ-008 | general-purpose | T-006 | DONE (security volta 2 APROVADO; decisão do usuário: opção 2; texto limpo via doc oficial; validate OK; v0.2.0) |
-| T-011 | Migrar o workspace `workshop` para o plugin `sdd` (backup antes; remover duplicados de `.claude/`) | REQ-002, REQ-003 | tecleader | T-008 | IMPLEMENTED (backup verificado 26/26 SHA256 + zip; plugins sdd 0.1.2 e authoring 0.2.0 instalados no workspace; settings: agent sdd:tecleader, deny 16, hook local removido; CLAUDE.md e docs atualizados; sessão validada como sdd:tecleader. PENDENTE: remoção de .claude/agents, .claude/rules, .claude/skills e skills-lock.json bloqueada pelo classificador do modo automático — aguardando o usuário) |
+| T-011 | Migrar o workspace `workshop` para o plugin `sdd` (backup antes; remover duplicados de `.claude/`) | REQ-002, REQ-003 | tecleader | T-008 | DONE (backup verificado; plugin instalado; duplicados removidos com autorização do usuário em 2026-10-10) |
 
 Somente o tecleader encerra tasks, com evidências.
 
