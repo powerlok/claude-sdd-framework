@@ -87,7 +87,7 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
 1. **Uma vez por máquina**, registre o marketplace na versão desejada (tag):
 
    ```bash
-   claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.6.4"
+   claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.7.0"
    ```
 
 2. **Na raiz do projeto** (raiz do repositório git; em monorepo, a pasta do projeto; nunca uma pasta-mãe fora do git),
@@ -169,7 +169,7 @@ chaves e certificados; credenciais de npm, PyPI, git e `netrc`; estado e variáv
 forçado/destrutivo (`--force*`, `-f`, `+refspec`, `--mirror`, `--delete`/`-d`). Push comum pede confirmação
 (`permissions.ask`).
 
-**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.6.4"`). Para subir de versão: troque o
+**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.7.0"`). Para subir de versão: troque o
 `ref` pela nova tag e rode `claude plugin marketplace update claude-sdd-framework` e
 `claude plugin update sdd@claude-sdd-framework --scope project`. Sem `ref`, vale a branch padrão do repositório
 (sempre a última versão).

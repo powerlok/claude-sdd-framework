@@ -2,9 +2,17 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## Release v0.7.0 — 2026-10-11
+
+Inclui: `sdd` 0.7.0, `authoring` 0.2.1.
+
+- `marketplace.json`: `metadata.version` = `0.7.0`; tag `v0.7.0` aponta para o commit que traz essa versão.
+- `templates/project-settings.git.json` e a documentação de instalação fixam `v0.7.0` (`#v0.7.0` / `"ref": "v0.7.0"`).
+- Conteúdo: salinha dos agentes (opcional, desligada por padrão); validada no Windows (Chrome/Edge); macOS, Linux e Firefox não testados.
+
 ## sdd 0.7.0 — 2026-10-11
 
-Salinha dos agentes, opcional (`.specs/done/agents-office/spec.md`; sem release/tag: `marketplace.json` e o `ref` do template seguem em 0.6.4).
+Salinha dos agentes, opcional (`.specs/done/agents-office/spec.md`).
 
 - REQ-001 (opt-in): desligada por padrão; o TecLeader oferece uma vez (recusa grava `off`); nova skill `office` com
   `/sdd:office on|off|status`; preferência em `~/.claude/sdd/office.conf` (por usuário, fora do repositório).

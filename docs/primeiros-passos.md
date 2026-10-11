@@ -3,7 +3,7 @@
 Guia para quem **nunca usou** o Claude SDD Framework nem plugins do Claude Code. Siga na ordem: cada passo diz o que
 **fazer**, o que **você vai ver** e como **conferir** que deu certo antes de seguir.
 
-Testado com o Claude Code 2.1.296 e a versão `v0.6.4` do framework (a salinha dos agentes, opcional, chega no `sdd` 0.7.0).
+Testado com o Claude Code 2.1.296 e a versão `v0.7.0` do framework (a salinha dos agentes, opcional, chega nessa versão).
 
 ## Índice
 
@@ -62,15 +62,15 @@ export PATH="$PATH:$HOME/.local/bin"
 **Faça** (em qualquer pasta):
 
 ```bash
-claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.6.4"
+claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.7.0"
 ```
 
-O `#v0.6.4` escolhe a versão (tag). O comando clona o repositório nessa tag e registra o marketplace no seu usuário.
+O `#v0.7.0` escolhe a versão (tag). O comando clona o repositório nessa tag e registra o marketplace no seu usuário.
 
 **Você vai ver** algo como:
 
 ```text
-Cloning ... (ref: v0.6.4)
+Cloning ... (ref: v0.7.0)
 Successfully added marketplace: claude-sdd-framework (declared in user settings)
 ```
 
@@ -108,7 +108,7 @@ trecho: além de declarar o marketplace e o plugin, ele traz as [proteções do 
 **Você vai ver:** nada ainda. Esse arquivo **sozinho não carrega o plugin**: ele declara o marketplace, habilita o
 `sdd` e define o TecLeader como agente da sessão, mas a instalação é o próximo passo.
 
-**Confira:** o arquivo existe em `<projeto>/.claude/settings.json` e contém `"ref": "v0.6.4"` e `"agent": "sdd:tecleader"`.
+**Confira:** o arquivo existe em `<projeto>/.claude/settings.json` e contém `"ref": "v0.7.0"` e `"agent": "sdd:tecleader"`.
 
 **A2. Instale o plugin no projeto**
 
@@ -267,7 +267,7 @@ O TecLeader **nunca faz commit**: você revisa e commita.
 
 O `.claude/settings.json` versionado **não instala nada sozinho**. Cada dev da equipe, depois de clonar o projeto:
 
-1. Uma vez na máquina: `claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.6.4"`
+1. Uma vez na máquina: `claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.7.0"`
    ([passo 1](#1-instalar-na-máquina-uma-vez)).
 2. Uma vez por projeto, na raiz: `claude plugin install sdd@claude-sdd-framework --scope project`.
 3. Abrir `claude` na raiz, confiar na pasta e conferir que responde o TecLeader.
@@ -301,7 +301,7 @@ Detalhes e limites: [README](../README.md#-salinha-dos-agentes-opcional).
 
 ## Atualizar a versão
 
-1. No `.claude/settings.json` do projeto, troque o `"ref"` pela nova tag (ex.: de `"v0.6.4"` para a tag nova).
+1. No `.claude/settings.json` do projeto, troque o `"ref"` pela nova tag (ex.: de `"v0.7.0"` para a tag nova).
 2. Rode:
 
    ```bash
