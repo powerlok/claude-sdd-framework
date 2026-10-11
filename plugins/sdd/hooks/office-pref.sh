@@ -3,7 +3,7 @@
 # Uso: office-pref.sh on|off|status   (sem argumento = status; qualquer outro valor: uso e exit 2).
 # Única escrita permitida: a constante "on" ou "off" em ${CLAUDE_CONFIG_DIR:-$HOME/.claude}/sdd/office.conf.
 # Sem rede, sem eval, nada vindo do chamador além de HOME/CLAUDE_CONFIG_DIR/CLAUDE_PROJECT_DIR/TMPDIR.
-# "status" também é usado como hook síncrono de SessionStart (diagnóstico lido pelo TecLeader): sempre exit 0.
+# "status" também é usado como hook síncrono de SessionStart (diagnóstico lido pelo TechLead): sempre exit 0.
 
 # Confiança no ambiente: CLAUDE_CONFIG_DIR (e HOME) vêm do ambiente do usuário/CLI, não de conteúdo de projeto; é onde
 # fica a preferência office.conf (o script só lê/grava a constante on|off nele).

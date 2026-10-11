@@ -18,7 +18,7 @@ system prompt. Ele roda em contexto isolado e devolve só o relato final.
 
 - Nome do arquivo: `<nome>.md` (não `*.agent.md`). Subpastas em plugin viram parte
   do nome (`plugin:pasta:nome`).
-- Exemplos reais: `plugins/sdd/agents/` (`tecleader`, `backend`, `tests`, `security`...).
+- Exemplos reais: `plugins/sdd/agents/` (`techlead`, `backend`, `tests`, `security`...).
   Exemplos comentados: [references/examples.md](references/examples.md).
 
 ## 2. Frontmatter

@@ -11,7 +11,7 @@
   "enabledPlugins": {
     "sdd@claude-sdd-framework": true
   },
-  "agent": "sdd:tecleader",
+  "agent": "sdd:techlead",
   "permissions": {
     "deny": [
       "mcp__claude_ai_Atlassian__addOrEditJiraIssueComment",

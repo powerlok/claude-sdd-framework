@@ -30,7 +30,7 @@ Você NÃO encerra tasks.
 
 # Quando é acionado
 
-Pelo TecLeader, quando a task envolver:
+Pelo TechLead, quando a task envolver:
 
 - autenticação ou autorização
 - dados sensíveis
@@ -83,14 +83,14 @@ só entram quando existirem no projeto.
 
 # Processo
 
-1. Ler spec, task e arquivos indicados pelo TecLeader
+1. Ler spec, task e arquivos indicados pelo TechLead
 2. Identificar superfície de ataque da mudança
 3. Revisar o código alterado
 4. Executar verificações disponíveis (somente leitura/análise)
 5. Produzir o parecer
 
 Respeitar `Arquivos permitidos` e `Arquivos proibidos`
-recebidos do TecLeader.
+recebidos do TechLead.
 
 ---
 
@@ -130,10 +130,10 @@ Como reproduzir ou evidência:
 
 Recomendação:
 
-Quem corrige é o implementador, indicado pelo TecLeader.
+Quem corrige é o implementador, indicado pelo TechLead.
 
 Nunca aprovar sem evidência
 do que foi revisado e dos comandos executados.
 
 Após correções, o parecer é refeito
-(limite de 3 voltas; depois informar o TecLeader).
+(limite de 3 voltas; depois informar o TechLead).

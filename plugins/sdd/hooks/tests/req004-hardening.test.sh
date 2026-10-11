@@ -33,8 +33,8 @@ reset
 fire '{"hook_event_name":"PreToolUse","tool_name":"Agent","tool_input":{"deep":{"description":"profunda","subagent_type":"sdd:fundo"},"description":"Revisar T-003","subagent_type":"sdd:security"}}'
 check "req004 L1 description/subagent_type do nível de tool_input" grep -q '"m":"Revisar T-003","g":"security"' "$f"
 reset
-fire '{"hook_event_name":"PreToolUse","tool_name":"Agent","tool_input":{"description":"ok","subagent_type":"sdd:backend"},"agent_type":"sdd:tecleader"}'
-check "req004 L1 campo depois do objeto aninhado ainda é lido" grep -q '"a":"tecleader"' "$f"
+fire '{"hook_event_name":"PreToolUse","tool_name":"Agent","tool_input":{"description":"ok","subagent_type":"sdd:backend"},"agent_type":"sdd:techlead"}'
+check "req004 L1 campo depois do objeto aninhado ainda é lido" grep -q '"a":"techlead"' "$f"
 
 # L2: d só alfanumérico, máx. 12.
 reset

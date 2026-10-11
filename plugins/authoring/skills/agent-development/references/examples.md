@@ -71,7 +71,7 @@ Pontos:
 
 ```markdown
 ---
-name: tecleader
+name: techlead
 description: >
   Principal Engineering Lead e Coordenador SDD.
   Agente da sessão principal do plugin sdd.
@@ -79,7 +79,7 @@ tools: Read, Edit, Write, Grep, Glob, Bash, Agent, Skill, mcp__claude_ai_Atlassi
 model: opus
 ---
 
-# TecLeader Agent
+# TechLead Agent
 
 No início da sessão e após compact: carregar `sdd:sdd-rules` e
 `sdd:sdd-governance` com a ferramenta Skill.
@@ -92,7 +92,7 @@ Você não implementa. Só você encerra tasks (DONE).
 Ativação no projeto (`.claude/settings.json`):
 
 ```json
-{ "agent": "sdd:tecleader" }
+{ "agent": "sdd:techlead" }
 ```
 
 Pontos:

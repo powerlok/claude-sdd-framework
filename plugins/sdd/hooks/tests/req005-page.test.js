@@ -119,7 +119,7 @@ function getJson(url) {
     await sleep(1800);
     check("aguardando: status 'Aguardando agentes...'", (await js("document.getElementById('status').textContent")) === "Aguardando agentes...");
     check("vazio: convite à ação visível", (await js("!document.getElementById('empty').hidden")) === true);
-    check("tecleader presente e ocioso na mesa", (await node("tecleader")) === "seat/idle", await node("tecleader"));
+    check("techlead presente e ocioso na mesa", (await node("techlead")) === "seat/idle", await node("techlead"));
     check("canvas tem role=img e aria-label", (await js("document.getElementById('cv').getAttribute('role')+'|'+document.getElementById('cv').getAttribute('aria-label')")).startsWith("img|Salinha dos agentes"));
     check("html lang=pt-BR e botão de pausa presente", (await js("document.documentElement.lang+'|'+!!document.getElementById('pause')")) === "pt-BR|true");
     await shot("1-aguardando");
@@ -128,7 +128,7 @@ function getJson(url) {
     hook({ hook_event_name: "UserPromptSubmit", prompt: "texto-secreto-do-usuario" });
     check("prompt: popup 'TechLead: recebeu um pedido'", await waitLog("TechLead: recebeu um pedido"));
     check("status vira 'Ativo' e vazio some", (await js("document.getElementById('status').textContent")) === "Ativo" && (await js("document.getElementById('empty').hidden")) === true);
-    check("tecleader trabalhando", (await node("tecleader")) === "seat/working", await node("tecleader"));
+    check("techlead trabalhando", (await node("techlead")) === "seat/working", await node("techlead"));
     hook({ hook_event_name: "PreToolUse", tool_name: "Agent", tool_input: { description: "Implementar T-003", subagent_type: "sdd:backend", prompt: "x" } });
     hook({ hook_event_name: "PreToolUse", tool_name: "Agent", tool_input: { description: "Tela de login T-004", subagent_type: "sdd:frontend", prompt: "x" } });
     check("delegação: 'TechLead → delegou \"Implementar T-003\" ao backend'", await waitLog('TechLead → delegou "Implementar T-003" ao backend'));

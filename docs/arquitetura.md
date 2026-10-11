@@ -14,7 +14,7 @@ Os diagramas usam [Mermaid](https://mermaid.js.org/), que renderiza no GitHub, n
 ## 1. Visão geral
 
 O plugin `sdd` distribui um time de engenharia com papéis fixos. Toda solicitação passa por um orquestrador
-(`sdd:tecleader`), que organiza o trabalho e delega para agentes especializados. O desenvolvimento segue
+(`sdd:techlead`), que organiza o trabalho e delega para agentes especializados. O desenvolvimento segue
 **SDD** (Spec-Driven Development): nada é implementado sem requisito, critério de aceite e forma de validação.
 
 Os agentes não dependem de linguagem: a stack de cada projeto vem da seção `## Stack` do `CLAUDE.md` do projeto,
@@ -25,7 +25,7 @@ flowchart TD
     U([Usuário]) -->|solicitação| TL
 
     subgraph ORQ[Orquestração]
-        TL[sdd:tecleader<br/>opus · agente da sessão principal]
+        TL[sdd:techlead<br/>opus · agente da sessão principal]
     end
 
     subgraph IMP[Implementadores · sonnet]
@@ -60,7 +60,7 @@ flowchart TD
     TL -->|"DONE + evidências + demonstração"| U
 ```
 
-Setas tracejadas são os retornos. Cada subagente roda numa janela de contexto isolada e só o resumo final volta ao TecLeader.
+Setas tracejadas são os retornos. Cada subagente roda numa janela de contexto isolada e só o resumo final volta ao TechLead.
 
 ## 2. Marketplace e plugins
 
@@ -68,7 +68,7 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.7.0 | padrão | 6 agentes, 9 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
+| `sdd` | 0.8.0 | padrão | 6 agentes, 9 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
 | `authoring` | 0.2.1 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
@@ -79,7 +79,7 @@ flowchart LR
         AUT[plugin authoring<br/>skills]
     end
     subgraph PRJ[projeto consumidor]
-        ST[.claude/settings.json<br/>extraKnownMarketplaces · enabledPlugins<br/>agent: sdd:tecleader · permissions.deny]
+        ST[.claude/settings.json<br/>extraKnownMarketplaces · enabledPlugins<br/>agent: sdd:techlead · permissions.deny]
         CM[CLAUDE.md<br/>## Stack · comandos · regras]
         SP[.specs/feature/<br/>spec.md · design.md · tasks.md]
     end
@@ -90,7 +90,7 @@ flowchart LR
 ```
 
 O plugin **não** distribui `CLAUDE.md` nem regras de projeto: as regras chegam como skills. O `CLAUDE.md` de cada
-projeto continua local (criado no onboarding pelo TecLeader, a partir de [templates/CLAUDE.md](../templates/CLAUDE.md))
+projeto continua local (criado no onboarding pelo TechLead, a partir de [templates/CLAUDE.md](../templates/CLAUDE.md))
 e prevalece sobre as regras do plugin no que for mais específico.
 
 O projeto consumidor declara o marketplace e o agente da sessão no `.claude/settings.json`
@@ -103,7 +103,7 @@ O projeto consumidor declara o marketplace e o agente da sessão no `.claude/set
     "claude-sdd-framework": { "source": { "source": "directory", "path": "<caminho local>" } }
   },
   "enabledPlugins": { "sdd@claude-sdd-framework": true },
-  "agent": "sdd:tecleader"
+  "agent": "sdd:techlead"
 }
 ```
 
@@ -118,7 +118,7 @@ claude-sdd-framework/
 ├── plugins/
 │   ├── sdd/
 │   │   ├── .claude-plugin/plugin.json # name, version (semver), description
-│   │   ├── agents/                   # tecleader, backend, frontend, tests, security, infra-architect
+│   │   ├── agents/                   # techlead, backend, frontend, tests, security, infra-architect
 │   │   ├── hooks/hooks.json          # SessionStart (compact)
 │   │   └── skills/                   # sdd-rules, sdd-governance, backend/frontend-engineering, ...
 │   └── authoring/skills/             # skill-development, agent-development
@@ -139,7 +139,7 @@ flowchart TD
     E -- não --> F[Atualizar spec /<br/>pedir complemento ao usuário]
     F --> D
     E -- sim --> E2{Design técnico<br/>obrigatório?}
-    E2 -- sim --> E3[design.md<br/>aprovado pelo TecLeader]
+    E2 -- sim --> E3[design.md<br/>aprovado pelo TechLead]
     E2 -- não --> G
     E3 --> G[Criar tasks<br/>tasks.md]
     G --> H[Definir cenários de teste]
@@ -157,7 +157,7 @@ flowchart TD
     O --> L
     L -- VALIDADO --> P[Critérios de DONE]
     P --> Q[README atualizado<br/>sistema no ar demonstrado]
-    Q --> R([DONE pelo TecLeader])
+    Q --> R([DONE pelo TechLead])
     M -. "3 ciclos sem progresso" .-> S([Escalar ao usuário])
 ```
 
@@ -187,7 +187,7 @@ stateDiagram-v2
 ```
 
 O estado é gravado em `tasks.md` a cada mudança, para sobreviver a compactações de contexto.
-Só o `sdd:tecleader` move uma task para `DONE`.
+Só o `sdd:techlead` move uma task para `DONE`.
 
 ## 4. Agentes
 
@@ -196,7 +196,7 @@ Na delegação e no settings, os agentes são chamados com o prefixo do plugin (
 
 | Agente | Papel | Model | Tools | Skills pré-carregadas (`skills:`) |
 |---|---|---|---|---|
-| `sdd:tecleader` | Orquestrador: tech lead, scrum master, coordenador SDD; único que encerra tasks | opus | Read, Edit, Write, Grep, Glob, Bash, Agent, Skill + 4 ferramentas de leitura do Jira em dois prefixos + ferramentas de leitura do provedor de código (seção 9) | nenhuma (carrega via ferramenta `Skill`, seção 6) |
+| `sdd:techlead` | Orquestrador: tech lead, scrum master, coordenador SDD; único que encerra tasks | opus | Read, Edit, Write, Grep, Glob, Bash, Agent, Skill + 4 ferramentas de leitura do Jira em dois prefixos + ferramentas de leitura do provedor de código (seção 9) | nenhuma (carrega via ferramenta `Skill`, seção 6) |
 | `sdd:backend` | Implementador backend agnóstico de linguagem (DDD, SOLID, Clean/Hexagonal, TDD) | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, backend-engineering, bug-diagnosis, domain-modeling |
 | `sdd:frontend` | Implementador frontend agnóstico de framework (UX/UI, acessibilidade, performance, E2E) | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, frontend-engineering, bug-diagnosis |
 | `sdd:tests` | Validador (QA): requisitos, regressão, integração, API, performance, E2E | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, bug-diagnosis |
@@ -221,7 +221,7 @@ flowchart LR
         IA[sdd:infra-architect]
     end
     subgraph Governa
-        TL[sdd:tecleader]
+        TL[sdd:techlead]
     end
 
     BE ---|"quem implementa"| X1[não valida a própria entrega]
@@ -231,12 +231,12 @@ flowchart LR
     TL ---|"quem governa"| X4[único que encerra tasks]
 ```
 
-O TecLeader roda como **agente da sessão principal** (`"agent": "sdd:tecleader"` no settings, ou
-`claude --agent sdd:tecleader`) porque um subagente não consegue chamar outros subagentes.
+O TechLead roda como **agente da sessão principal** (`"agent": "sdd:techlead"` no settings, ou
+`claude --agent sdd:techlead`) porque um subagente não consegue chamar outros subagentes.
 
 ### Contrato de delegação
 
-O TecLeader envia: objetivo, requisitos, spec, tasks, contexto, arquivos permitidos e proibidos, critérios de aceite,
+O TechLead envia: objetivo, requisitos, spec, tasks, contexto, arquivos permitidos e proibidos, critérios de aceite,
 validação obrigatória, resultado esperado e o campo `Stack:` (seção 5). Implementadores respondem `IMPLEMENTADO`
 com arquivos, testes, comandos, evidências, riscos e a stack/referência lida; `tests` responde por requisito com
 `VALIDADO` ou `REPROVADO`; `security` com `APROVADO` ou `RISCO IDENTIFICADO` e severidade.
@@ -246,8 +246,8 @@ com arquivos, testes, comandos, evidências, riscos e a stack/referência lida; 
 | Skill | Conteúdo | Quem usa |
 |---|---|---|
 | `sdd-rules` | regras globais (antes de alterar, SDD, escopo, qualidade, segurança, documentação, evidências, encerramento); `references/` com `readme.md`, `final-run.md`, `reproducibility.md` | todos |
-| `sdd-governance` | papéis, estados, correção, escalonamento, evidências, contexto, Jira e repositório somente leitura | tecleader |
-| `requirements-grilling` | protocolo de perguntas antes de escrever ou aprovar uma spec | tecleader |
+| `sdd-governance` | papéis, estados, correção, escalonamento, evidências, contexto, Jira e repositório somente leitura | techlead |
+| `requirements-grilling` | protocolo de perguntas antes de escrever ou aprovar uma spec | techlead |
 | `backend-engineering` | princípios backend agnósticos + `references/dotnet.md`, `references/python.md` | backend |
 | `frontend-engineering` | princípios frontend agnósticos + `references/react.md`, `references/web-interface.md` | frontend |
 | `bug-diagnosis` | diagnóstico em 5 fases (o `tests` usa a fase de reprodução) | backend, frontend, tests |
@@ -270,7 +270,7 @@ As `references/` **não** são pré-carregadas: o agente lê só a da stack info
 ```mermaid
 sequenceDiagram
     participant CM as CLAUDE.md do projeto
-    participant TL as sdd:tecleader
+    participant TL as sdd:techlead
     participant BE as sdd:backend
     participant RF as plugin: references/
 
@@ -281,13 +281,13 @@ sequenceDiagram
 ```
 
 1. A fonte é a seção `## Stack` do `CLAUDE.md` do projeto (o onboarding a cria; o template já traz a seção).
-2. O TecLeader repete a stack na delegação, no campo
+2. O TechLead repete a stack na delegação, no campo
    `Stack: <linguagem/framework/versão> — referência: <skill>/references/<arquivo>.md`
    (ou `referência: nenhuma`).
 3. O agente lê a referência em `${CLAUDE_PLUGIN_ROOT}/skills/<skill>/references/<stack>.md`.
    O Claude Code substitui `${CLAUDE_PLUGIN_ROOT}` pelo caminho do plugin ao carregar o corpo do agente e o da skill
    (reteste no CLI 2.1.296); o caminho fica nos agentes desde a correção D-001 (`sdd` 0.1.2).
-4. Sem referência: princípios gerais da skill e lacuna declarada no relato; o TecLeader registra como observação.
+4. Sem referência: princípios gerais da skill e lacuna declarada no relato; o TechLead registra como observação.
 5. Stack ausente no `CLAUDE.md` e na delegação: o agente não adivinha e pede a informação.
 
 ## 6. Carregamento das skills
@@ -295,7 +295,7 @@ sequenceDiagram
 ```mermaid
 flowchart LR
     subgraph Sessão principal
-        TL[sdd:tecleader] -->|"ferramenta Skill<br/>início da sessão e após compact"| R1[sdd:sdd-rules<br/>sdd:sdd-governance<br/>sdd:requirements-grilling]
+        TL[sdd:techlead] -->|"ferramenta Skill<br/>início da sessão e após compact"| R1[sdd:sdd-rules<br/>sdd:sdd-governance<br/>sdd:requirements-grilling]
     end
     subgraph Subagentes
         SA[sdd:backend / frontend /<br/>tests / security / infra-architect] -->|"skills: no frontmatter<br/>pré-carregadas"| R2[sdd-rules + skills do papel]
@@ -304,7 +304,7 @@ flowchart LR
 ```
 
 - **Subagentes:** as skills listadas em `skills:` são injetadas no início da execução (nome sem prefixo no frontmatter).
-- **TecLeader:** `skills:` não pré-carrega no agente da sessão principal (spike, item #3). Por isso ele tem `Skill`
+- **TechLead:** `skills:` não pré-carrega no agente da sessão principal (spike, item #3). Por isso ele tem `Skill`
   em `tools:` e carrega `sdd:sdd-rules`, `sdd:sdd-governance` e `sdd:requirements-grilling` no início da sessão e
   após cada compact. Se uma skill não carregar, segue com a governança do próprio arquivo do agente (autossuficiente)
   e informa o usuário.
@@ -318,7 +318,7 @@ flowchart LR
 - não confiar apenas no resumo;
 - recarregar as skills `sdd:sdd-rules` e `sdd:sdd-governance`.
 
-Agentes não conseguem executar `/compact` nem medir o próprio contexto; o TecLeader pede ao usuário `/context`
+Agentes não conseguem executar `/compact` nem medir o próprio contexto; o TechLead pede ao usuário `/context`
 e, se o uso estiver alto, `/compact`.
 
 ### Salinha dos agentes (opcional)
@@ -351,9 +351,9 @@ Requisito sem teste é reportado pelo `sdd:tests` como lacuna de cobertura e imp
 
 | Controle | Onde | Como |
 |---|---|---|
-| Jira somente leitura (1ª camada) | `tools:` do `sdd:tecleader` | só `atlassianUserInfo`, `getAccessibleAtlassianResources`, `getJiraIssue`, `searchJiraIssuesUsingJql`, nos prefixos `mcp__claude_ai_Atlassian__` (conector claude.ai, padrão) e `mcp__atlassian__` (`.mcp.json` opcional) |
+| Jira somente leitura (1ª camada) | `tools:` do `sdd:techlead` | só `atlassianUserInfo`, `getAccessibleAtlassianResources`, `getJiraIssue`, `searchJiraIssuesUsingJql`, nos prefixos `mcp__claude_ai_Atlassian__` (conector claude.ai, padrão) e `mcp__atlassian__` (`.mcp.json` opcional) |
 | Jira somente leitura (2ª camada) | `permissions.deny` nos templates de settings | 16 regras bloqueiam as ferramentas de escrita do Atlassian (comentar, criar, editar, transicionar issue; Confluence; `executeWrite`/`executeDestructive`) nos dois prefixos |
-| Somente o TecLeader acessa o Jira | frontmatter dos agentes | os demais agentes não têm ferramentas Atlassian |
+| Somente o TechLead acessa o Jira | frontmatter dos agentes | os demais agentes não têm ferramentas Atlassian |
 | Regras não relaxáveis | `sdd-rules` e `templates/CLAUDE.md` | regras do projeto não podem relaxar segredos/credenciais, verificação SSL, confirmação de ações irreversíveis, Jira somente leitura e menor privilégio |
 | `security` não altera o projeto | `tools:` sem Edit/Write | tem Bash para verificações; a proibição de alterar vale pelo prompt |
 | `infra-architect` não executa | `tools:` sem Bash | limitado de fato |
@@ -367,7 +367,7 @@ Revisão de segurança do plugin: [security-review.md](../.specs/done/sdd-plugin
 ### Integração com provedores de código
 
 Opcional e somente leitura (feature `vcs-integration`, `sdd` 0.2.0). Só vale se o `CLAUDE.md` do projeto tiver
-`## Repositório` (Provedor, Repositório, Acesso); sem a seção, o TecLeader não consulta nenhum provedor.
+`## Repositório` (Provedor, Repositório, Acesso); sem a seção, o TechLead não consulta nenhum provedor.
 Uso: issue → spec (ID registrado, ex.: `GH#42`) e status de PR/CI como evidência antes do `DONE`.
 Decisão e riscos: [design.md](../.specs/done/vcs-integration/design.md); pesquisa: [research-t000.md](../.specs/done/vcs-integration/research-t000.md).
 
@@ -376,7 +376,7 @@ Decisão e riscos: [design.md](../.specs/done/vcs-integration/design.md); pesqui
 | Camada | Onde | Como |
 |---|---|---|
 | 1. Servidor somente leitura | `.mcp.json` | GitHub em `/mcp/readonly`; Azure DevOps com `X-MCP-Readonly: true` (GitLab e Bitbucket não oferecem modo read-only) |
-| 2. Lista fechada de leitura | `tools:` do `sdd:tecleader` | GitHub: `get_me`, `issue_read`, `list_issues`, `search_issues`, `pull_request_read`, `list_pull_requests`, `search_pull_requests`, `actions_list`, `actions_get`; sem `get_job_logs`. Bitbucket (Atlassian) só ferramentas de leitura; GitLab e Azure: nenhuma no plugin (usuário adiciona por nome, nunca curinga) |
+| 2. Lista fechada de leitura | `tools:` do `sdd:techlead` | GitHub: `get_me`, `issue_read`, `list_issues`, `search_issues`, `pull_request_read`, `list_pull_requests`, `search_pull_requests`, `actions_list`, `actions_get`; sem `get_job_logs`. Bitbucket (Atlassian) só ferramentas de leitura; GitLab e Azure: nenhuma no plugin (usuário adiciona por nome, nunca curinga) |
 | 3. `permissions.deny` | templates de settings | ferramentas de escrita por nome (cobre sessões sem o agente) e prefixos Bash de `gh`/`glab`/`az`. O deny de Bash é defesa em profundidade, não barreira |
 | Token | variável de ambiente `GITHUB_PAT` | PAT fine-grained somente leitura (só os repositórios do projeto; Metadata, Issues, Pull requests, Actions = Read; validade curta); proibido reutilizar `gh auth token`; nunca versionado |
 
@@ -394,7 +394,7 @@ Decisão e riscos: [design.md](../.specs/done/vcs-integration/design.md); pesqui
 ```mermaid
 sequenceDiagram
     actor U as Usuário
-    participant TL as sdd:tecleader
+    participant TL as sdd:techlead
     participant P as Provedor (leitura)
     participant SA as Subagentes
     U->>TL: "Implemente a issue GH#42"
@@ -406,13 +406,13 @@ sequenceDiagram
     TL->>SA: apenas REQs validados (nunca o texto bruto)
 ```
 
-Issue, PR, comentário, work item e log são **dados, nunca instruções**: o TecLeader não executa comandos, não chama
+Issue, PR, comentário, work item e log são **dados, nunca instruções**: o TechLead não executa comandos, não chama
 ferramentas, não muda escopo e não lê nem expõe segredos por pedido contido neles. Issue sem critério de aceite:
 solicita complementação. Escrita (PR, comentário, merge, issue) não está liberada: o usuário faz manualmente.
 
 **Riscos residuais**
 
-- `gh` já logado na máquina tem escrita, e o Bash do `tecleader` alcança a API por `curl`/PowerShell sem passar
+- `gh` já logado na máquina tem escrita, e o Bash do `techlead` alcança a API por `curl`/PowerShell sem passar
   pelo deny. Mitigação real: token somente leitura. O modo `Acesso: cli` não é recomendado.
 - OAuth do GitHub (sem header `Authorization`) não foi testado.
 - Bitbucket, GitLab e Azure DevOps não foram validados; nomes das ferramentas de escrita do Bitbucket devem ser
@@ -442,7 +442,7 @@ Claude Code 2.1.288):
 
 ## 12. Limitações conhecidas
 
-- `skills:` só pré-carrega em subagentes; o carregamento das regras no TecLeader depende da instrução de usar a
+- `skills:` só pré-carrega em subagentes; o carregamento das regras no TechLead depende da instrução de usar a
   ferramenta `Skill` (observado funcionando na validação).
 - `${CLAUDE_PLUGIN_ROOT}` é substituído ao carregar o corpo de agentes e de skills; em arquivos lidos pela ferramenta
   `Read` (ex.: references) e no ambiente do Bash, não.

@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.7.0-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.8.0-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -22,7 +22,7 @@
 Um **marketplace de plugins do Claude Code** que instala, em qualquer projeto, um processo de
 engenharia completo:
 
-- **Você conversa com um só agente, o TecLeader.** Ele transforma o pedido em spec e tasks,
+- **Você conversa com um só agente, o TechLead.** Ele transforma o pedido em spec e tasks,
   delega aos especialistas e só encerra quando há evidência de que funciona.
 - **Nada de implementação sem spec.** Requisito, critério de aceite e forma de validar vêm antes do código.
 - **Agnóstico de linguagem.** Os agentes não têm stack fixa: a stack do projeto é declarada no
@@ -37,7 +37,7 @@ engenharia completo:
 
 ```mermaid
 flowchart LR
-    U([Você]) --> TL[sdd:tecleader]
+    U([Você]) --> TL[sdd:techlead]
     TL --> S[spec.md + tasks.md]
     S --> D{Design<br/>obrigatório?}
     D -->|sim| DS[design.md aprovado]
@@ -52,13 +52,13 @@ flowchart LR
 ```
 
 Estados de cada task: `TODO → IN_PROGRESS → IMPLEMENTED → SECURITY_REVIEW → VALIDATING → DONE`
-(com `FAILED_VALIDATION → FIXING → VALIDATING_AGAIN` até aprovar). **Só o TecLeader encerra.**
+(com `FAILED_VALIDATION → FIXING → VALIDATING_AGAIN` até aprovar). **Só o TechLead encerra.**
 
 ## 👥 O time
 
 | Agente | Papel | Modelo |
 |---|---|---|
-| `sdd:tecleader` | Orquestra, cria specs e tasks, aprova design, encerra (sessão principal) | opus |
+| `sdd:techlead` | Orquestra, cria specs e tasks, aprova design, encerra (sessão principal) | opus |
 | `sdd:backend` | APIs, domínio, persistência e testes, na stack do projeto | sonnet |
 | `sdd:frontend` | Interfaces, UX, acessibilidade e testes, na stack do projeto | sonnet |
 | `sdd:tests` | Validação independente: regressão, contratos, E2E, aceite | sonnet |
@@ -101,7 +101,7 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
    claude plugin install sdd@claude-sdd-framework --scope project
    ```
 
-4. Abra `claude` na raiz do projeto e aceite o diálogo de confiança da pasta. A primeira resposta é do **TecLeader**,
+4. Abra `claude` na raiz do projeto e aceite o diálogo de confiança da pasta. A primeira resposta é do **TechLead**,
    que verifica o onboarding e, se faltar `CLAUDE.md`, oferece criá-lo (lendo o código ou perguntando a stack) — nada é
    alterado sem confirmação. Depois, faça o primeiro pedido:
 
@@ -154,14 +154,14 @@ export PATH="$PATH:$HOME/.local/bin"
 <details>
 <summary><b>Preencher o <code>CLAUDE.md</code> à mão (opcional)</b></summary>
 
-Em vez do onboarding pelo TecLeader, copie [`templates/CLAUDE.md`](templates/CLAUDE.md) para a raiz do projeto e
-preencha a seção **`## Stack`** e os comandos. O TecLeader confere o que faltar.
+Em vez do onboarding pelo TechLead, copie [`templates/CLAUDE.md`](templates/CLAUDE.md) para a raiz do projeto e
+preencha a seção **`## Stack`** e os comandos. O TechLead confere o que faltar.
 </details>
 
 ## 🔒 Proteções do template
 
 [`templates/project-settings.git.json`](templates/project-settings.git.json) declara o marketplace
-(`extraKnownMarketplaces`), habilita o plugin (`enabledPlugins`) e define `"agent": "sdd:tecleader"`. Por isso copie o
+(`extraKnownMarketplaces`), habilita o plugin (`enabledPlugins`) e define `"agent": "sdd:techlead"`. Por isso copie o
 arquivo inteiro: o template também bloqueia (`permissions.deny`) as ferramentas de escrita do Jira e dos provedores de
 repositório; a leitura de segredos (`.env`/`.env.*`, também na edição, exceto `.env.example`/`.sample`/`.template`;
 chaves e certificados; credenciais de npm, PyPI, git e `netrc`; estado e variáveis do Terraform; e, na home,
@@ -199,7 +199,7 @@ O Claude Code carrega o `CLAUDE.md` da pasta aberta, dos diretórios pais e o pe
   aplica o mais específico e sinaliza (exceto os controles de segurança não relaxáveis).
 - `Versionar artefatos SDD: não` (seção `## SDD` do projeto), para repositórios que não aceitam esses arquivos:
   `.claude/settings.local.json` + exclude local do git (`git rev-parse --git-path info/exclude`); `.gitignore` intocado.
-- **Artefatos fora do repositório** (ex.: `CLAUDE.md`, `.specs/` e `.claude/` na pasta-mãe): o TecLeader propõe o plano
+- **Artefatos fora do repositório** (ex.: `CLAUDE.md`, `.specs/` e `.claude/` na pasta-mãe): o TechLead propõe o plano
   padrão de migração com **uma única confirmação** — mescla sem sobrescrever (com diff), renomeia as origens para
   `.bak-<data>` (nunca apaga), não copia `allow`/`env` para arquivo versionável e **nunca faz commit**.
   Ele não pergunta onde fica `.specs/`, se move o `CLAUDE.md` nem se versiona: esses padrões são regra.
@@ -212,7 +212,7 @@ Três modos, com efeitos diferentes (verificados na documentação oficial e em 
 |---|---|---|---|---|
 | Dentro do projeto | `claude` em `ict_app/` | só o projeto | o do projeto + pais (workspace) | o do projeto |
 | Projeto + outro | `claude --add-dir ../outro` (ou `/add-dir`) | os dois | o do outro só com `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1` | **só o da sessão** |
-| Workspace | `claude` na pasta-mãe, com `.claude/settings.json` | todos os projetos abaixo | o do workspace; o de um projeto carrega sob demanda ao ler arquivo da pasta dele (o TecLeader ainda o lê antes de planejar) | **só o do workspace** |
+| Workspace | `claude` na pasta-mãe, com `.claude/settings.json` | todos os projetos abaixo | o do workspace; o de um projeto carrega sob demanda ao ler arquivo da pasta dele (o TechLead ainda o lê antes de planejar) | **só o do workspace** |
 
 - Deny exigido na sessão = deny do modelo ∪ deny dos projetos envolvidos. Faltando, a sessão fica **somente leitura**
   (sem escrita, build, testes ou delegação) até corrigir e reiniciar; dica: `--permission-mode plan`.
@@ -224,12 +224,12 @@ Três modos, com efeitos diferentes (verificados na documentação oficial e em 
 ## 🏢 Salinha dos agentes (opcional)
 
 Uma página HTML local, aberta no navegador, mostra uma **sala em pixel art 16 bits** com uma mesa por agente
-(tecleader, backend, frontend, tests, security, infra-architect; agentes novos ganham mesa). Os personagens aparecem
-trabalhando, entregando, em revisão ou ociosos, e um popup mostra o processo atual (ex.: "TecLeader → delegou uma
+(techlead, backend, frontend, tests, security, infra-architect; agentes novos ganham mesa). Os personagens aparecem
+trabalhando, entregando, em revisão ou ociosos, e um popup mostra o processo atual (ex.: "TechLead → delegou uma
 tarefa ao backend", "backend: editando arquivos", "tests: rodando validação"). Sem dependências de terceiros, sem
 servidor, sem rede.
 
-**Desligada por padrão.** O TecLeader oferece uma vez (no fim da primeira resposta e no fim do onboarding; recusar
+**Desligada por padrão.** O TechLead oferece uma vez (no fim da primeira resposta e no fim do onboarding; recusar
 grava `off`). Depois, liga e desliga a qualquer momento:
 
 | Comando | Efeito |
@@ -238,7 +238,7 @@ grava `off`). Depois, liga e desliga a qualquer momento:
 | `/sdd:office off` | Desliga; o hook só confere a preferência e sai |
 | `/sdd:office status` | Mostra a preferência atual |
 
-Também dá para pedir ao TecLeader. A preferência fica em `~/.claude/sdd/office.conf` (respeita `CLAUDE_CONFIG_DIR`),
+Também dá para pedir ao TechLead. A preferência fica em `~/.claude/sdd/office.conf` (respeita `CLAUDE_CONFIG_DIR`),
 por usuário, nunca no repositório. Para apagar, remova o arquivo.
 
 - **Abre sozinha:** com `on`, cada sessão nova abre o navegador padrão uma vez (Windows `cmd.exe /c start`, macOS `open`,
@@ -264,9 +264,13 @@ claude plugin update sdd@claude-sdd-framework --scope project
 
 Reinicie a sessão para aplicar. Versões seguem semver; veja o [CHANGELOG](CHANGELOG.md).
 
+> **0.8.0 (mudança incompatível):** `sdd:tecleader` foi renomeado para `sdd:techlead`. Troque
+> `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` (ou `settings.local.json`) e
+> reinicie. Até lá, a sessão abre com um agente obsoleto que só mostra essa instrução (removido na versão seguinte).
+
 ## 🧩 Jira (opcional, somente leitura)
 
-- **Padrão:** conector Atlassian do claude.ai (Settings → Connectors → Atlassian). Só o TecLeader acessa.
+- **Padrão:** conector Atlassian do claude.ai (Settings → Connectors → Atlassian). Só o TechLead acessa.
 - **Sem login claude.ai:** copie [`templates/mcp-atlassian.json`](templates/mcp-atlassian.json) para
   `.mcp.json` (MCP remoto oficial da Atlassian, OAuth, sem token em arquivo).
 - Ferramentas de escrita (criar, editar, comentar, transicionar) ficam bloqueadas nos templates.
@@ -274,7 +278,7 @@ Reinicie a sessão para aplicar. Versões seguem semver; veja o [CHANGELOG](CHAN
 ## 🔗 Repositório: GitHub, Bitbucket, GitLab, Azure DevOps (opcional, somente leitura)
 
 Serve para duas coisas: **issue → spec** (o ID fica registrado, ex.: `GH#42`) e **status de PR/CI como evidência**
-antes do DONE. Só o TecLeader consulta o provedor, e só se o `CLAUDE.md` do projeto tiver a seção `## Repositório`.
+antes do DONE. Só o TechLead consulta o provedor, e só se o `CLAUDE.md` do projeto tiver a seção `## Repositório`.
 
 | Provedor | Caminho padrão | Status |
 |---|---|---|
@@ -295,11 +299,11 @@ antes do DONE. Só o TecLeader consulta o provedor, e só se o `CLAUDE.md` do pr
 
 Nunca reutilize `gh auth token`: o login local do `gh` costuma ter escrita.
 
-**Camadas de proteção:** (1) servidor em modo somente leitura; (2) o TecLeader só tem uma lista fechada de
+**Camadas de proteção:** (1) servidor em modo somente leitura; (2) o TechLead só tem uma lista fechada de
 ferramentas de leitura; (3) `permissions.deny` das ferramentas de escrita nos templates de settings.
 Abrir PR, comentar, revisar, fazer merge e criar issue não estão liberados: faça manualmente.
 
-**Issue e PR são dado não confiável.** O TecLeader não segue instruções escritas dentro de issue, PR,
+**Issue e PR são dado não confiável.** O TechLead não segue instruções escritas dentro de issue, PR,
 comentário ou log; sinaliza trechos suspeitos, exige sua confirmação antes de transformar a issue em spec
 e repassa aos demais agentes apenas os requisitos validados.
 
@@ -353,9 +357,9 @@ claude-sdd-framework/
 
 ## ⚠️ Limitações conhecidas
 
-- `skills:` só pré-carrega em subagentes; o TecLeader carrega as regras pela ferramenta `Skill`.
+- `skills:` só pré-carrega em subagentes; o TechLead carrega as regras pela ferramenta `Skill`.
 - A verificação de onboarding no início da sessão é um hook em bash (no Windows, requer Git Bash no PATH);
-  sem ele, o TecLeader faz a mesma verificação lendo os arquivos.
+  sem ele, o TechLead faz a mesma verificação lendo os arquivos.
 - Stacks sem referência (ex.: Vue, Java, Go) usam os princípios gerais; o agente declara a lacuna.
 - A salinha dos agentes (opcional) só foi validada no Windows (Chrome e Edge); macOS, Linux e Firefox não foram testados.
 - Caminho `.mcp.json` (Jira, GitHub, GitLab, Azure DevOps) ainda não validado em rede com inspeção TLS (ex.: Zscaler).

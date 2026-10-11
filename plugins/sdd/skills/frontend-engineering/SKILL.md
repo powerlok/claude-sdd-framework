@@ -39,7 +39,7 @@ Stack sem referência: seguir as convenções já presentes no código e declara
 
 - Tipar explicitamente props/inputs, respostas de API e eventos nas fronteiras.
 - Proibido `any` quando houver alternativa tipada.
-- Não inventar contratos de API: usar a spec/OpenAPI existente; se faltar, pedir ao TecLeader.
+- Não inventar contratos de API: usar a spec/OpenAPI existente; se faltar, pedir ao TechLead.
 - Tratar respostas externas como não confiáveis: validar o formato antes de usar.
 
 ## Estados de UX obrigatórios
@@ -108,7 +108,7 @@ deliberada, não como padrão genérico.
 
 - Componente: renderização por estado (carregando, erro, vazio, sucesso), por papel/rótulo acessível, não por detalhe de implementação.
 - Interação: teclado e mouse, formulários, validação, navegação.
-- E2E: somente quando o TecLeader delegar; cobrir o fluxo principal da feature.
+- E2E: somente quando o TechLead delegar; cobrir o fluxo principal da feature.
 - Rastreabilidade: REQ-001 vira teste `req001` (arquivo ou nome do caso), seguindo a
   convenção de nomes da stack.
 - Todo defeito corrigido ganha teste de regressão.

@@ -20,7 +20,7 @@ prática de versão mais nova sem confirmar que o projeto a suporta.
 | Signal Forms, `resource`/`httpResource` e Angular Aria estáveis | v22 |
 
 - Projeto em versão antiga: não migrar por conta própria. Seguir os padrões da versão
-  atual do projeto e propor a migração como task separada ao TecLeader
+  atual do projeto e propor a migração como task separada ao TechLead
   (`ng update`; schematics `ng generate @angular/core:<migração>`, ex.: `standalone`,
   `control-flow`, `inject-function`, `signal-inputs`, `route-lazy-loading`).
 - Em v20/v21, declarar `ChangeDetectionStrategy.OnPush` explicitamente nos componentes novos.
@@ -185,7 +185,7 @@ Medir primeiro (DevTools, relatório de bundle, Lighthouse). Só então aplicar.
   sem depender do DOM interno.
 - E2E (somente se delegado): o CLI não traz framework; `ng e2e` exige um esquema configurado.
   `ng add` instala dependência e executa schematic: se o projeto não tiver E2E configurado,
-  não instalar por conta própria; registrar a lacuna e propor ao TecLeader. Nome exato do
+  não instalar por conta própria; registrar a lacuna e propor ao TechLead. Nome exato do
   pacote definido na task ou no `CLAUDE.md`; pacote novo passa pela revisão do `security`.
   Fluxo principal, seletores por papel.
 - Rastreabilidade: REQ-001 em `req001` (ex.: `req001.spec.ts` ou `describe('REQ-001 ...')`).
@@ -201,7 +201,7 @@ ng e2e             # se delegado e configurado
 ```
 
 - Sem lint configurado: não rodar `ng add` por conta própria (instala dependência e executa
-  schematic); registrar a lacuna e propor ao TecLeader; pacote novo passa pelo `security`.
+  schematic); registrar a lacuna e propor ao TechLead; pacote novo passa pelo `security`.
 - Rodar `ng build` após gerar código; falha de budget ou de tipo é falha de build.
 - Variáveis e arquivos de ambiente entram no bundle: nunca colocar segredos.
 - Conferir o tamanho do bundle após adicionar dependência.

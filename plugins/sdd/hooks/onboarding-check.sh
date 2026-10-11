@@ -15,7 +15,7 @@ dir="${CLAUDE_PROJECT_DIR:-$PWD}"
 
 if [ ! -d "$dir" ]; then
   printf '%s\n' "[sdd:onboarding] error=project_dir_not_found"
-  printf '%s\n' "TecLeader: trate este diagnostico na primeira resposta (secao 'Inicio de sessao' do agente)."
+  printf '%s\n' "TechLead: trate este diagnostico na primeira resposta (secao 'Inicio de sessao' do agente)."
   exit 0
 fi
 
@@ -132,5 +132,5 @@ for entry in "$base"/* "$base"/.[!.]* "$base"/..?*; do
 done
 
 printf '%s\n' "[sdd:onboarding] claude_md=$claude_md stack=$stack specs_index=$specs_index empty=$empty manifests=$manifests git=$git subrepos=$subrepos claude_dir=$claude_dir specs_dir=$specs_dir"
-printf '%s\n' "TecLeader: trate este diagnostico na primeira resposta (secao 'Inicio de sessao' do agente)."
+printf '%s\n' "TechLead: trate este diagnostico na primeira resposta (secao 'Inicio de sessao' do agente)."
 exit 0

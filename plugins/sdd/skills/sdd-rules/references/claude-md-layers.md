@@ -1,6 +1,6 @@
 # Camadas do CLAUDE.md e versionamento dos artefatos SDD
 
-Parte da skill [sdd-rules](../SKILL.md). Aplicação (migração e configuração): agente `sdd:tecleader`,
+Parte da skill [sdd-rules](../SKILL.md). Aplicação (migração e configuração): agente `sdd:techlead`,
 seção "Migração para a raiz do projeto".
 
 ## Camadas
@@ -53,7 +53,7 @@ Opção no `CLAUDE.md` do projeto, seção `## SDD`: `Versionar artefatos SDD: s
   inclusive sem `.claude/`) ou mesclado a partir do modelo: `settings.json` com `sim`, `settings.local.json` com `não`.
 - Em monorepo com `não`: as entradas usam o caminho da pasta do projeto relativo à raiz do repositório
   (ex.: `/apps/api/CLAUDE.md`).
-- O TecLeader **não pergunta** se deve versionar: aplica o valor do `CLAUDE.md` (ausente = `sim`). "Sem perguntar" =
+- O TechLead **não pergunta** se deve versionar: aplica o valor do `CLAUDE.md` (ausente = `sim`). "Sem perguntar" =
   sem pergunta separada; settings e exclude aparecem no plano/onboarding que o usuário confirma.
 
 ## Settings na migração
@@ -71,7 +71,7 @@ Opção no `CLAUDE.md` do projeto, seção `## SDD`: `Versionar artefatos SDD: s
 - `.claude/` do workspace: cada item com destino (migrado | mesclado | mantido); sem destino (`settings.local.json`
   pessoal, `agents/`, `commands/`, `skills/`, hooks) fica e é reportado. Antes de mexer na origem, conferir que todo
   deny dela está no destino; se restar só o migrado, renomear para `.claude.bak-<AAAA-MM-DD>` (nunca apagar). Avisar no
-  plano: sessões no workspace ficam sem o deny e sem o agente `sdd:tecleader`; abrir o `claude` dentro do repositório
+  plano: sessões no workspace ficam sem o deny e sem o agente `sdd:techlead`; abrir o `claude` dentro do repositório
   (opcional, a pedido: `.claude/settings.json` no workspace com deny do modelo ∪ deny dos projetos envolvidos).
 - Origens após verificar: `.specs/` do workspace → `.specs.bak-<AAAA-MM-DD>`; `CLAUDE.md` original do workspace →
   `CLAUDE.md.bak-<AAAA-MM-DD>` (substituído pelo curto de workspace, ou nenhum com um só projeto). Nunca apagar.
@@ -81,13 +81,13 @@ Opção no `CLAUDE.md` do projeto, seção `## SDD`: `Versionar artefatos SDD: s
 
 ## Trabalho entre projetos
 
-Aplicação: agente `sdd:tecleader`, seção "Trabalho entre projetos". Comportamento do Claude Code (documentação oficial):
+Aplicação: agente `sdd:techlead`, seção "Trabalho entre projetos". Comportamento do Claude Code (documentação oficial):
 
 | Modo | Acesso ao outro projeto | `CLAUDE.md` carregado | Deny que vale |
 |---|---|---|---|
 | Sessão dentro do projeto A | negado (fora da pasta) | o de A e os dos pais (workspace) | o de A |
 | Sessão em A com `--add-dir B` (ou `/add-dir`) | leitura; edição conforme o modo de permissão | A e pais; o de B só com `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1` | só o de A (de B só `enabledPlugins`/`extraKnownMarketplaces` são lidos) |
-| Sessão no workspace | todos os projetos abaixo | o do workspace no início; o de um projeto é carregado sob demanda ao ler arquivo da pasta dele (o TecLeader ainda o lê explicitamente antes de planejar; não depender do sob demanda) | só o do workspace |
+| Sessão no workspace | todos os projetos abaixo | o do workspace no início; o de um projeto é carregado sob demanda ao ler arquivo da pasta dele (o TechLead ainda o lê explicitamente antes de planejar; não depender do sob demanda) | só o do workspace |
 
 - Subagentes herdam as regras de permissão da sessão.
 - Deny da sessão sem o deny do modelo ∪ deny dos projetos envolvidos (de cada projeto, `settings.json` e

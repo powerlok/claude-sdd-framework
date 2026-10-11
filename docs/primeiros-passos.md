@@ -24,7 +24,7 @@ Testado com o Claude Code 2.1.296 e a versão `v0.7.0` do framework (a salinha d
 
 O framework é um **plugin** (`sdd`) distribuído por um **marketplace** (`claude-sdd-framework`, este repositório).
 Você registra o marketplace **uma vez na máquina** e instala o plugin **em cada projeto**. Depois disso, ao abrir o
-`claude` na pasta do projeto, quem responde é o **TecLeader**, o agente que conduz todo o trabalho.
+`claude` na pasta do projeto, quem responde é o **TechLead**, o agente que conduz todo o trabalho.
 
 ## Antes de começar
 
@@ -94,7 +94,7 @@ Escolha o seu caso:
 | Caminho A: projeto com código existente | Caminho B: projeto do zero |
 |---|---|
 | Já existe um repositório com código (e talvez sem `CLAUDE.md`) | Pasta nova, ainda sem código |
-| O TecLeader **lê o código** e propõe o `CLAUDE.md` | O TecLeader **pergunta a stack** e propõe o `CLAUDE.md` |
+| O TechLead **lê o código** e propõe o `CLAUDE.md` | O TechLead **pergunta a stack** e propõe o `CLAUDE.md` |
 
 ### Caminho A: projeto com código existente
 
@@ -106,9 +106,9 @@ trecho: além de declarar o marketplace e o plugin, ele traz as [proteções do 
 (`permissions.deny`).
 
 **Você vai ver:** nada ainda. Esse arquivo **sozinho não carrega o plugin**: ele declara o marketplace, habilita o
-`sdd` e define o TecLeader como agente da sessão, mas a instalação é o próximo passo.
+`sdd` e define o TechLead como agente da sessão, mas a instalação é o próximo passo.
 
-**Confira:** o arquivo existe em `<projeto>/.claude/settings.json` e contém `"ref": "v0.7.0"` e `"agent": "sdd:tecleader"`.
+**Confira:** o arquivo existe em `<projeto>/.claude/settings.json` e contém `"ref": "v0.7.0"` e `"agent": "sdd:techlead"`.
 
 **A2. Instale o plugin no projeto**
 
@@ -131,7 +131,7 @@ claude plugin list
 
 Se aparecerem várias linhas `sdd` (uma por projeto em que você instalou), basta uma com `0.6.4`, `project`, `enabled`.
 O `plugin list` não mostra o caminho do projeto; na dúvida, abra o `claude` e veja se a resposta começa com
-"Sou o TecLeader".
+"Sou o TechLead".
 
 Siga para [3. Primeira conversa](#3-primeira-conversa).
 
@@ -176,12 +176,12 @@ claude
 **Você vai ver:**
 
 1. Na primeira vez, o **diálogo de confiança da pasta**. Aceite: sem confiar na pasta, o plugin do projeto não carrega.
-2. A primeira resposta vem do **TecLeader** ("Sou o TecLeader") com a situação do projeto (onboarding). Nada é
+2. A primeira resposta vem do **TechLead** ("Sou o TechLead") com a situação do projeto (onboarding). Nada é
    alterado sem a sua confirmação.
 
 Se você instalou o plugin com uma sessão já aberta, rode `/reload-plugins` ou abra uma nova sessão.
 
-**No Caminho A (código existente, sem `CLAUDE.md`)**, o TecLeader:
+**No Caminho A (código existente, sem `CLAUDE.md`)**, o TechLead:
 
 - diz que a pasta é um repositório git com manifestos (ex.: `package.json`), sem `CLAUDE.md` e sem `.specs/`;
 - explica o que vai ler e o que vai criar;
@@ -202,7 +202,7 @@ Ele **não faz commit**. Revise o `CLAUDE.md` gerado e corrija o que estiver err
 `CLAUDE.md` sair com a nota "comandos ainda não executados", aprove a execução (ou peça para rodar depois) e confira
 os comandos registrados.
 
-**No Caminho B (projeto do zero)**, o TecLeader diz que a pasta não tem código e pergunta:
+**No Caminho B (projeto do zero)**, o TechLead diz que a pasta não tem código e pergunta:
 
 - a stack (linguagem, framework, versão);
 - a nuvem/infra (ou "nenhuma");
@@ -222,13 +222,13 @@ mostra o plano e **só cria** `CLAUDE.md` e `.specs/INDEX.md` depois do seu "ok"
 
 **Confira:**
 
-- a resposta começa com "Sou o TecLeader" (se vier uma resposta genérica, veja [Problemas comuns](#problemas-comuns));
+- a resposta começa com "Sou o TechLead" (se vier uma resposta genérica, veja [Problemas comuns](#problemas-comuns));
 - `/plugin`: aba **Installed** mostra o `sdd`; aba **Errors** vazia;
 - fora da sessão, `claude doctor` não aponta erro de plugin;
 - o `CLAUDE.md` e o `.specs/INDEX.md` existem na raiz do projeto.
 
 > Opcional: em vez do onboarding, você pode partir do modelo [`templates/CLAUDE.md`](../templates/CLAUDE.md) e
-> preenchê-lo; o TecLeader confere o que faltar.
+> preenchê-lo; o TechLead confere o que faltar.
 
 ## 4. Primeiro pedido
 
@@ -238,7 +238,7 @@ mostra o plano e **só cria** `CLAUDE.md` e `.specs/INDEX.md` depois do seu "ok"
 Crie um endpoint POST /todos que cadastra tarefas com título obrigatório
 ```
 
-**Você vai ver:** o TecLeader pode primeiro fazer perguntas (ex.: qual framework, onde guardar os dados),
+**Você vai ver:** o TechLead pode primeiro fazer perguntas (ex.: qual framework, onde guardar os dados),
 principalmente se o pedido muda a stack do projeto. Pode responder "recomendações". Depois ele propõe requisitos e
 critérios de aceite — e um design técnico quando necessário (novo módulo, contrato de API) — e pede sua confirmação
 antes de implementar. Depois de confirmar, ele cria
@@ -257,9 +257,9 @@ O padrão é `Versionar artefatos SDD: sim` (seção `## SDD` do `CLAUDE.md`). F
 - `CLAUDE.md`
 - `.specs/`
 
-O TecLeader **nunca faz commit**: você revisa e commita.
+O TechLead **nunca faz commit**: você revisa e commita.
 
-**Repositório de cliente que não aceita esses arquivos:** use `Versionar artefatos SDD: não`. O TecLeader passa a usar
+**Repositório de cliente que não aceita esses arquivos:** use `Versionar artefatos SDD: não`. O TechLead passa a usar
 `.claude/settings.local.json` e o exclude local do git, sem tocar no `.gitignore`. Detalhes em
 "Camadas do CLAUDE.md" no [README](../README.md).
 
@@ -270,7 +270,7 @@ O `.claude/settings.json` versionado **não instala nada sozinho**. Cada dev da 
 1. Uma vez na máquina: `claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.7.0"`
    ([passo 1](#1-instalar-na-máquina-uma-vez)).
 2. Uma vez por projeto, na raiz: `claude plugin install sdd@claude-sdd-framework --scope project`.
-3. Abrir `claude` na raiz, confiar na pasta e conferir que responde o TecLeader.
+3. Abrir `claude` na raiz, confiar na pasta e conferir que responde o TechLead.
 
 Sem o passo 2, o `/plugin` mostra na aba **Errors**: "enabled in project settings but isn't installed here".
 
@@ -287,10 +287,10 @@ no README.
 Uma página local, aberta no navegador, mostra uma sala em pixel art com uma mesa por agente e o que cada um está fazendo
 (ex.: "backend: editando arquivos"). Vem **desligada**; sem dependências de terceiros, sem servidor, sem rede.
 
-- **Aceitar na primeira conversa:** o TecLeader oferece uma vez, no fim da primeira resposta (e no fim do onboarding).
+- **Aceitar na primeira conversa:** o TechLead oferece uma vez, no fim da primeira resposta (e no fim do onboarding).
   Responda que quer; se recusar, ela fica desligada.
 - **Ligar ou desligar depois:** `/sdd:office on`, `/sdd:office off` ou `/sdd:office status` (na primeira vez o Claude
-  pede para você aprovar o comando), ou peça ao TecLeader. O `on` já abre a tela e, nas sessões seguintes, ela abre
+  pede para você aprovar o comando), ou peça ao TechLead. O `on` já abre a tela e, nas sessões seguintes, ela abre
   sozinha no navegador padrão.
 - **Onde fica a preferência:** `~/.claude/sdd/office.conf`, por usuário, nunca no repositório. A página guarda só agente,
   tipo de ferramenta e horário (nunca conteúdo de arquivos, comandos ou prompts), na pasta temporária do sistema.
@@ -314,6 +314,10 @@ Detalhes e limites: [README](../README.md#-salinha-dos-agentes-opcional).
 **Confira:** `claude plugin list` mostra a versão nova do `sdd`. As mudanças de cada versão estão no
 [CHANGELOG](../CHANGELOG.md).
 
+> **Ao subir para a 0.8.0:** o agente `sdd:tecleader` foi renomeado para `sdd:techlead`. Troque
+> `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` (ou no
+> `.claude/settings.local.json`) e reinicie o Claude Code. Passo a passo no [CHANGELOG](../CHANGELOG.md).
+
 ## Problemas comuns
 
 | Sintoma | Causa provável | Solução |
@@ -321,9 +325,10 @@ Detalhes e limites: [README](../README.md#-salinha-dos-agentes-opcional).
 | `claude` não encontrado (Windows) | `%USERPROFILE%\.local\bin` fora do PATH | PowerShell: `$env:Path += ";$HOME\.local\bin"`; Git Bash: `export PATH="$PATH:$HOME/.local/bin"` |
 | `Plugin "sdd" not found in marketplace` ao instalar | Marketplace não registrado nesta máquina, ou desatualizado | Rode o [passo 1](#1-instalar-na-máquina-uma-vez) (`marketplace add`); se já registrado, `claude plugin marketplace update claude-sdd-framework` |
 | Falha de clone ou de autenticação no `marketplace add` | Git sem acesso ao repositório privado | Teste `git ls-remote https://github.com/powerlok/claude-sdd-framework.git`; configure credenciais (gerenciador de credenciais/`gh auth setup-git` ou SSH); nunca token na URL |
-| Resposta genérica, sem "Sou o TecLeader" | Plugin não instalado no projeto; pasta não confiada; ou sessão aberta antes do install | Rode o `plugin install` na raiz; aceite o diálogo de confiança; `/reload-plugins` ou nova sessão |
+| Resposta genérica, sem "Sou o TechLead" | Plugin não instalado no projeto; pasta não confiada; ou sessão aberta antes do install | Rode o `plugin install` na raiz; aceite o diálogo de confiança; `/reload-plugins` ou nova sessão |
 | `/plugin` › Errors: "enabled in project settings but isn't installed here" | O settings foi copiado (ou veio pelo git), mas o plugin não foi instalado nesta máquina | `claude plugin install sdd@claude-sdd-framework --scope project` na raiz do projeto |
-| Verificação de onboarding (hook) sem efeito no Windows | Git for Windows ausente (o hook usa `bash`) | Instale o Git for Windows; sem ele, o TecLeader faz a mesma verificação lendo os arquivos |
+| A sessão abre com o agente "OBSOLETO" (`sdd:tecleader`) em vez do TechLead | O `settings` ainda aponta para o nome antigo, renomeado na 0.8.0 | Troque `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` (ou `settings.local.json`) e reinicie (ou `/reload-plugins`) |
+| Verificação de onboarding (hook) sem efeito no Windows | Git for Windows ausente (o hook usa `bash`) | Instale o Git for Windows; sem ele, o TechLead faz a mesma verificação lendo os arquivos |
 | `git diff` mostra o `.claude/settings.json` alterado logo após o install | O `plugin install` reordena as chaves | Sem mudança de conteúdo; pode commitar ou descartar |
 | A salinha dos agentes não abre | Preferência desligada, navegador padrão não definido ou Git Bash ausente | Rode `/sdd:office status` (se `off`, `/sdd:office on`); defina um navegador padrão; instale o Git for Windows (e confira que o `bash` do PATH não é o do WSL) |
 

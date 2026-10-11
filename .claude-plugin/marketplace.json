@@ -11,7 +11,7 @@
     {
       "name": "sdd",
       "source": "./plugins/sdd",
-      "description": "Processo SDD: agentes tecleader, backend, frontend, tests, security e infra-architect, regras globais, governança e hook pós-compact."
+      "description": "Processo SDD: agentes techlead, backend, frontend, tests, security e infra-architect, regras globais, governança e hook pós-compact."
     },
     {
       "name": "authoring",

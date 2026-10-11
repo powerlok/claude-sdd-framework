@@ -2,6 +2,23 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.8.0 — 2026-10-11
+
+Renomeação do agente principal (`.specs/done/rename-techlead/spec.md`): `sdd:tecleader` → `sdd:techlead` (o nome estava errado).
+
+**Mudança incompatível:** quem tem `"agent": "sdd:tecleader"` no `.claude/settings.json` (ou `.claude/settings.local.json`) precisa trocar para `"agent": "sdd:techlead"`.
+
+- REQ-001/REQ-002: `agents/tecleader.md` → `agents/techlead.md` (`name: techlead`); todas as referências em agentes, skills, hooks, testes, `office/office.html`, templates, README, `docs/` e skills do `authoring` seguem o nome novo ("TechLead").
+- REQ-003: `agents/tecleader.md` permanece nesta versão como agente **obsoleto** mínimo (`tools: Read`, sem escrita): avisa da troca de nome e instrui a migração; não executa trabalho. **Será removido na versão seguinte.**
+- REQ-005: `sdd` 0.8.0; sem release/tag e sem mudança de `ref` ou `metadata.version` (decisão do usuário).
+
+### Migração
+
+1. Atualize o plugin: `claude plugin marketplace update claude-sdd-framework` e `claude plugin update sdd@claude-sdd-framework --scope project` (com `ref` fixado, troque-o antes pela nova tag).
+2. No `.claude/settings.json` do projeto, troque `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"`. Se o `agent` estiver em `.claude/settings.local.json` (workspace ou projetos com `Versionar artefatos SDD: não`), troque nele também.
+3. Reinicie o Claude Code (ou `/reload-plugins`). A sessão deve responder como TechLead.
+4. Transição: quem ainda não trocou abre a sessão com o agente obsoleto `sdd:tecleader`, que só mostra essa instrução e não altera nada.
+
 ## sdd 0.7.1 — 2026-10-11
 
 Salinha dos agentes: qualidade visual (`.specs/done/office-visual/spec.md`). Só renderização em `office/office.html`; sem hooks, dados ou permissões novas. Não é release (sem tag).

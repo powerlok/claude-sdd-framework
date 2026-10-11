@@ -14,7 +14,7 @@ Tentar correções ao acaso esconde o defeito e cria novos.
 |---|---|
 | tests | Fase 1: reprodução determinística, evidência (comando, saída real), relatório do defeito. Não corrige produção. |
 | backend / frontend | Fases 2 a 5 na própria área: isolar, diagnosticar, corrigir, teste de regressão. |
-| tecleader | Recebe escalonamento, registra bloqueio, decide o próximo passo. |
+| techlead | Recebe escalonamento, registra bloqueio, decide o próximo passo. |
 
 ## Fase 1: Reproduzir de forma determinística
 
@@ -73,7 +73,7 @@ registrar como observação.
 
 - Contar as tentativas de correção para a mesma falha.
 - **3 tentativas sem progresso significativo**: parar.
-- Escalar ao tecleader com:
+- Escalar ao techlead com:
   - reprodução (comando e saída);
   - hipóteses testadas e resultado de cada uma;
   - o que se sabe e o que falta saber;

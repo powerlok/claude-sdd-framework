@@ -11,11 +11,11 @@ ficam em `references/<stack>.md`.
 ## Como escolher a referência
 
 1. Identifique a stack na seção `## Stack` do `CLAUDE.md` do projeto
-   ou no campo `Stack:` da delegação do TecLeader.
+   ou no campo `Stack:` da delegação do TechLead.
 2. Leia somente a referência correspondente.
 3. Sem referência para a stack: aplique estes princípios, siga as convenções
    já existentes no código e declare a lacuna no relato (campo `Riscos`).
-4. Stack ausente: não adivinhe; informe o TecLeader.
+4. Stack ausente: não adivinhe; informe o TechLead.
 
 | Stack | Referência |
 |---|---|

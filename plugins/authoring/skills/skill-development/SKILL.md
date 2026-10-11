@@ -99,7 +99,7 @@ Regras:
 - **Achado do spike (T-001)**: `skills:` **não** pré-carrega no agente da sessão
   principal (definido por `"agent"` no settings ou `--agent`). Nesse caso, incluir
   `Skill` em `tools:` e instruir o agente a carregar a skill no início
-  (ex.: `tecleader` carrega `sdd:sdd-rules` via ferramenta `Skill`).
+  (ex.: `techlead` carrega `sdd:sdd-rules` via ferramenta `Skill`).
 
 ## 8. Conteúdo do corpo
 

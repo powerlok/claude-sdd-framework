@@ -1,6 +1,6 @@
 ---
 name: requirements-grilling
-description: Protocolo de perguntas sobre requisitos que o tecleader aplica antes de escrever ou aprovar uma spec. Usar quando a solicitação (do usuário ou de uma issue do Jira) estiver ambígua, incompleta ou sem critério de aceite/validação, e antes de delegar qualquer implementação.
+description: Protocolo de perguntas sobre requisitos que o techlead aplica antes de escrever ou aprovar uma spec. Usar quando a solicitação (do usuário ou de uma issue do Jira) estiver ambígua, incompleta ou sem critério de aceite/validação, e antes de delegar qualquer implementação.
 ---
 
 # Requirements Grilling

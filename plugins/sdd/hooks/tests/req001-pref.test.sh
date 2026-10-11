@@ -49,7 +49,7 @@ S="$HOOKS_DIR/../skills/office/SKILL.md"
 check "req001 skill tem name: office" grep -q '^name: office$' "$S"
 check "req001 skill tem argument-hint on|off|status" grep -q '^argument-hint: on|off|status$' "$S"
 check "req001 skill disable-model-invocation" grep -q '^disable-model-invocation: true$' "$S"
-check "req001 tecleader oferece opt-in (pref=unset)" grep -q 'pref=unset' "$HOOKS_DIR/../agents/tecleader.md"
-check "req001 tecleader cita /sdd:office on|off" grep -q '/sdd:office on|off' "$HOOKS_DIR/../agents/tecleader.md"
+check "req001 techlead oferece opt-in (pref=unset)" grep -q 'pref=unset' "$HOOKS_DIR/../agents/techlead.md"
+check "req001 techlead cita /sdd:office on|off" grep -q '/sdd:office on|off' "$HOOKS_DIR/../agents/techlead.md"
 drop_sandbox
 finish

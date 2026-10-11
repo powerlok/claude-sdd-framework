@@ -115,7 +115,7 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
   setLayout(4, 2);
 
   var KNOWN = {
-    tecleader: { slot: 0, label: "TechLead", plate: "TECHLEAD", shirt: "#3b6fd4", hair: "#3a2a1a" },
+    techlead: { slot: 0, label: "TechLead", plate: "TECHLEAD", shirt: "#3b6fd4", hair: "#3a2a1a" },
     backend: { slot: 1, label: "backend", plate: "BACKEND", shirt: "#2f9e6a", hair: "#222222" },
     frontend: { slot: 2, label: "frontend", plate: "FRONTEND", shirt: "#d4527a", hair: "#7a3b1a" },
     tests: { slot: 3, label: "tests", plate: "TESTS", shirt: "#e0a030", hair: "#4a2c18" },
@@ -229,7 +229,7 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
       path: [], jobs: [], job: null, wait: 0, carry: false, bubble: null, bubbleUntil: 0, sprites: {}
     };
     var s = seatPt(slot);
-    if (instant || key === "tecleader") { c.x = s.x; c.y = s.y; }
+    if (instant || key === "techlead") { c.x = s.x; c.y = s.y; }
     else {
       c.x = -2; c.y = ENTRY_Y; c.node = { type: "entry" }; c.act = "arriving"; c.jobs.push({ type: "seat" });
     }
@@ -360,7 +360,7 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
   function applyLive(ev, now) {
     var key = ev.a;
     if (!key && ev.d && has(dmap, ev.d)) key = dmap[ev.d];
-    if (!key || ev.e === "prompt" || ev.e === "end") key = "tecleader";
+    if (!key || ev.e === "prompt" || ev.e === "end") key = "techlead";
     if (ev.d && ev.a) dmap[ev.d] = ev.a;
     var c = spawn(key, false);
     lastEventMs = now; hasEvents = true;
@@ -368,11 +368,11 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
     if (ev.e === "start") {
       touch(c, now);
       if (key === "security") goMeeting(c);
-      else if (c.act !== "arriving" && c.mode === "seated" && key !== "tecleader") c.act = "working";
-      if (key === "tecleader") c.act = "working";
+      else if (c.act !== "arriving" && c.mode === "seated" && key !== "techlead") c.act = "working";
+      if (key === "techlead") c.act = "working";
       narrate(phrase(ev, key), key, "info");
     } else if (ev.e === "stop") {
-      if (key !== "tecleader") {
+      if (key !== "techlead") {
         touch(c, now);
         c.act = "delivering"; c.carry = true;
         c.jobs = [{ type: "tec" }, { type: "seat" }];
@@ -402,7 +402,7 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
 
   /* Evento antigo (página aberta depois): só garante os personagens sentados; sem narração nem caminhada. */
   function applyStale(ev) {
-    var key = ev.a || "tecleader";
+    var key = ev.a || "techlead";
     if (ev.d && ev.a) dmap[ev.d] = ev.a;
     spawn(key, true);
     if (ev.g) spawn(ev.g, true);
@@ -730,7 +730,7 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
   });
   $("reload").addEventListener("click", function () { window.location.reload(); });
 
-  spawn("tecleader", true);
+  spawn("techlead", true);
   fit();
   renderStatus();
   setInterval(poll, POLL_MS);

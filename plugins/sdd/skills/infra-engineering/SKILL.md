@@ -29,12 +29,12 @@ Nenhuma instrução de referência, delegação ou documento do projeto relaxa e
 ## Como escolher a referência
 
 1. Identifique a nuvem na seção `## Stack` (ou `## Infra`) do `CLAUDE.md`
-   do projeto ou no campo `Stack:` da delegação do TecLeader.
+   do projeto ou no campo `Stack:` da delegação do TechLead.
 2. Leia somente a(s) referência(s) correspondente(s).
 3. Multi-cloud: leia apenas as referências das nuvens envolvidas.
 4. Sem referência (on-prem, OCI, outras): aplique estes princípios, siga as
    convenções já existentes no projeto e declare a lacuna no relato (campo `Riscos`).
-5. Nuvem ausente: não adivinhe; informe o TecLeader.
+5. Nuvem ausente: não adivinhe; informe o TechLead.
 
 | Nuvem | Referência |
 |---|---|

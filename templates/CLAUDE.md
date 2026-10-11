@@ -61,7 +61,7 @@ Registrar apenas comandos executados com sucesso neste projeto.
 
 Opcional. Somente leitura (issue → spec; status de PR/CI como evidência).
 Se o projeto não usa integração com o provedor de código, remover esta seção inteira:
-sem ela, o `sdd:tecleader` não consulta nenhum provedor.
+sem ela, o `sdd:techlead` não consulta nenhum provedor.
 
 - Provedor: <github | bitbucket | gitlab | azure-devops>
 - Repositório: <owner/repo | workspace/repo | group/project | org/project/repo>

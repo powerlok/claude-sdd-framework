@@ -1,6 +1,6 @@
 # Índice de specs
 
-Mantido pelo `sdd:tecleader`: atualizado ao criar e ao arquivar features.
+Mantido pelo `sdd:techlead`: atualizado ao criar e ao arquivar features.
 Ativas ficam em `.specs/<feature>/`; concluídas em `.specs/done/<feature>/` (não editar; mudança vira feature nova
 com `Relacionada a: done/<feature>`).
 
@@ -29,3 +29,4 @@ com `Relacionada a: done/<feature>`).
 | [first-run-guide](done/first-run-guide/spec.md) | 2026-10-11 | pedido do usuário | Guia de primeiro uso (código existente e projeto do zero), verificado em máquina nova e por teste de usabilidade |
 | [agents-office](done/agents-office/spec.md) | 2026-10-11 | pedido do usuário | Salinha dos agentes no navegador: opt-in, abre sozinha, popup do processo, sem terceiros (`sdd` 0.7.0) |
 | [office-visual](done/office-visual/spec.md) | 2026-10-11 | pedido do usuário | Salinha: texto nítido, layout melhor, balões sem sobreposição (`sdd` 0.7.1) |
+| [rename-techlead](done/rename-techlead/spec.md) | 2026-10-11 | pedido do usuário | Renomear `sdd:tecleader` para `sdd:techlead`, com agente obsoleto de migração (`sdd` 0.8.0, mudança incompatível) |
