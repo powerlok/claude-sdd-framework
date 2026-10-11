@@ -2,6 +2,14 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.7.1 — 2026-10-11
+
+Salinha dos agentes: qualidade visual (`.specs/done/office-visual/spec.md`). Só renderização em `office/office.html`; sem hooks, dados ou permissões novas. Não é release (sem tag).
+
+- Nitidez: canvas na resolução nativa da tela (`devicePixelRatio`, redimensiona com a janela/zoom); texto (nomes das mesas, "REUNIÃO") em resolução nativa, com placa de contraste; sprites continuam pixel art.
+- Layout: sala maior que ocupa a largura, mesas em fileiras com o nome legível, TecLeader em destaque, sala de reunião proporcional; sem rolagem horizontal em 375 px.
+- Balões de fala sem sobreposição e inteiros dentro da sala; teste de regressão (50 casos de página, 35 estáticos).
+
 ## Release v0.7.0 — 2026-10-11
 
 Inclui: `sdd` 0.7.0, `authoring` 0.2.1.

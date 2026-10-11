@@ -238,6 +238,49 @@ function getJson(url) {
     await shot("10-mobile");
     await cdp("Emulation.clearDeviceMetricsOverride");
 
+    // 11) regressão de balões: backend e frontend (mesas vizinhas) com balões ao mesmo tempo; nenhum sobrepõe, todos inteiros na sala
+    const bubbleProbe = "(function(){var s=document.getElementById('stage').getBoundingClientRect(),o=[];" +
+      "Array.prototype.forEach.call(document.querySelectorAll('#bubbles .bubble'),function(b){if(b.hidden)return;var r=b.getBoundingClientRect();" +
+      "o.push({t:b.textContent,l:r.left,r:r.right,tp:r.top,b:r.bottom,trunc:b.scrollWidth>b.clientWidth+1||b.scrollHeight>b.clientHeight+1});});return {s:{l:s.left,r:s.right,tp:s.top,b:s.bottom},o:o};})()";
+    const sampleBubbles = async (label) => {
+      let maxSim = 0, overlap = "", outside = "", trunc = "", shotDone = false;
+      const t1 = Date.now();
+      while (Date.now() - t1 < 9000) {
+        const p = await js(bubbleProbe);
+        maxSim = Math.max(maxSim, p.o.length);
+        for (let i = 0; i < p.o.length; i++) {
+          const a = p.o[i];
+          if (a.l < p.s.l - 0.5 || a.r > p.s.r + 0.5 || a.tp < p.s.tp - 0.5 || a.b > p.s.b + 0.5) outside = a.t + " " + JSON.stringify(a) + " sala " + JSON.stringify(p.s);
+          if (a.trunc) trunc = a.t;
+          for (let j = i + 1; j < p.o.length; j++) {
+            const b = p.o[j];
+            if (a.l < b.r && b.l < a.r && a.tp < b.b && b.tp < a.b) overlap = a.t + " x " + b.t;
+          }
+        }
+        if (p.o.length >= 2 && !shotDone) { shotDone = true; await shot("11-baloes-simultaneos-" + label); }
+        await sleep(100);
+      }
+      check("balões " + label + ": ao menos 2 visíveis ao mesmo tempo", maxSim >= 2, maxSim);
+      check("balões " + label + ": nenhum par se sobrepõe", !overlap, overlap);
+      check("balões " + label + ": todos inteiros dentro da sala", !outside, outside);
+      check("balões " + label + ": texto completo (sem truncar)", !trunc, trunc);
+    };
+    const burst = () => {
+      hook({ hook_event_name: "PreToolUse", agent_type: "sdd:backend", agent_id: "b1b1b1", tool_name: "Edit", tool_input: { file_path: "x" } });
+      hook({ hook_event_name: "SubagentStart", agent_type: "sdd:frontend", agent_id: "f2f2f2" });
+      hook({ hook_event_name: "PreToolUse", agent_type: "sdd:frontend", agent_id: "f2f2f2", tool_name: "Edit", tool_input: { file_path: "x" } });
+      hook({ hook_event_name: "SubagentStop", agent_type: "sdd:frontend", agent_id: "f2f2f2" });
+      hook({ hook_event_name: "PreToolUse", agent_type: "sdd:backend", agent_id: "b1b1b1", tool_name: "Bash", tool_input: { command: "x" } });
+    };
+    for (const vp of [{ w: 1280, h: 900, n: "1280px", mobile: false }, { w: 375, h: 800, n: "375px", mobile: true }]) {
+      await cdp("Emulation.setDeviceMetricsOverride", { width: vp.w, height: vp.h, deviceScaleFactor: 1, mobile: vp.mobile });
+      await sleep(600);
+      burst();
+      await sampleBubbles(vp.n);
+      await waitFor("(function(){var l=document.querySelector('#roster li[data-agent=frontend]');return l.dataset.node==='seat';})()", 25000);
+    }
+    await cdp("Emulation.clearDeviceMetricsOverride");
+
     check("nenhuma exceção/erro de console/violação de CSP durante o teste", problems.length === 0, problems.join(" ; "));
     console.log("  info screenshots em " + SHOTS);
     await done();

@@ -33,15 +33,16 @@ button:hover { background: #dbe4f5; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 #notice { margin: 0 0 12px; padding: 10px 12px; border: 2px solid var(--err); background: #fdeaea; color: #5c1010; border-radius: 4px; }
 #notice[hidden] { display: none; }
-.layout { display: grid; grid-template-columns: minmax(0, auto) minmax(260px, 1fr); gap: 16px; align-items: start; }
-.stage { position: relative; display: block; width: fit-content; max-width: 100%; border: 3px solid var(--ink); background: #1b2230; line-height: 0; }
-#cv { display: block; image-rendering: pixelated; image-rendering: crisp-edges; max-width: 100%; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+.stage { position: relative; display: block; width: 100%; max-width: 1100px; border: 3px solid var(--ink); background: #1b2230; line-height: 0; }
+#cv { display: block; max-width: 100%; }
 #bubbles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-.bubble { position: absolute; max-width: 46%; padding: 3px 7px; background: #fffdf2; color: #1b2230; border: 2px solid #1b2230;
+.bubble { position: absolute; width: max-content; max-width: 46%; padding: 3px 7px; background: #fffdf2; color: #1b2230; border: 2px solid #1b2230;
   border-radius: 4px; font: 600 12px/1.3 ui-monospace, "Cascadia Mono", Consolas, monospace; transform: translate(-50%, -100%);
   overflow-wrap: anywhere; }
 .bubble[hidden] { display: none; }
-aside section { background: var(--panel); border: 2px solid var(--line); border-radius: 4px; padding: 12px; margin-bottom: 12px; }
+aside { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; max-width: 1100px; }
+aside section { margin: 0 !important; background: var(--panel); border: 2px solid var(--line); border-radius: 4px; padding: 12px; margin-bottom: 12px; }
 #log { list-style: none; margin: 0; padding: 0; }
 #log li { padding: 4px 0; border-bottom: 1px solid #d3dae6; overflow-wrap: anywhere; }
 #log li:first-child { font-weight: 700; }
@@ -50,8 +51,9 @@ aside section { background: var(--panel); border: 2px solid var(--line); border-
 #empty { margin: 0; color: var(--muted); }
 #empty[hidden] { display: none; }
 #roster { margin: 0; padding-left: 18px; color: var(--ink); }
-.note { margin: 12px 0 0; color: var(--muted); font-size: 0.875rem; }
-@media (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+.note { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 0.875rem; }
+@media (max-width: 700px) { aside { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) { body { padding: 8px; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
@@ -69,7 +71,7 @@ aside section { background: var(--panel); border: 2px solid var(--line); border-
 
 <div class="layout">
   <div class="stage" id="stage">
-    <canvas id="cv" width="320" height="200" role="img" aria-label="Salinha dos agentes: 1 agente na sala"></canvas>
+    <canvas id="cv" width="420" height="272" role="img" aria-label="Salinha dos agentes: 1 agente na sala"></canvas>
     <div id="bubbles" aria-hidden="true"></div>
   </div>
   <aside>
@@ -89,11 +91,28 @@ aside section { background: var(--panel); border: 2px solid var(--line); border-
 <script>
 "use strict";
 (function () {
-  var W = 320, H = 200;
+  /* Mundo em unidades lógicas; o canvas tem tamanho CSS x devicePixelRatio e a escala (sc) vem de largura/W.
+     Retângulos e mobília são arredondados ao pixel do dispositivo; sprites usam escala inteira; texto é nativo. */
+  var W = 420, H = 272, sc = 1, dpr = 1, cols = 4, rows = 2, maxSlot = 5;
   var WORK_MS = 8000, QUIET_MS = 300000, MEET_MS = 12000, BUBBLE_MS = 4000, NARRATE_MS = 1000, POLL_MS = 1000;
   var SPEED = 60, FRAME_MS = 90, STALE_MS = 30000, MAX_SLOTS = 16;
-  var L_AISLE = 6, R_AISLE = 234, LINE_TEC = 72, DOOR_Y = 158;
-  var MEET_CX = 282, MEET_CY = 148;
+  var L_AISLE = 8, LINE_TEC = 112, DESK_X0 = 18, DESK_W = 54, PITCH_X = 70, ROW0 = 128, PITCH_Y = 70, ROOM_W = 114;
+  var TEC_W = 64, TEC_Y = 66, MEET_RX = 34, MEET_RY = 20, MEET_CY = 150, DOOR_Y = 210;
+  var R_AISLE, WALL_X, ROOM_X, MEET_CX, ENTRY_Y, MEET_SEATS;
+
+  function setLayout(nc, nr) {
+    cols = nc; rows = nr;
+    R_AISLE = DESK_X0 + (cols - 1) * PITCH_X + DESK_W + 10;
+    WALL_X = R_AISLE + 8; ROOM_X = WALL_X + 6;
+    W = ROOM_X + ROOM_W; H = ROW0 + PITCH_Y * rows + 4;
+    MEET_CX = ROOM_X + ROOM_W / 2; ENTRY_Y = H - 10;
+    MEET_SEATS = [
+      { x: MEET_CX - 44, y: MEET_CY + 8 }, { x: MEET_CX + 44, y: MEET_CY + 8 },
+      { x: MEET_CX - 16, y: MEET_CY - 14 }, { x: MEET_CX + 16, y: MEET_CY - 14 },
+      { x: MEET_CX - 16, y: MEET_CY + MEET_RY + 14 }, { x: MEET_CX + 16, y: MEET_CY + MEET_RY + 14 }
+    ];
+  }
+  setLayout(4, 2);
 
   var KNOWN = {
     tecleader: { slot: 0, label: "TecLeader", plate: "TECLEADER", shirt: "#3b6fd4", hair: "#3a2a1a" },
@@ -114,7 +133,6 @@ aside section { background: var(--panel); border: 2px solid var(--line); border-
   function $(id) { return document.getElementById(id); }
 
   var cv = $("cv"), ctx = cv.getContext("2d"), stage = $("stage"), bubblesEl = $("bubbles");
-  ctx.imageSmoothingEnabled = false;
   var motionQuery = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
   var reduced = !!(motionQuery && motionQuery.matches);
   if (motionQuery && motionQuery.addEventListener) {
@@ -144,15 +162,13 @@ aside section { background: var(--panel); border: 2px solid var(--line); border-
   /* ------------------------------------------------------------- layout */
 
   function deskOf(slot) {
-    if (slot === 0) return { x: 100, y: 50, w: 44 };
+    if (slot === 0) return { x: Math.round(WALL_X / 2 - TEC_W / 2), y: TEC_Y, w: TEC_W };
     var i = slot - 1;
-    return { x: 14 + (i % 5) * 44, y: 100 + Math.floor(i / 5) * 36, w: 36 };
+    return { x: DESK_X0 + (i % cols) * PITCH_X, y: ROW0 + Math.floor(i / cols) * PITCH_Y, w: DESK_W };
   }
   function seatPt(slot) { var d = deskOf(slot); return { x: d.x + d.w / 2, y: d.y + 6 }; }
-  function lineY(slot) { return deskOf(slot).y + 22; }
-  var MEET_SEATS = [
-    { x: 270, y: 160 }, { x: 294, y: 160 }, { x: 270, y: 140 }, { x: 294, y: 140 }, { x: 282, y: 168 }, { x: 282, y: 132 }
-  ];
+  function lineY(slot) { return slot === 0 ? LINE_TEC : deskOf(slot).y + 48; }
+  function rowsFor(slot) { return Math.max(2, Math.floor((slot - 1) / cols) + 1); }
 
   function nodeInfo(c, node) {
     if (node.type === "seat") {
@@ -160,14 +176,14 @@ aside section { background: var(--panel); border: 2px solid var(--line); border-
       return { tail: [s], anchor: { x: s.x, y: lineY(c.slot) } };
     }
     if (node.type === "tec") {
-      var tx = 96 + (c.slot % 3) * 26;
-      return { tail: [{ x: tx, y: 76 }], anchor: { x: tx, y: LINE_TEC } };
+      var tx = WALL_X / 2 - 22 + (c.slot % 3) * 22;
+      return { tail: [{ x: tx, y: LINE_TEC }], anchor: { x: tx, y: LINE_TEC } };
     }
     if (node.type === "meet") {
       var ms = MEET_SEATS[node.seat % MEET_SEATS.length];
-      return { tail: [{ x: 244, y: DOOR_Y }, { x: 256, y: DOOR_Y }, ms], anchor: { x: R_AISLE, y: DOOR_Y } };
+      return { tail: [{ x: WALL_X + 2, y: DOOR_Y }, { x: ROOM_X + 14, y: DOOR_Y }, ms], anchor: { x: R_AISLE, y: DOOR_Y } };
     }
-    return { tail: [{ x: -2, y: 194 }], anchor: { x: L_AISLE, y: 194 } };
+    return { tail: [{ x: -2, y: ENTRY_Y }], anchor: { x: L_AISLE, y: ENTRY_Y } };
   }
 
   /* Caminho por corredores (linhas horizontais e dois corredores verticais): nunca atravessa mesas. */
@@ -179,7 +195,7 @@ aside section { background: var(--panel); border: 2px solid var(--line); border-
     }
     var P = A.anchor, Q = B.anchor;
     if (P.y !== Q.y) {
-      var X = (from.type === "meet" || to.type === "meet") ? R_AISLE : ((P.x + Q.x) / 2 < 120 ? L_AISLE : R_AISLE);
+      var X = (from.type === "meet" || to.type === "meet") ? R_AISLE : ((P.x + Q.x) / 2 < WALL_X / 2 ? L_AISLE : R_AISLE);
       pts.push({ x: X, y: P.y }, { x: X, y: Q.y });
     }
     pts.push(Q);
@@ -215,9 +231,10 @@ aside section { background: var(--panel); border: 2px solid var(--line); border-
     var s = seatPt(slot);
     if (instant || key === "tecleader") { c.x = s.x; c.y = s.y; }
     else {
-      c.x = -2; c.y = 194; c.node = { type: "entry" }; c.act = "arriving"; c.jobs.push({ type: "seat" });
+      c.x = -2; c.y = ENTRY_Y; c.node = { type: "entry" }; c.act = "arriving"; c.jobs.push({ type: "seat" });
     }
     chars[key] = c; order.push(key);
+    if (slot > maxSlot) { maxSlot = slot; if (rowsFor(maxSlot) > rows) fit(); }
     return c;
   }
 
@@ -460,6 +477,7 @@ aside section { background: var(--panel); border: 2px solid var(--line); border-
     c.bubble.textContent = item.text;
     c.bubble.hidden = false;
     c.bubbleUntil = now + BUBBLE_MS;
+    positionBubbles(now); // sem isso o balão novo fica 1 quadro sem posição (fora da sala)
   }
 
   function drain() {
@@ -470,15 +488,33 @@ aside section { background: var(--panel); border: 2px solid var(--line); border-
   }
 
   function positionBubbles(now) {
-    var k, c, left;
+    var k, c, bw, bh, w, h, bx, by, i, r, placed = [];
+    bw = bubblesEl.clientWidth; bh = bubblesEl.clientHeight;
     for (k in chars) {
       if (!has(chars, k)) continue;
       c = chars[k];
       if (!c.bubble) continue;
       if (now > c.bubbleUntil) { c.bubble.hidden = true; continue; }
-      left = Math.max(14, Math.min(86, c.x / W * 100));
-      c.bubble.style.left = left + "%";
-      c.bubble.style.top = Math.max(14, (c.y - 18) / H * 100) + "%";
+      w = c.bubble.offsetWidth; h = c.bubble.offsetHeight;
+      // keep the whole bubble inside the room; anchor is bottom-center (translate -50%,-100%)
+      bx = Math.max(w / 2, Math.min(bw - w / 2, c.x / W * bw));
+      by = Math.max(h, (c.y - 18) / H * bh);
+      // stack upward above any bubble already placed so none overlaps another
+      for (i = 0; i < placed.length; i++) {
+        r = placed[i];
+        if (Math.abs(bx - r.x) < (w + r.w) / 2 && by > r.y - r.h && by - h < r.y) { by = r.y - r.h - 2; i = -1; }
+      }
+      if (by < h) { // no room above: stack downward from the anchor instead, still inside the room
+        by = Math.max(h, (c.y - 18) / H * bh);
+        for (i = 0; i < placed.length; i++) {
+          r = placed[i];
+          if (Math.abs(bx - r.x) < (w + r.w) / 2 && by > r.y - r.h && by - h < r.y) { by = r.y + h + 2; i = -1; }
+        }
+        by = Math.min(by, bh);
+      }
+      placed.push({ x: bx, y: by, w: w, h: h });
+      c.bubble.style.left = bx + "px";
+      c.bubble.style.top = by + "px";
     }
   }
 
@@ -554,46 +590,66 @@ aside section { background: var(--panel); border: 2px solid var(--line); border-
 
   /* -------------------------------------------------------------- desenho */
 
-  function R(g, x, y, w, h, col) { g.fillStyle = col; g.fillRect(Math.round(x), Math.round(y), w, h); }
+  var MONO = 'ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace';
+
+  /* Retângulo em unidades do mundo, arredondado ao pixel do dispositivo (sem frestas entre vizinhos). */
+  function R(g, x, y, w, h, col) {
+    var x0 = Math.round(x * sc), y0 = Math.round(y * sc);
+    g.fillStyle = col; g.fillRect(x0, y0, Math.round((x + w) * sc) - x0, Math.round((y + h) * sc) - y0);
+  }
+
+  /* Placa de texto em resolução nativa (>= 12 px CSS), com fundo para contraste. Retorna a altura em pixels do dispositivo. */
+  function plate(g, text, cx, y, lead) {
+    var fs = Math.round((lead ? 13 : 12) * dpr), padX = Math.round(4 * dpr), padY = Math.round(3 * dpr), tw, bw, bh, bx, by;
+    g.font = "700 " + fs + "px " + MONO; g.textAlign = "left"; g.textBaseline = "middle";
+    tw = Math.ceil(g.measureText(text).width);
+    bw = tw + padX * 2; bh = fs + padY * 2;
+    bx = Math.max(0, Math.min(cv.width - bw, Math.round(cx * sc - bw / 2))); by = Math.round(y * sc);
+    g.fillStyle = lead ? "#f2c14e" : "#10151f"; g.fillRect(bx, by, bw, bh);
+    g.fillStyle = lead ? "#1b2a5c" : "#1b2230"; g.fillRect(bx + 1, by + 1, bw - 2, bh - 2);
+    g.fillStyle = lead ? "#ffffff" : "#f3f0e6"; g.fillText(text, bx + padX, by + Math.round(bh / 2) + 1);
+    return bh;
+  }
 
   var bg = document.createElement("canvas");
-  bg.width = W; bg.height = H;
-  (function drawBackground(g) {
-    var x, y;
-    for (y = 0; y < H; y += 16) for (x = 0; x < 240; x += 16) R(g, x, y, 16, 16, ((x + y) / 16) % 2 ? "#b4c3d8" : "#a9b9d0");
-    for (y = 0; y < H; y += 16) for (x = 244; x < W; x += 16) R(g, x, y, 16, 16, ((x + y) / 16) % 2 ? "#c7b9d8" : "#bcaecf");
-    R(g, 0, 0, W, 36, "#56667f"); R(g, 0, 32, W, 4, "#36425a");
-    [[16, 6], [62, 6], [168, 6], [206, 6]].forEach(function (p) {
-      R(g, p[0], p[1], 28, 22, "#1c2536"); R(g, p[0] + 2, p[1] + 2, 24, 18, "#8fd0f0"); R(g, p[0] + 13, p[1] + 2, 2, 18, "#1c2536"); R(g, p[0] + 2, p[1] + 10, 24, 2, "#1c2536");
+
+  function drawBackground() {
+    var g = bg.getContext("2d"), x, y, dy, hw, cx = WALL_X / 2, wins = [cx - 60, cx + 32];
+    bg.width = cv.width; bg.height = cv.height;
+    g.imageSmoothingEnabled = false;
+    for (y = 0; y < H; y += 16) for (x = 0; x < WALL_X; x += 16) R(g, x, y, 16, 16, ((x + y) / 16) % 2 ? "#b4c3d8" : "#a9b9d0");
+    for (y = 0; y < H; y += 16) for (x = WALL_X + 4; x < W; x += 16) R(g, x, y, 16, 16, ((x + y) / 16) % 2 ? "#c7b9d8" : "#bcaecf");
+    R(g, cx - 44, TEC_Y - 8, 88, 54, "#8fa6d8"); R(g, cx - 42, TEC_Y - 6, 84, 50, "#a3b6e2");
+    R(g, 0, 0, WALL_X, 36, "#56667f"); R(g, 0, 32, WALL_X, 4, "#36425a");
+    if (cols > 3) wins.push(cx - 100, cx + 72);
+    wins.forEach(function (wx) {
+      R(g, wx, 6, 28, 22, "#1c2536"); R(g, wx + 2, 8, 24, 18, "#8fd0f0"); R(g, wx + 13, 8, 2, 18, "#1c2536"); R(g, wx + 2, 16, 24, 2, "#1c2536");
     });
-    R(g, 104, 5, 40, 24, "#1c2536"); R(g, 106, 7, 36, 20, "#f4f6fa");
-    R(g, 110, 11, 14, 2, "#3b6fd4"); R(g, 110, 16, 24, 2, "#2f9e6a"); R(g, 110, 21, 10, 2, "#d4527a");
-    R(g, 240, 36, 4, 104, "#36425a"); R(g, 240, 172, 4, 28, "#36425a");
-    R(g, 244, 0, 76, 36, "#6a5a80"); R(g, 244, 32, 76, 4, "#43385a");
-    R(g, 262, 8, 40, 14, "#43385a"); R(g, 264, 10, 36, 10, "#e8e2f2");
-    R(g, 0, 36, 3, 150, "#36425a"); R(g, 0, 186, 3, 14, "#8a5a2c");
-    var dx, dy, hw;
-    for (dy = -11; dy <= 11; dy++) {
-      hw = Math.round(Math.sqrt(121 - dy * dy));
-      R(g, MEET_CX - hw, MEET_CY + dy, hw * 2, 1, dy < 8 ? "#9a6b3c" : "#6e4a28");
+    R(g, cx - 20, 5, 40, 24, "#1c2536"); R(g, cx - 18, 7, 36, 20, "#f4f6fa");
+    R(g, cx - 14, 11, 14, 2, "#3b6fd4"); R(g, cx - 14, 16, 24, 2, "#2f9e6a"); R(g, cx - 14, 21, 10, 2, "#d4527a");
+    R(g, WALL_X, 0, 4, DOOR_Y - 14, "#36425a"); R(g, WALL_X, DOOR_Y + 14, 4, H - DOOR_Y - 14, "#36425a");
+    R(g, WALL_X + 4, 0, W - WALL_X - 4, 36, "#6a5a80"); R(g, WALL_X + 4, 32, W - WALL_X - 4, 4, "#43385a");
+    R(g, 0, 36, 3, H - 24 - 36, "#36425a"); R(g, 0, H - 24, 3, 24, "#8a5a2c");
+    for (dy = -MEET_RY; dy <= MEET_RY; dy++) {
+      hw = Math.round(MEET_RX * Math.sqrt(1 - dy * dy / (MEET_RY * MEET_RY)));
+      R(g, MEET_CX - hw, MEET_CY + dy, hw * 2, 1, dy < MEET_RY - 5 ? "#9a6b3c" : "#6e4a28");
     }
     R(g, MEET_CX - 3, MEET_CY - 3, 6, 6, "#b98450");
-    [[230, 190], [6, 40]].forEach(function (p) { R(g, p[0], p[1], 6, 6, "#7a4a2a"); R(g, p[0] - 1, p[1] - 8, 8, 8, "#2f9e5a"); R(g, p[0] + 1, p[1] - 11, 4, 4, "#46c274"); });
-    g.fillStyle = "#e8e2f2"; g.font = "bold 6px monospace"; g.textAlign = "center"; g.textBaseline = "middle";
-    g.fillStyle = "#43385a"; g.fillText("REUNIAO", 282, 15);
-  })(bg.getContext("2d"));
+    [[6, 58], [ROOM_X + 4, 60], [W - 14, H - 8]].forEach(function (p) {
+      R(g, p[0], p[1], 6, 6, "#7a4a2a"); R(g, p[0] - 1, p[1] - 8, 8, 8, "#2f9e5a"); R(g, p[0] + 1, p[1] - 11, 4, 4, "#46c274");
+    });
+    plate(g, "REUNIÃO", MEET_CX, 8, false);
+  }
 
   function drawDesk(c, now) {
-    var d = deskOf(c.slot), working = c.act === "working" && c.mode === "seated" && c.node.type === "seat";
-    R(ctx, d.x, d.y + 2, d.w, 10, "#a8733f"); R(ctx, d.x, d.y + 10, d.w, 2, "#7d5230"); R(ctx, d.x, d.y + 2, d.w, 1, "#c99a63");
-    R(ctx, d.x + 3, d.y - 5, 12, 8, "#20242e");
-    R(ctx, d.x + 4, d.y - 4, 10, 6, working ? ((Math.floor(now / 300) % 2) ? "#7ee8a6" : "#4fb87a") : "#2c3a4a");
-    if (working) { R(ctx, d.x + 5, d.y - 3, 5, 1, "#1c4a30"); R(ctx, d.x + 5, d.y - 1, 7, 1, "#1c4a30"); }
-    R(ctx, d.x + 8, d.y + 3, 2, 2, "#20242e");
-    R(ctx, d.x + d.w - 8, d.y + 4, 4, 4, "#f4f6fa");
-    R(ctx, d.x + 3, d.y + 6, d.w - 6, 5, "#3a2f2a");
-    ctx.fillStyle = "#f3f0e6"; ctx.font = "bold 5px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText(c.plate, d.x + d.w / 2, d.y + 9);
+    var d = deskOf(c.slot), working = c.act === "working" && c.mode === "seated" && c.node.type === "seat", lead = c.slot === 0;
+    R(ctx, d.x, d.y + 2, d.w, 10, lead ? "#b98450" : "#a8733f"); R(ctx, d.x, d.y + 10, d.w, 2, "#7d5230"); R(ctx, d.x, d.y + 2, d.w, 1, "#c99a63");
+    R(ctx, d.x + 5, d.y - 5, 12, 8, "#20242e");
+    R(ctx, d.x + 6, d.y - 4, 10, 6, working ? ((Math.floor(now / 300) % 2) ? "#7ee8a6" : "#4fb87a") : "#2c3a4a");
+    if (working) { R(ctx, d.x + 7, d.y - 3, 5, 1, "#1c4a30"); R(ctx, d.x + 7, d.y - 1, 7, 1, "#1c4a30"); }
+    R(ctx, d.x + 10, d.y + 3, 2, 2, "#20242e");
+    R(ctx, d.x + d.w - 12, d.y + 4, 4, 4, "#f4f6fa");
+    plate(ctx, c.plate, d.x + d.w / 2, d.y + 13, lead);
   }
 
   function frameOf(c, now) {
@@ -606,19 +662,19 @@ aside section { background: var(--panel); border: 2px solid var(--line); border-
 
   function drawChar(c, now) {
     var f = frameOf(c, now), bob = (!reduced && !paused && f === 0 && c.mode === "seated" && Math.floor(now / 1000) % 2) ? 1 : 0;
-    var px = Math.round(c.x - 6), py = Math.round(c.y - 16) + bob;
-    ctx.drawImage(sprite(c, f), px, py);
-    if (c.carry) { R(ctx, px + 3, py - 7, 7, 5, "#f4f6fa"); R(ctx, px + 4, py - 6, 5, 1, "#8a94a8"); R(ctx, px + 4, py - 4, 3, 1, "#8a94a8"); }
-    if (c.wait > 0 && c.node.type === "tec") { R(ctx, px + 3, py - 7, 7, 5, "#b8f0c8"); R(ctx, px + 5, py - 6, 3, 3, "#166534"); }
+    var k = Math.max(1, Math.round(sc)), px = Math.round(c.x * sc) - 6 * k, py = Math.round(c.y * sc) - 16 * k + bob * k;
+    ctx.drawImage(sprite(c, f), px, py, 12 * k, 16 * k);
+    function icon(x, y, w, h, col) { ctx.fillStyle = col; ctx.fillRect(px + x * k, py + y * k, w * k, h * k); }
+    if (c.carry) { icon(3, -7, 7, 5, "#f4f6fa"); icon(4, -6, 5, 1, "#8a94a8"); icon(4, -4, 3, 1, "#8a94a8"); }
+    if (c.wait > 0 && c.node.type === "tec") { icon(3, -7, 7, 5, "#b8f0c8"); icon(5, -6, 3, 3, "#166534"); }
   }
 
   function draw(now) {
+    ctx.imageSmoothingEnabled = false;
     ctx.drawImage(bg, 0, 0);
     var list = order.map(function (k) { return chars[k]; }), seatedAtDesk = [], others = [];
     list.forEach(function (c) { (c.mode === "seated" && c.node.type === "seat" ? seatedAtDesk : others).push(c); });
     seatedAtDesk.forEach(function (c) { drawChar(c, now); });
-    var deskSlots = {};
-    list.forEach(function (c) { deskSlots[c.slot] = c; });
     Object.keys(KNOWN).forEach(function (k) { if (!has(chars, k)) { var g = KNOWN[k]; drawDesk({ slot: g.slot, plate: g.plate, act: "idle", mode: "seated", node: { type: "seat" } }, now); } });
     list.forEach(function (c) { drawDesk(c, now); });
     others.sort(function (a, b) { return a.y - b.y; });
@@ -627,13 +683,30 @@ aside section { background: var(--panel); border: 2px solid var(--line); border-
 
   /* ---------------------------------------------------------------- laço */
 
+  /* Dimensiona o canvas por largura CSS x devicePixelRatio; poucas colunas em telas estreitas. */
   function fit() {
-    var vw = document.documentElement.clientWidth - 40, avail = vw > 860 ? Math.floor(vw * 0.62) : vw;
-    if (avail < W) { cv.style.width = "100%"; cv.style.height = "auto"; return; }
-    var s = Math.max(1, Math.min(4, Math.floor(avail / W)));
-    cv.style.width = W * s + "px"; cv.style.height = H * s + "px";
+    var cssW = Math.max(240, stage.clientWidth), nc = cssW < 600 ? 3 : 4, nr = rowsFor(maxSlot), k, c, t;
+    dpr = window.devicePixelRatio || 1;
+    if (nc !== cols || nr !== rows) {
+      setLayout(nc, nr);
+      for (k in chars) {
+        if (!has(chars, k)) continue;
+        c = chars[k];
+        if (c.job) { c.jobs.unshift(c.job); c.job = null; }
+        t = nodeInfo(c, c.node).tail; c.x = t[t.length - 1].x; c.y = t[t.length - 1].y;
+        c.mode = "seated"; c.path = []; c.wait = 0;
+      }
+    }
+    sc = Math.max(0.5, Math.round(cssW * dpr) / W);
+    cv.width = Math.round(cssW * dpr); cv.height = Math.round(H * sc);
+    cv.style.width = cssW + "px"; cv.style.height = (cv.height / dpr) + "px";
+    ctx.imageSmoothingEnabled = false;
+    drawBackground();
+    draw(Date.now());
   }
   window.addEventListener("resize", fit);
+  if (window.ResizeObserver) new ResizeObserver(function () { var w = stage.clientWidth; if (w !== lastW) { lastW = w; fit(); } }).observe(stage);
+  var lastW = 0;
 
   var lastTs = 0, acc = 0;
   function frame(ts) {
