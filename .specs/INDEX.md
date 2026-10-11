@@ -26,3 +26,4 @@ com `Relacionada a: done/<feature>`).
 | [workspace-multi-project](done/workspace-multi-project/spec.md) | 2026-10-10 | pedido do usuário | Gatilho de migração preciso; trabalho entre projetos (workspace, `--add-dir`), deny exigido e somente leitura (`sdd` 0.6.3) |
 | [docs-conformance](done/docs-conformance/spec.md) | 2026-10-11 | pedido do usuário | Conformidade com a doc oficial: precedência real, textos corrigidos, deny de segredos/push destrutivo, licença MIT (`sdd` 0.6.4, `authoring` 0.2.1) |
 | [pin-ref](done/pin-ref/spec.md) | 2026-10-11 | pedido do usuário | Template git fixa a versão com `ref`; regra versão × release (tag só em release, com confirmação) |
+| [first-run-guide](done/first-run-guide/spec.md) | 2026-10-11 | pedido do usuário | Guia de primeiro uso (código existente e projeto do zero), verificado em máquina nova e por teste de usabilidade |

@@ -2,6 +2,19 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## docs — 2026-10-11
+
+Guia de primeiro uso (`.specs/done/first-run-guide/spec.md`), sem mudança nos plugins (sem bump).
+
+- `docs/primeiros-passos.md` (REQ-001): guia novo para quem nunca usou o framework — pré-requisitos e teste de acesso,
+  instalação na máquina (`marketplace add` com tag), Caminho A (código existente) e Caminho B (projeto do zero) com
+  "Faça / Você vai ver / Confira" em cada passo, primeira conversa (onboarding pelo TecLeader), primeiro pedido, o que
+  versionar, o que cada dev da equipe faz, workspace com vários repositórios, atualização de versão e problemas comuns.
+- README (REQ-002): "Início rápido" reescrito em 4 passos (`marketplace add` com `#v0.6.4`, copiar o template inteiro,
+  `plugin install`, abrir `claude`) com link para o guia; deny/limites e nota de `ref` movidos para a nova seção
+  "Proteções do template"; removido o passo de preencher `CLAUDE.md` à mão (agora opcional); dica de PATH no Git Bash.
+- Manual (REQ-003): seção "2. Instalação" alinhada aos mesmos passos, com link para o guia.
+
 ## Release v0.6.4 — 2026-10-11
 
 Primeira release com tag. Inclui: `sdd` 0.6.4, `authoring` 0.2.1.

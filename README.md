@@ -11,7 +11,7 @@
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
 ![idioma](https://img.shields.io/badge/docs-pt--BR-555)
 
-[Início rápido](#-início-rápido) · [Como funciona](#-como-funciona) · [O time](#-o-time) · [Manual de uso](docs/manual-de-uso.html) · [Arquitetura](docs/arquitetura.md)
+[Início rápido](#-início-rápido) · [Primeiros passos](docs/primeiros-passos.md) · [Como funciona](#-como-funciona) · [O time](#-o-time) · [Manual de uso](docs/manual-de-uso.html) · [Arquitetura](docs/arquitetura.md)
 
 </div>
 
@@ -81,65 +81,36 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
 
 ## 🚀 Início rápido
 
-**Pré-requisitos:** Claude Code ≥ 2.1.288 e Git com acesso a este repositório.
+**Pré-requisitos:** Claude Code ≥ 2.1.288 e Git com acesso a este repositório (teste:
+`git ls-remote https://github.com/powerlok/claude-sdd-framework.git`). No Windows, também Git for Windows.
 
-> **Onde instalar:** na **raiz do projeto** (raiz do repositório git; em monorepo, a pasta do projeto). É lá que
-> ficam `.claude/settings.json`, `CLAUDE.md` e `.specs/` — nunca num diretório pai/workspace fora do git.
-> Abra o `claude` nessa pasta.
-
-1. No seu projeto, crie `.claude/settings.json` a partir de
-   [`templates/project-settings.git.json`](templates/project-settings.git.json):
-
-   ```json
-   {
-     "extraKnownMarketplaces": {
-       "claude-sdd-framework": {
-         "source": { "source": "git", "url": "https://github.com/powerlok/claude-sdd-framework.git", "ref": "v0.6.4" }
-       }
-     },
-     "enabledPlugins": { "sdd@claude-sdd-framework": true },
-     "agent": "sdd:tecleader"
-   }
-   ```
-
-   O template completo também bloqueia (`permissions.deny`) as ferramentas de escrita do Jira e dos provedores de
-   repositório; a leitura de segredos (`.env`/`.env.*`, também na edição, exceto `.env.example`/`.sample`/`.template`;
-   chaves e certificados; credenciais de npm, PyPI, git e `netrc`; estado e variáveis do Terraform; e, na home,
-   `~/.ssh`, `~/.aws`, `~/.azure`, `~/.config/gh`, `~/.kube`, `~/.docker/config.json`); e as formas usuais de push
-   forçado/destrutivo (`--force*`, `-f`, `+refspec`, `--mirror`, `--delete`/`-d`). Push comum pede confirmação
-   (`permissions.ask`).
-   O template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.6.4"`). Para subir de versão: troque o `ref` pela nova
-   tag e rode `claude plugin marketplace update claude-sdd-framework` e `claude plugin update sdd@claude-sdd-framework
-   --scope project`. Sem `ref`, vale a branch padrão do repositório (sempre a última versão).
-
-   > **Limites:** o deny é defesa em profundidade, não barreira. O deny de `Read` cobre as ferramentas de arquivo e os
-   > comandos de arquivo que o Claude Code reconhece no Bash (`cat`, `head`, `tail`, `sed`, `tee`, redirecionamentos),
-   > mas não um `grep -r` sem citar o arquivo nem um script (Python, Node) que abre o arquivo por conta própria. Padrões
-   > `**/` valem a partir da pasta onde a sessão começou; arquivos da home usam `~/`. O deny de `Bash` não pega o mesmo
-   > comando escrito de outro jeito (`sh -c '...'`, caminho absoluto do programa, `git -C . push`); flags combinadas
-   > (`-uf`) e `:refspec` caem só na confirmação (`ask`). No Windows sem Git Bash (ferramenta PowerShell), as regras
-   > `Bash(...)` não se aplicam ao PowerShell. Para bloqueio no
-   > sistema operacional, use o [sandbox](https://code.claude.com/docs/en/sandboxing) do Claude Code
-   > ([permissões](https://code.claude.com/docs/en/permissions)).
-
-2. Instale:
+1. **Uma vez por máquina**, registre o marketplace na versão desejada (tag):
 
    ```bash
-   claude plugin marketplace add https://github.com/powerlok/claude-sdd-framework.git --scope project
+   claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.6.4"
+   ```
+
+2. **Na raiz do projeto** (raiz do repositório git; em monorepo, a pasta do projeto; nunca uma pasta-mãe fora do git),
+   copie o arquivo **inteiro**
+   [`templates/project-settings.git.json`](templates/project-settings.git.json) para `.claude/settings.json`
+   (veja as [proteções do template](#-proteções-do-template)).
+
+3. Instale o plugin no projeto e confira com `claude plugin list` (`sdd` 0.6.4, `project`, `enabled`):
+
+   ```bash
    claude plugin install sdd@claude-sdd-framework --scope project
    ```
 
-3. Copie [`templates/CLAUDE.md`](templates/CLAUDE.md) para a raiz do projeto e preencha a seção
-   **`## Stack`** e os comandos (sem `CLAUDE.md`, o TecLeader faz o onboarding).
-
-4. Abra `claude` no projeto. A sessão já começa com o **TecLeader**, que na primeira resposta verifica o
-   onboarding (`CLAUDE.md`, `## Stack`, `.specs/INDEX.md`) e oferece o que faltar — nada é alterado sem confirmação:
+4. Abra `claude` na raiz do projeto e aceite o diálogo de confiança da pasta. A primeira resposta é do **TecLeader**,
+   que verifica o onboarding e, se faltar `CLAUDE.md`, oferece criá-lo (lendo o código ou perguntando a stack) — nada é
+   alterado sem confirmação. Depois, faça o primeiro pedido:
 
    ```text
    Crie um endpoint POST /todos que cadastra tarefas com título obrigatório
    ```
 
-   Ele propõe os requisitos e critérios de aceite, você confirma, e o time executa até o DONE.
+**Guia completo** (código existente × projeto do zero, o que você vai ver, o que versionar, equipe, problemas comuns):
+[docs/primeiros-passos.md](docs/primeiros-passos.md).
 
 > **Credenciais:** o Claude Code usa o git da sua máquina. Nunca coloque usuário, senha ou token na URL
 > (`https://user:token@...`); use SSH ou o gerenciador de credenciais do git.
@@ -172,7 +143,46 @@ O instalador nativo coloca o `claude.exe` em `%USERPROFILE%\.local\bin`. No Powe
 ```powershell
 $env:Path += ";$HOME\.local\bin"
 ```
+
+No Git Bash:
+
+```bash
+export PATH="$PATH:$HOME/.local/bin"
+```
 </details>
+
+<details>
+<summary><b>Preencher o <code>CLAUDE.md</code> à mão (opcional)</b></summary>
+
+Em vez do onboarding pelo TecLeader, copie [`templates/CLAUDE.md`](templates/CLAUDE.md) para a raiz do projeto e
+preencha a seção **`## Stack`** e os comandos. O TecLeader confere o que faltar.
+</details>
+
+## 🔒 Proteções do template
+
+[`templates/project-settings.git.json`](templates/project-settings.git.json) declara o marketplace
+(`extraKnownMarketplaces`), habilita o plugin (`enabledPlugins`) e define `"agent": "sdd:tecleader"`. Por isso copie o
+arquivo inteiro: o template também bloqueia (`permissions.deny`) as ferramentas de escrita do Jira e dos provedores de
+repositório; a leitura de segredos (`.env`/`.env.*`, também na edição, exceto `.env.example`/`.sample`/`.template`;
+chaves e certificados; credenciais de npm, PyPI, git e `netrc`; estado e variáveis do Terraform; e, na home,
+`~/.ssh`, `~/.aws`, `~/.azure`, `~/.config/gh`, `~/.kube`, `~/.docker/config.json`); e as formas usuais de push
+forçado/destrutivo (`--force*`, `-f`, `+refspec`, `--mirror`, `--delete`/`-d`). Push comum pede confirmação
+(`permissions.ask`).
+
+**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.6.4"`). Para subir de versão: troque o
+`ref` pela nova tag e rode `claude plugin marketplace update claude-sdd-framework` e
+`claude plugin update sdd@claude-sdd-framework --scope project`. Sem `ref`, vale a branch padrão do repositório
+(sempre a última versão).
+
+> **Limites:** o deny é defesa em profundidade, não barreira. O deny de `Read` cobre as ferramentas de arquivo e os
+> comandos de arquivo que o Claude Code reconhece no Bash (`cat`, `head`, `tail`, `sed`, `tee`, redirecionamentos),
+> mas não um `grep -r` sem citar o arquivo nem um script (Python, Node) que abre o arquivo por conta própria. Padrões
+> `**/` valem a partir da pasta onde a sessão começou; arquivos da home usam `~/`. O deny de `Bash` não pega o mesmo
+> comando escrito de outro jeito (`sh -c '...'`, caminho absoluto do programa, `git -C . push`); flags combinadas
+> (`-uf`) e `:refspec` caem só na confirmação (`ask`). No Windows sem Git Bash (ferramenta PowerShell), as regras
+> `Bash(...)` não se aplicam ao PowerShell. Para bloqueio no
+> sistema operacional, use o [sandbox](https://code.claude.com/docs/en/sandboxing) do Claude Code
+> ([permissões](https://code.claude.com/docs/en/permissions)).
 
 ## 🗂️ Camadas do CLAUDE.md
 
@@ -263,6 +273,7 @@ e repassa aos demais agentes apenas os requisitos validados.
 
 | Documento | Conteúdo |
 |---|---|
+| [Primeiros passos](docs/primeiros-passos.md) | Primeiro uso passo a passo: código existente ou projeto do zero, o que versionar, problemas comuns |
 | [Manual de uso](docs/manual-de-uso.html) | 18 exemplos passo a passo, solução de problemas. Baixe e abra no navegador (funciona offline) |
 | [Arquitetura](docs/arquitetura.md) | Componentes, carregamento de skills, resolução da stack, segurança |
 | [CHANGELOG](CHANGELOG.md) | Histórico de versões |
@@ -300,7 +311,7 @@ claude-sdd-framework/
 │   ├── sdd/                          # agentes, skills, references e hook do processo
 │   └── authoring/                    # catálogo opcional
 ├── templates/                        # settings (git/local), CLAUDE.md de projeto, .mcp.json (Jira, GitHub, GitLab, Azure)
-├── docs/                             # manual de uso (HTML) e arquitetura
+├── docs/                             # primeiros passos, manual de uso (HTML) e arquitetura
 ├── .specs/                           # specs ativas, INDEX.md e done/ (concluídas)
 ├── CHANGELOG.md
 └── CLAUDE.md

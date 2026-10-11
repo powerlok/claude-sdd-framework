@@ -298,12 +298,33 @@ tr:last-child td { border-bottom: 0; }
 <!-- 2 -->
 <section class="sec" id="instalacao" aria-labelledby="h-inst">
   <h2 id="h-inst"><span class="n">2.</span>Instalação</h2>
+  <div class="callout tip" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5V15h8v-1.5A6 6 0 0 0 12 3z"/></svg><div><span class="t">Primeira vez?</span><p>Siga o guia <a href="primeiros-passos.md">Primeiros passos</a>: os mesmos passos abaixo, com o que você vai ver e como conferir em cada um, nos dois caminhos (código existente e projeto do zero), além de o que versionar e problemas comuns.</p></div></div>
+
   <h3>Pré-requisitos <span class="badge verified">Verificado</span></h3>
   <ul>
-    <li>Claude Code <strong>2.1.288</strong> ou superior (<code>claude --version</code>).</li>
-    <li>Git, para instalar a partir do GitHub.</li>
+    <li>Claude Code <strong>2.1.288</strong> ou superior (<code>claude --version</code>; testado no 2.1.296).</li>
+    <li>Git com acesso ao repositório privado. Teste: <code>git ls-remote https://github.com/powerlok/claude-sdd-framework.git</code>. O Claude Code usa as credenciais git da máquina (HTTPS com gerenciador de credenciais, ex.: <code>gh auth setup-git</code>, ou SSH).</li>
+    <li>Windows: Git for Windows (o hook do plugin usa <code>bash</code>) e <code>claude</code> no PATH (ver <a href="#problemas">Solução de problemas</a>).</li>
     <li>Opcional: conector <strong>Atlassian</strong> no claude.ai, para ler issues do Jira.</li>
   </ul>
+
+  <h3>A partir do GitHub <span class="badge verified">Verificado</span></h3>
+  <ol>
+    <li><strong>Uma vez por máquina</strong>, registre o marketplace na versão desejada (tag):</li>
+  </ol>
+  <div class="code" data-label="bash"><pre><code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.6.4"</code></pre></div>
+  <ol start="2">
+    <li><strong>Na raiz do projeto</strong> (raiz do repositório git; no projeto do zero, antes rode <code>git init</code>), copie o arquivo <strong>inteiro</strong> <a href="../templates/project-settings.git.json"><code>templates/project-settings.git.json</code></a> para <code>.claude/settings.json</code>. Só esse arquivo não carrega o plugin.</li>
+    <li>Instale o plugin no projeto e confira:</li>
+  </ol>
+  <div class="code" data-label="bash"><pre><code>claude plugin install sdd@claude-sdd-framework --scope project
+claude plugin list        # sdd 0.6.4, Scope: project, enabled</code></pre></div>
+  <ol start="4">
+    <li>Abra <code>claude</code> na raiz do projeto e aceite o diálogo de confiança da pasta (sem confiar, o plugin do projeto não carrega). A primeira resposta é do TecLeader ("Sou o TecLeader"), com a situação do projeto. Se instalou com a sessão aberta, use <code>/reload-plugins</code> ou abra nova sessão.</li>
+    <li>Sem <code>CLAUDE.md</code>, o TecLeader faz o onboarding: com <strong>código existente</strong>, pergunta "Faço o onboarding agora?" e, com o seu sim, lê o código e cria <code>CLAUDE.md</code> e <code>.specs/INDEX.md</code>; no <strong>projeto do zero</strong>, pergunta a stack (linguagem, framework, versão), a nuvem/infra (ou "nenhuma") e as convenções, assume que os artefatos são versionados (<code>Versionar artefatos SDD: sim</code>; você pode pedir <code>não</code>) e só cria os arquivos depois do seu ok. Ele nunca faz commit.</li>
+  </ol>
+  <div class="callout danger" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18h.01"/></svg><div><span class="t">Perigo</span><p><strong>Nunca</strong> coloque usuário, senha ou token na URL do repositório. Use SSH ou HTTPS com o gerenciador de credenciais do git.</p></div></div>
+  <p>Equipe: o <code>.claude/settings.json</code> versionado não instala nada sozinho; cada dev roda o <code>marketplace add</code> (uma vez) e o <code>plugin install</code> (por projeto). Opcional: em vez do onboarding, copie <a href="../templates/CLAUDE.md"><code>templates/CLAUDE.md</code></a> e preencha <code>## Stack</code> e os comandos.</p>
 
   <h3>A partir de uma pasta local <span class="badge verified">Verificado</span></h3>
   <ol>
@@ -314,14 +335,9 @@ tr:last-child td { border-bottom: 0; }
 claude plugin install sdd@claude-sdd-framework --scope project
 claude plugin list        # sdd ... Status: enabled</code></pre></div>
   <ol start="3">
-    <li>Copie <a href="../templates/CLAUDE.md"><code>templates/CLAUDE.md</code></a> para a raiz do projeto e preencha (principalmente <code>## Stack</code> e os comandos). Projeto sem <code>CLAUDE.md</code>: o TecLeader faz o onboarding.</li>
     <li>Abra <code>claude</code> no projeto. A sessão já inicia como <code>sdd:tecleader</code> (<code>"agent": "sdd:tecleader"</code> no settings). Alternativa:</li>
   </ol>
   <div class="code" data-label="bash"><pre><code>claude --agent sdd:tecleader</code></pre></div>
-
-  <h3>A partir do GitHub <span class="badge verified">Verificado</span></h3>
-  <p>Use <a href="../templates/project-settings.git.json"><code>templates/project-settings.git.json</code></a> com a URL do repositório (quando ele existir). O Claude Code usa as credenciais git da sua máquina.</p>
-  <div class="callout danger" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18h.01"/></svg><div><span class="t">Perigo</span><p><strong>Nunca</strong> coloque usuário, senha ou token na URL do repositório. Use SSH ou HTTPS com o gerenciador de credenciais do git.</p></div></div>
 
   <h3>Catálogo opcional <code>authoring</code> <span class="badge verified">Verificado</span></h3>
   <p>Skills para criar novas skills e agentes. Sem instalação, nada com prefixo <code>authoring:</code> aparece.</p>
@@ -487,14 +503,14 @@ claude plugin list</code></pre></div></div>
     <div class="steps">
       <div class="step"><h4>Pedido</h4><p>Seu time publicou o marketplace no GitHub e você quer usá-lo sem clonar manualmente.</p></div>
       <div class="step"><h4>O que o TecLeader faz</h4><p>Nada nesta etapa. O Claude Code usa as credenciais git da sua máquina para acessar o repositório.</p></div>
-      <div class="step"><h4>O que você responde</h4><p>Copie <code>templates/project-settings.git.json</code> para <code>&lt;projeto&gt;/.claude/settings.json</code> e preencha a URL do repositório no campo indicado:</p>
+      <div class="step"><h4>O que você responde</h4><p>Uma vez na máquina, registre o marketplace na versão fixada: <code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.6.4"</code>. No projeto, copie o arquivo <strong>inteiro</strong> <code>templates/project-settings.git.json</code> para <code>&lt;projeto&gt;/.claude/settings.json</code>; ele já declara o marketplace com o <code>ref</code>:</p>
         <div class="code" data-label="json (trecho)"><pre><code>"extraKnownMarketplaces": {
   "claude-sdd-framework": {
-    "source": { "source": "git", "url": "https://github.com/powerlok/claude-sdd-framework.git" }
+    "source": { "source": "git", "url": "https://github.com/powerlok/claude-sdd-framework.git", "ref": "v0.6.4" }
   }
 }</code></pre></div>
         <div class="callout danger" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18h.01"/></svg><div><span class="t">Perigo</span><p>Sem usuário, senha ou token na URL. Use SSH ou HTTPS com o gerenciador de credenciais.</p></div></div></div>
-      <div class="step"><h4>Resultado</h4><p>Com o marketplace declarado, instale com <code>claude plugin install sdd@claude-sdd-framework --scope project</code> e confirme com <code>claude plugin list</code>. Em sessão interativa, o Claude Code também oferece instalar o que o <code>settings.json</code> declara.</p></div>
+      <div class="step"><h4>Resultado</h4><p>Na raiz do projeto, instale com <code>claude plugin install sdd@claude-sdd-framework --scope project</code> e confirme com <code>claude plugin list</code> (<code>sdd</code> 0.6.4, Scope: project, enabled). O <code>settings.json</code> sozinho <strong>não</strong> instala o plugin: cada dev roda o <code>install</code>. Passo a passo completo: <a href="primeiros-passos.md">primeiros-passos.md</a>.</p></div>
     </div>
   </article>
 
@@ -839,7 +855,7 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
     <p>É comportamento do Claude Code: <code>skills:</code> só pré-carrega em subagentes. O TecLeader carrega <code>sdd:sdd-rules</code> e <code>sdd:sdd-governance</code> com a ferramenta <code>Skill</code> no início da sessão e após compact. Se uma skill não carregar, ele segue com a governança do próprio agente e avisa você.</p></article>
 
   <article class="trouble"><h3>"not found in marketplace" ao instalar</h3>
-    <p>Aconteceu no spike quando o plugin foi instalado antes de adicionar o marketplace. Rode antes <code>claude plugin marketplace add ... --scope project</code> e depois o <code>install</code>.</p></article>
+    <p>O marketplace não está registrado na máquina (verificado numa máquina nova: <code>Plugin "sdd" not found in marketplace "claude-sdd-framework"</code>). Rode uma vez <code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.6.4"</code> e repita o <code>install</code>. Se já estiver registrado, rode <code>claude plugin marketplace update claude-sdd-framework</code>.</p></article>
 
   <article class="trouble"><h3>Conector do Jira aparece como <code>pending</code> em <code>-p</code></h3>
     <p>Em modo não interativo o conector conecta de forma assíncrona. No spike, funcionou com a variável abaixo:</p>
