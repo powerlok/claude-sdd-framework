@@ -1,6 +1,9 @@
 {
   "name": "sdd",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "Processo de Desenvolvimento Orientado por Especificação (SDD): agentes tecleader, backend, frontend, tests, security e infra-architect, regras globais, governança, hook pós-compact e verificação de onboarding no início da sessão.",
-  "author": { "name": "Paulo Laredo" }
+  "author": {
+    "name": "Paulo Laredo"
+  },
+  "license": "MIT"
 }

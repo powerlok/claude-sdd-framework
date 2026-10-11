@@ -5,8 +5,8 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.6.3-2563EB)
-![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.0-7C3AED)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.6.4-2563EB)
+![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
 ![idioma](https://img.shields.io/badge/docs-pt--BR-555)
@@ -102,7 +102,24 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
    }
    ```
 
-   O template completo também bloqueia (`permissions.deny`) as ferramentas de escrita do Jira.
+   O template completo também bloqueia (`permissions.deny`) as ferramentas de escrita do Jira e dos provedores de
+   repositório; a leitura de segredos (`.env`/`.env.*`, também na edição, exceto `.env.example`/`.sample`/`.template`;
+   chaves e certificados; credenciais de npm, PyPI, git e `netrc`; estado e variáveis do Terraform; e, na home,
+   `~/.ssh`, `~/.aws`, `~/.azure`, `~/.config/gh`, `~/.kube`, `~/.docker/config.json`); e as formas usuais de push
+   forçado/destrutivo (`--force*`, `-f`, `+refspec`, `--mirror`, `--delete`/`-d`). Push comum pede confirmação
+   (`permissions.ask`).
+   Para fixar uma versão do framework, acrescente `"ref"` em `source` (branch ou tag, ex.: `"ref": "v0.6.4"`); sem
+   `ref`, vale a branch padrão do repositório.
+
+   > **Limites:** o deny é defesa em profundidade, não barreira. O deny de `Read` cobre as ferramentas de arquivo e os
+   > comandos de arquivo que o Claude Code reconhece no Bash (`cat`, `head`, `tail`, `sed`, `tee`, redirecionamentos),
+   > mas não um `grep -r` sem citar o arquivo nem um script (Python, Node) que abre o arquivo por conta própria. Padrões
+   > `**/` valem a partir da pasta onde a sessão começou; arquivos da home usam `~/`. O deny de `Bash` não pega o mesmo
+   > comando escrito de outro jeito (`sh -c '...'`, caminho absoluto do programa, `git -C . push`); flags combinadas
+   > (`-uf`) e `:refspec` caem só na confirmação (`ask`). No Windows sem Git Bash (ferramenta PowerShell), as regras
+   > `Bash(...)` não se aplicam ao PowerShell. Para bloqueio no
+   > sistema operacional, use o [sandbox](https://code.claude.com/docs/en/sandboxing) do Claude Code
+   > ([permissões](https://code.claude.com/docs/en/permissions)).
 
 2. Instale:
 
@@ -167,7 +184,8 @@ O Claude Code carrega o `CLAUDE.md` da pasta aberta, dos diretórios pais e o pe
 | **Projeto** | raiz do repositório | `## Stack`, comandos, arquitetura, `## Repositório`, `## SDD` ([modelo](templates/CLAUDE.md)) | sim (padrão) |
 | Processo | plugin `sdd` | regras, governança, fluxo | no repositório do framework |
 
-- Nada duplicado entre camadas; o mais específico prevalece (exceto os controles de segurança não relaxáveis).
+- Nada duplicado entre camadas. Os `CLAUDE.md` são **concatenados** (sem sobreposição automática); em conflito, o agente
+  aplica o mais específico e sinaliza (exceto os controles de segurança não relaxáveis).
 - `Versionar artefatos SDD: não` (seção `## SDD` do projeto), para repositórios que não aceitam esses arquivos:
   `.claude/settings.local.json` + exclude local do git (`git rev-parse --git-path info/exclude`); `.gitignore` intocado.
 - **Artefatos fora do repositório** (ex.: `CLAUDE.md`, `.specs/` e `.claude/` na pasta-mãe): o TecLeader propõe o plano
@@ -183,7 +201,7 @@ Três modos, com efeitos diferentes (verificados na documentação oficial e em 
 |---|---|---|---|---|
 | Dentro do projeto | `claude` em `ict_app/` | só o projeto | o do projeto + pais (workspace) | o do projeto |
 | Projeto + outro | `claude --add-dir ../outro` (ou `/add-dir`) | os dois | o do outro só com `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1` | **só o da sessão** |
-| Workspace | `claude` na pasta-mãe, com `.claude/settings.json` | todos os projetos abaixo | só o do workspace (o TecLeader lê o de cada projeto) | **só o do workspace** |
+| Workspace | `claude` na pasta-mãe, com `.claude/settings.json` | todos os projetos abaixo | o do workspace; o de um projeto carrega sob demanda ao ler arquivo da pasta dele (o TecLeader ainda o lê antes de planejar) | **só o do workspace** |
 
 - Deny exigido na sessão = deny do modelo ∪ deny dos projetos envolvidos. Faltando, a sessão fica **somente leitura**
   (sem escrita, build, testes ou delegação) até corrigir e reiniciar; dica: `--permission-mode plan`.
@@ -251,11 +269,15 @@ e repassa aos demais agentes apenas os requisitos validados.
 
 ## 🛠️ Desenvolvimento do framework
 
+Antes de cada release (obrigatório; avisos também reprovam com `--strict`):
+
 ```bash
+claude plugin validate ./plugins/sdd --strict
+claude plugin validate ./plugins/authoring --strict
 claude plugin validate .                    # marketplace
-claude plugin validate ./plugins/sdd
-claude plugin validate ./plugins/authoring
 ```
+
+Depois: bump de `version` no `plugin.json` alterado, seção no [CHANGELOG](CHANGELOG.md) e versões no README e em `docs/`.
 
 Testar um agente sem instalar (prompt logo após `-p`, pois `--allowedTools` aceita vários valores):
 
@@ -286,6 +308,11 @@ claude-sdd-framework/
   sem ele, o TecLeader faz a mesma verificação lendo os arquivos.
 - Stacks sem referência (ex.: Vue, Java, Go) usam os princípios gerais; o agente declara a lacuna.
 - Caminho `.mcp.json` (Jira, GitHub, GitLab, Azure DevOps) ainda não validado em rede com inspeção TLS (ex.: Zscaler).
+
+## 📄 Licença
+
+[MIT](LICENSE). O material de terceiros em `plugins/authoring/skills/skill-development/references/`
+(`skill-creator-original.md`) segue a Apache-2.0 ([LICENSE.txt](plugins/authoring/skills/skill-development/references/LICENSE.txt)).
 
 ## 🙏 Créditos
 

@@ -24,3 +24,4 @@ com `Relacionada a: done/<feature>`).
 | [specs-location](done/specs-location/spec.md) | 2026-10-10 | pedido do usuário | `.specs/` sempre na raiz do projeto (repositório git); hook detecta git sem executá-lo (`sdd` 0.6.1) |
 | [claude-md-layers](done/claude-md-layers/spec.md) | 2026-10-10 | pedido do usuário | Camadas do CLAUDE.md; migração com plano padrão e uma confirmação; `Versionar artefatos SDD` (`sdd` 0.6.2) |
 | [workspace-multi-project](done/workspace-multi-project/spec.md) | 2026-10-10 | pedido do usuário | Gatilho de migração preciso; trabalho entre projetos (workspace, `--add-dir`), deny exigido e somente leitura (`sdd` 0.6.3) |
+| [docs-conformance](done/docs-conformance/spec.md) | 2026-10-11 | pedido do usuário | Conformidade com a doc oficial: precedência real, textos corrigidos, deny de segredos/push destrutivo, licença MIT (`sdd` 0.6.4, `authoring` 0.2.1) |

@@ -2,6 +2,32 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.6.4 — 2026-10-11
+
+Conformidade com a documentação oficial do Claude Code (`.specs/done/docs-conformance/spec.md`; reteste no CLI 2.1.296).
+
+- Licença (REQ-004): `LICENSE` MIT na raiz; `license` nos `plugin.json` (`sdd`: `MIT`; `authoring`: `MIT AND Apache-2.0`).
+- `sdd-rules` (REQ-001): precedência real — os `CLAUDE.md` são concatenados, sem override automático; regra do processo:
+  uma fonte por regra, em conflito o agente aplica a da camada mais específica e sinaliza (exceto controles não relaxáveis).
+  `references/claude-md-layers.md` cita `CLAUDE.local.md` e `.claude/rules/`; description começa pelo caso de uso (REQ-003).
+- Textos factuais (REQ-002): `${CLAUDE_PLUGIN_ROOT}` é substituído no corpo de skills e de agentes (o texto antigo dizia
+  só agentes); subagentes do `sdd` não delegam por não terem `Agent` em `tools` (`tecleader`, seção Execução);
+  `CLAUDE.md` de projeto numa sessão no workspace carrega sob demanda, e o TecLeader continua lendo-o antes de planejar.
+- Agentes `backend`, `frontend`, `tests`, `security`, `infra-architect` (REQ-003): description com gatilho "Use quando ...".
+- Templates de settings (REQ-006): `permissions.deny` bloqueia leitura de segredos (`.env`/`.env.*` também na edição,
+  com exceção `!` para `.env.example`/`.sample`/`.template`; chaves, certificados, keystores; credenciais de npm, PyPI,
+  git, `netrc`; Terraform; `~/.ssh`, `~/.aws`, `~/.azure`, `~/.config/gh`, `~/.kube`, `~/.docker/config.json`) e as
+  formas usuais de push forçado/destrutivo (`--force*`, `-f`, `+refspec`, `--mirror`, `--delete`/`-d`); `permissions.ask`
+  pede confirmação para `git push`. README e manual documentam os limites do deny (âncora `**/` × `~/`, sandbox);
+  precedência completa: projeto > workspace > pessoal > skills do plugin.
+- Release (REQ-005): `claude plugin validate --strict` (sdd, authoring) e do marketplace no procedimento (`CLAUDE.md`,
+  README); README explica `ref` opcional em `extraKnownMarketplaces.source`.
+
+## authoring 0.2.1 — 2026-10-11
+
+- `skill-development` (REQ-002): `${CLAUDE_PLUGIN_ROOT}`/`${CLAUDE_SKILL_DIR}` são substituídos no corpo ao carregar; em
+  arquivo lido com `Read` fica o literal.
+
 ## sdd 0.6.3 — 2026-10-10
 
 Workspace com vários projetos: gatilho de migração e trabalho entre projetos (`.specs/done/workspace-multi-project/spec.md`).

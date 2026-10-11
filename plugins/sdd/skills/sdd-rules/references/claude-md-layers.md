@@ -18,9 +18,15 @@ Regras:
 - `## Stack` e comandos **nunca** ficam no workspace; se estiverem lá, movê-los para o projeto.
 - Processo **nunca** é copiado para nenhum `CLAUDE.md`; citar a skill quando necessário.
 - Nada duplicado entre camadas. Workspace com um só projeto: dispensar o `CLAUDE.md` de workspace.
-- Precedência: o mais específico prevalece (projeto > workspace > pessoal > regras globais do plugin),
-  exceto os controles não relaxáveis (segredos/credenciais, verificação SSL, confirmação de ações irreversíveis,
-  Jira somente leitura, menor privilégio).
+- Outros arquivos do Claude Code: `CLAUDE.local.md` (pessoal do projeto, não versionado) e `.claude/rules/` (regras
+  do projeto em arquivos separados, opcionalmente por caminho); seguem a mesma regra de não duplicar.
+- Precedência: o Claude Code **concatena** os `CLAUDE.md` carregados (pessoal, workspace, projeto); não há
+  sobreposição automática e, em contradição, o modelo pode seguir qualquer um. Instrução em `CLAUDE.md` é contexto, não
+  imposição (bloqueio de fato: `permissions.deny` ou hook `PreToolUse`). Regra do processo: **uma fonte por regra**;
+  havendo conflito, o agente aplica a da camada mais específica (projeto > workspace > pessoal > skills do plugin) e
+  sinaliza o conflito, exceto os controles não relaxáveis (segredos/credenciais, verificação SSL, confirmação de ações
+  irreversíveis, Jira somente leitura, menor privilégio). As regras do plugin (skills) também não são sobrepostas
+  automaticamente: o projeto as complementa.
 
 ## Versionamento dos artefatos SDD
 
@@ -81,7 +87,7 @@ Aplicação: agente `sdd:tecleader`, seção "Trabalho entre projetos". Comporta
 |---|---|---|---|
 | Sessão dentro do projeto A | negado (fora da pasta) | o de A e os dos pais (workspace) | o de A |
 | Sessão em A com `--add-dir B` (ou `/add-dir`) | leitura; edição conforme o modo de permissão | A e pais; o de B só com `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1` | só o de A (de B só `enabledPlugins`/`extraKnownMarketplaces` são lidos) |
-| Sessão no workspace | todos os projetos abaixo | só o do workspace (os dos projetos: ler explicitamente) | só o do workspace |
+| Sessão no workspace | todos os projetos abaixo | o do workspace no início; o de um projeto é carregado sob demanda ao ler arquivo da pasta dele (o TecLeader ainda o lê explicitamente antes de planejar; não depender do sob demanda) | só o do workspace |
 
 - Subagentes herdam as regras de permissão da sessão.
 - Deny da sessão sem o deny do modelo ∪ deny dos projetos envolvidos (de cada projeto, `settings.json` e

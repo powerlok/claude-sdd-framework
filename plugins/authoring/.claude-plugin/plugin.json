@@ -1,6 +1,9 @@
 {
   "name": "authoring",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Catálogo opcional: skills skill-development e agent-development para criar skills e agentes do Claude Code.",
-  "author": { "name": "Paulo Laredo" }
+  "author": {
+    "name": "Paulo Laredo"
+  },
+  "license": "MIT AND Apache-2.0"
 }

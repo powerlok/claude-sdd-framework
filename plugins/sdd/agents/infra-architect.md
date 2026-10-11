@@ -5,6 +5,8 @@ description: >
   por todas as decisões arquiteturais de infraestrutura local e em
   nuvem (AWS, Azure, Google Cloud). A nuvem vem do CLAUDE.md do
   projeto e da delegação do tecleader. Não implementa mudanças.
+  Use quando a task exigir decisão ou revisão de arquitetura de
+  infraestrutura (rede, identidade, IaC, custo, resiliência).
 
 tools: Read, Write, Grep, Glob
 skills: sdd-rules, domain-modeling, infra-engineering

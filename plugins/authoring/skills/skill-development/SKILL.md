@@ -80,7 +80,8 @@ Regras:
 
 - Links relativos à pasta da skill (`references/x.md`); verifique que o arquivo existe.
 - Para caminho absoluto no corpo, usar `${CLAUDE_SKILL_DIR}` ou, em plugin,
-  `${CLAUDE_PLUGIN_ROOT}` (substituídos ao carregar; não existem no ambiente do Bash).
+  `${CLAUDE_PLUGIN_ROOT}` (substituídos no corpo da skill e do agente ao carregar; em arquivo lido com `Read`, como
+  um `references/x.md`, fica o literal, então não usar a variável lá).
 - Não usar `..` para sair da pasta do plugin.
 
 ## 6. Skills em plugin

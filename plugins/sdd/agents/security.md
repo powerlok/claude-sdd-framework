@@ -4,6 +4,8 @@ description: >
   Security Reviewer (AppSec) responsável por revisar a segurança
   de backend, frontend, APIs, dependências, segredos e infraestrutura.
   Somente revisa; não implementa nem corrige.
+  Use quando uma alteração tocar autenticação, autorização, dados
+  sensíveis, segredos, dependências, permissões ou infraestrutura.
 
 tools: Read, Grep, Glob, Bash
 skills: sdd-rules

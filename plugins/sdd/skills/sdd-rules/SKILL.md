@@ -1,6 +1,6 @@
 ---
 name: sdd-rules
-description: Regras globais de engenharia do processo SDD (antes de alterar, fluxo SDD, escopo, qualidade, engenharia, tipagem, segurança, documentação, evidências, encerramento de tasks). Usar em qualquer agente do plugin sdd antes de analisar, implementar, revisar ou validar uma alteração.
+description: Usar em qualquer agente do plugin sdd antes de analisar, implementar, revisar ou validar uma alteração. Regras globais de engenharia do processo SDD (antes de alterar, fluxo SDD, escopo, qualidade, engenharia, tipagem, segurança, documentação, evidências, encerramento de tasks).
 ---
 
 # Regras Globais SDD
@@ -8,8 +8,9 @@ description: Regras globais de engenharia do processo SDD (antes de alterar, flu
 Estas regras se aplicam a todos os projetos que usam o plugin `sdd`.
 Regras específicas do projeto (no `CLAUDE.md` do projeto) complementam estas regras.
 
-Em caso de conflito: **regra do projeto prevalece sobre regra global**.
-
+O Claude Code não sobrepõe regras automaticamente (skills e `CLAUDE.md` são concatenados no contexto). Regra do
+processo: uma fonte por regra; em conflito, vale a camada mais específica (**projeto > workspace > pessoal > skills
+do plugin**) e o agente sinaliza o conflito no relatório.
 Exceção: regras do projeto NÃO podem relaxar segredos/credenciais, verificação SSL,
 confirmação de ações irreversíveis, Jira somente leitura e menor privilégio.
 
@@ -120,7 +121,8 @@ repositório). Workspace com vários projetos: um `.specs/` por projeto; **nunca
 
 Camadas do `CLAUDE.md`: pessoal (`~/.claude/`), workspace (fora do git: lista de projetos, convenções comuns) e
 **projeto** (versionado: `## Stack`, comandos, arquitetura, `## Repositório`, `## SDD`, regras); processo fica no plugin,
-nunca copiado. Nada duplicado; o mais específico prevalece (exceto controles não relaxáveis). `## SDD` do projeto:
+nunca copiado. Nada duplicado; os arquivos são concatenados (sem override automático): em conflito, aplicar o mais
+específico e sinalizar (exceto controles não relaxáveis). `## SDD` do projeto:
 `Versionar artefatos SDD: sim (padrão) | não` (`não` → `.claude/settings.local.json` + exclude via
 `git rev-parse --git-path info/exclude`, `.gitignore` intocado; nada rastreado é tirado do git).
 Detalhes: [references/claude-md-layers.md](references/claude-md-layers.md).

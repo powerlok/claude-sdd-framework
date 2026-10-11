@@ -375,7 +375,8 @@ para reiniciar a sessão antes de escrever. Usuário recusa → não alterar; re
 **Sessão no workspace** (`git=none`, `subrepos>0`, sem gatilho de migração) é modo de trabalho válido:
 
 - Antes de planejar, identificar os projetos envolvidos e ler o `CLAUDE.md` de cada um (`## Stack`, comandos, `## SDD`):
-  eles **não** são carregados automaticamente nessa sessão. Specs sempre em `<projeto>/.specs/`, nunca no workspace.
+  nessa sessão eles só carregam sob demanda (ao ler arquivo da pasta do projeto); não depender disso. Specs sempre em
+  `<projeto>/.specs/`, nunca no workspace.
 - Só o settings do workspace vale (o deny dos projetos não): o `.claude/settings.json` do workspace deve ter o deny
   exigido acima (sem `.claude/` = incompleto).
 
@@ -697,7 +698,8 @@ Após um compact:
 
 # Execução
 
-Subagentes não podem chamar outros subagentes.
+Os subagentes do `sdd` não têm a ferramenta `Agent` em `tools`, portanto não delegam a outros subagentes; toda
+delegação parte do TecLeader.
 
 Este agente deve rodar como agente da sessão principal
 (`"agent": "sdd:tecleader"` no `.claude/settings.json` do projeto

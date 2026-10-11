@@ -68,8 +68,8 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.6.3 | padrão | 6 agentes, 8 skills, hook pós-compact |
-| `authoring` | 0.2.0 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
+| `sdd` | 0.6.4 | padrão | 6 agentes, 8 skills, hook pós-compact |
+| `authoring` | 0.2.1 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
 flowchart LR
@@ -285,8 +285,8 @@ sequenceDiagram
    `Stack: <linguagem/framework/versão> — referência: <skill>/references/<arquivo>.md`
    (ou `referência: nenhuma`).
 3. O agente lê a referência em `${CLAUDE_PLUGIN_ROOT}/skills/<skill>/references/<stack>.md`.
-   O Claude Code substitui `${CLAUDE_PLUGIN_ROOT}` pelo caminho do plugin **no texto do agente** (não no texto da skill),
-   por isso o caminho fica nos agentes (correção D-001, `sdd` 0.1.2).
+   O Claude Code substitui `${CLAUDE_PLUGIN_ROOT}` pelo caminho do plugin ao carregar o corpo do agente e o da skill
+   (reteste no CLI 2.1.296); o caminho fica nos agentes desde a correção D-001 (`sdd` 0.1.2).
 4. Sem referência: princípios gerais da skill e lacuna declarada no relato; o TecLeader registra como observação.
 5. Stack ausente no `CLAUDE.md` e na delegação: o agente não adivinha e pede a informação.
 
@@ -427,7 +427,8 @@ Claude Code 2.1.288):
 
 - `skills:` só pré-carrega em subagentes; o carregamento das regras no TecLeader depende da instrução de usar a
   ferramenta `Skill` (observado funcionando na validação).
-- `${CLAUDE_PLUGIN_ROOT}` só é substituído no texto de agentes, não no de skills.
+- `${CLAUDE_PLUGIN_ROOT}` é substituído ao carregar o corpo de agentes e de skills; em arquivos lidos pela ferramenta
+  `Read` (ex.: references) e no ambiente do Bash, não.
 - Stacks sem referência (ex.: Vue) usam os princípios gerais e o agente declara a lacuna.
 - Caminho `.mcp.json` do Jira não testado com Zscaler ativo; nomes `mcp__atlassian__*` não verificados.
 - Repositório: ver riscos residuais na seção 9 (OAuth GitHub não testado; Bitbucket, GitLab e Azure DevOps não validados).

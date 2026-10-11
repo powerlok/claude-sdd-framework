@@ -4,6 +4,8 @@ description: >
   Staff Frontend Engineer agnóstico de framework: UX/UI,
   acessibilidade, performance e E2E. A stack vem do CLAUDE.md
   do projeto e da delegação do tecleader.
+  Use quando a task exigir implementar ou corrigir interface web
+  (componentes, estado, acessibilidade, E2E) com testes.
 
 tools: Read, Edit, Write, Grep, Glob, Bash
 skills: sdd-rules, frontend-engineering, bug-diagnosis

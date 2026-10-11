@@ -20,6 +20,9 @@ Ativas em `.specs/<feature>/` (`spec.md`, `tasks.md`); concluídas em `.specs/do
 `claude` = `~/.local/bin/claude.exe` (fora do PATH no bash desta máquina).
 
 - Validar: `claude plugin validate .` | `./plugins/sdd` | `./plugins/authoring`
+- Release (antes de cada uma, obrigatório): `claude plugin validate ./plugins/sdd --strict`,
+  `claude plugin validate ./plugins/authoring --strict` e `claude plugin validate .` (marketplace); depois bump de
+  `version`, CHANGELOG e versões no README e em `docs/`
 - Testar um agente sem instalar: `claude -p "<prompt>" --plugin-dir ./plugins/sdd --agent sdd:<agente> --allowedTools "..."`
   (prompt logo após `-p`; `--allowedTools` é variádica)
 - Inspecionar carregamento: `--output-format stream-json --verbose` (evento `init`: agentes, skills, MCP)
@@ -28,4 +31,5 @@ Ativas em `.specs/<feature>/` (`spec.md`, `tasks.md`); concluídas em `.specs/do
 ## Arquitetura e decisões
 
 Ver `README.md` e `.specs/done/sdd-plugin/design.md`. Limitações confirmadas: `skills:` não pré-carrega
-no agente da sessão principal; `${CLAUDE_PLUGIN_ROOT}` só é substituído no texto de agentes.
+no agente da sessão principal. `${CLAUDE_PLUGIN_ROOT}` é substituído ao carregar o corpo de skills e de agentes
+(principal e subagente; reteste CLI 2.1.296); no disco fica o literal.

@@ -4,6 +4,8 @@ description: >
   QA Lead responsável pela validação
   de requisitos, regressão,
   integração, API, performance e E2E.
+  Use quando for preciso validar uma entrega contra os requisitos,
+  reproduzir um defeito ou executar testes e registrar evidência.
 
 tools: Read, Edit, Write, Grep, Glob, Bash
 skills: sdd-rules, bug-diagnosis

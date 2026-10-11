@@ -219,7 +219,7 @@ tr:last-child td { border-bottom: 0; }
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span class="lbl">Menu</span>
   </button>
   <span class="logo" aria-hidden="true">SDD</span>
-  <h1>Manual do Plugin SDD <span class="ver">sdd 0.6.3 · authoring 0.2.0</span></h1>
+  <h1>Manual do Plugin SDD <span class="ver">sdd 0.6.4 · authoring 0.2.1</span></h1>
   <div class="header-tools" role="search">
     <div class="search">
       <label for="q" class="sr-only">Buscar no manual</label>
@@ -365,7 +365,7 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
     <tbody>
       <tr><td>Dentro do projeto</td><td><code>claude</code> na pasta do projeto</td><td>só o projeto</td><td>o do projeto e os dos pais</td><td>o do projeto</td></tr>
       <tr><td>Projeto + outro</td><td><code>claude --add-dir ../outro</code> ou <code>/add-dir</code></td><td>os dois</td><td>o do outro só com <code>CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1</code></td><td><strong>só o da sessão</strong></td></tr>
-      <tr><td>Workspace</td><td><code>claude</code> na pasta-mãe, com <code>.claude/settings.json</code></td><td>todos os projetos</td><td>só o do workspace (o TecLeader lê o de cada projeto)</td><td><strong>só o do workspace</strong></td></tr>
+      <tr><td>Workspace</td><td><code>claude</code> na pasta-mãe, com <code>.claude/settings.json</code></td><td>todos os projetos</td><td>o do workspace; o de um projeto carrega sob demanda ao ler arquivo da pasta dele (o TecLeader ainda o lê antes de planejar)</td><td><strong>só o do workspace</strong></td></tr>
     </tbody>
   </table></div>
   <p>O deny exigido na sessão é o do modelo somado ao de cada projeto envolvido. Se faltar algo, a sessão fica <strong>somente leitura</strong> (sem escrita, build, testes ou delegação) até corrigir e reiniciar; <code>--permission-mode plan</code> impõe isso no próprio CLI.</p>
@@ -379,7 +379,8 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
       <tr><td><code>project-settings.git.json</code></td><td>marketplace no GitHub</td><td><code>source.url</code> = URL do repositório</td></tr>
     </tbody>
   </table></div>
-  <p>Os dois declaram o marketplace em <code>extraKnownMarketplaces</code>, habilitam <code>sdd@claude-sdd-framework</code> em <code>enabledPlugins</code>, definem <code>"agent": "sdd:tecleader"</code> e bloqueiam em <code>permissions.deny</code> as 16 ferramentas de escrita do Atlassian (8 do conector claude.ai e 8 do MCP remoto). <span class="badge verified">Verificado</span></p>
+  <p>Os dois declaram o marketplace em <code>extraKnownMarketplaces</code>, habilitam <code>sdd@claude-sdd-framework</code> em <code>enabledPlugins</code>, definem <code>"agent": "sdd:tecleader"</code> e bloqueiam em <code>permissions.deny</code> as 16 ferramentas de escrita do Atlassian (8 do conector claude.ai e 8 do MCP remoto), além das de escrita dos provedores de repositório, da leitura de segredos (<code>.env</code>/<code>.env.*</code>, também na edição, exceto <code>.env.example</code>/<code>.sample</code>/<code>.template</code>; chaves e certificados; credenciais de npm, PyPI, git e <code>netrc</code>; estado e variáveis do Terraform; e, na home, <code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.azure</code>, <code>~/.config/gh</code>, <code>~/.kube</code>, <code>~/.docker/config.json</code>) e das formas usuais de push forçado/destrutivo (<code>--force*</code>, <code>-f</code>, <code>+refspec</code>, <code>--mirror</code>, <code>--delete</code>/<code>-d</code>); push comum pede confirmação (<code>permissions.ask</code>). <span class="badge verified">Verificado</span></p>
+  <p><strong>Limites:</strong> o deny é defesa em profundidade, não barreira. O deny de <code>Read</code> cobre as ferramentas de arquivo e os comandos de arquivo que o Claude Code reconhece no Bash (<code>cat</code>, <code>head</code>, <code>tail</code>, <code>sed</code>, <code>tee</code>, redirecionamentos), mas não um <code>grep -r</code> sem citar o arquivo nem um script (Python, Node) que abre o arquivo por conta própria. Padrões <code>**/</code> valem a partir da pasta onde a sessão começou; arquivos da home usam <code>~/</code>. O deny de <code>Bash</code> não pega o mesmo comando escrito de outro jeito (<code>sh -c '...'</code>, caminho absoluto do programa, <code>git -C . push</code>); flags combinadas (<code>-uf</code>) e <code>:refspec</code> caem só na confirmação (<code>ask</code>). No Windows sem Git Bash (ferramenta PowerShell), as regras <code>Bash(...)</code> não se aplicam ao PowerShell. Para bloqueio no sistema operacional, use o <a href="https://code.claude.com/docs/en/sandboxing">sandbox</a> do Claude Code (<a href="https://code.claude.com/docs/en/permissions">documentação de permissões</a>). Para fixar uma versão do framework, acrescente <code>"ref"</code> (branch ou tag) em <code>source</code>; sem ele, vale a branch padrão.</p>
 </section>
 
 <!-- 4 -->
@@ -809,7 +810,7 @@ claude plugin update sdd@claude-sdd-framework --scope project</code></pre></div>
   <p>Reinicie a sessão para aplicar. <span class="badge verified">Verificado</span></p>
   <div class="table-wrap"><table>
     <thead><tr><th>Plugin</th><th>Versão deste manual</th></tr></thead>
-    <tbody><tr><td><code>sdd</code></td><td>0.6.3</td></tr><tr><td><code>authoring</code></td><td>0.2.0</td></tr></tbody>
+    <tbody><tr><td><code>sdd</code></td><td>0.6.4</td></tr><tr><td><code>authoring</code></td><td>0.2.1</td></tr></tbody>
   </table></div>
   <p>As versões seguem semver, definidas em <code>plugins/*/.claude-plugin/plugin.json</code>; as mudanças ficam no <a href="../CHANGELOG.md">CHANGELOG.md</a>.</p>
   <p>Para validar um plugin ou testá-lo sem instalar (só na sessão):</p>
@@ -856,7 +857,7 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
   <h2 id="h-lim"><span class="n">12.</span>Limitações conhecidas</h2>
   <ul>
     <li><code>skills:</code> só pré-carrega em subagentes; o TecLeader carrega as regras pela ferramenta <code>Skill</code> no início da sessão e após compact.</li>
-    <li>No texto do agente, <code>${CLAUDE_PLUGIN_ROOT}</code> é substituído pelo caminho do plugin; no texto da skill, não.</li>
+    <li><code>${CLAUDE_PLUGIN_ROOT}</code> é substituído pelo caminho do plugin ao carregar o corpo do agente e o da skill; em arquivos lidos com <code>Read</code> e no ambiente do Bash, não.</li>
     <li>O caminho <code>.mcp.json</code> do Jira não foi validado com Zscaler ativo, e os nomes <code>mcp__atlassian__*</code> não foram verificados.</li>
     <li>O carregamento das regras no TecLeader depende da instrução do agente (sem pré-carregamento na sessão principal); funcionou nos testes de validação.</li>
     <li>Comandos de exemplo das references (lint, auditoria de dependências) não foram executados nos pilotos.</li>
@@ -883,7 +884,7 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
 </main>
 </div>
 
-<footer class="site-footer">Manual do Plugin SDD · sdd 0.6.3 · authoring 0.2.0 · arquivo único, funciona offline.</footer>
+<footer class="site-footer">Manual do Plugin SDD · sdd 0.6.4 · authoring 0.2.1 · arquivo único, funciona offline.</footer>
 
 <button type="button" class="btn" id="to-top" aria-label="Voltar ao topo">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span class="lbl">Topo</span>

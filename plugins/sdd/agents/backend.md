@@ -4,6 +4,8 @@ description: >
   Staff Backend Engineer agnóstico de linguagem: DDD, SOLID,
   Clean Architecture, Hexagonal e TDD. A stack vem do CLAUDE.md
   do projeto e da delegação do tecleader.
+  Use quando a task exigir implementar ou corrigir código backend
+  (API, domínio, persistência, integrações) com testes.
 
 tools: Read, Edit, Write, Grep, Glob, Bash
 skills: sdd-rules, backend-engineering, bug-diagnosis, domain-modeling
