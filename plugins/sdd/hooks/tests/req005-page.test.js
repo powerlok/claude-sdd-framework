@@ -126,12 +126,12 @@ function getJson(url) {
 
     // 2) pedido do usuário e delegação em paralelo
     hook({ hook_event_name: "UserPromptSubmit", prompt: "texto-secreto-do-usuario" });
-    check("prompt: popup 'TecLeader: recebeu um pedido'", await waitLog("TecLeader: recebeu um pedido"));
+    check("prompt: popup 'TechLead: recebeu um pedido'", await waitLog("TechLead: recebeu um pedido"));
     check("status vira 'Ativo' e vazio some", (await js("document.getElementById('status').textContent")) === "Ativo" && (await js("document.getElementById('empty').hidden")) === true);
     check("tecleader trabalhando", (await node("tecleader")) === "seat/working", await node("tecleader"));
     hook({ hook_event_name: "PreToolUse", tool_name: "Agent", tool_input: { description: "Implementar T-003", subagent_type: "sdd:backend", prompt: "x" } });
     hook({ hook_event_name: "PreToolUse", tool_name: "Agent", tool_input: { description: "Tela de login T-004", subagent_type: "sdd:frontend", prompt: "x" } });
-    check("delegação: 'TecLeader → delegou \"Implementar T-003\" ao backend'", await waitLog('TecLeader → delegou "Implementar T-003" ao backend'));
+    check("delegação: 'TechLead → delegou \"Implementar T-003\" ao backend'", await waitLog('TechLead → delegou "Implementar T-003" ao backend'));
     check("delegação paralela: frontend também", await waitLog('"Tela de login T-004" ao frontend'));
     hook({ hook_event_name: "SubagentStart", agent_type: "sdd:backend", agent_id: "b1b1b1" });
     hook({ hook_event_name: "SubagentStart", agent_type: "sdd:frontend", agent_id: "f1f1f1" });
@@ -148,11 +148,11 @@ function getJson(url) {
     check("privacidade na tela: sem segredos/arquivos/comandos", !/hunter2|arquivo-privado|segredo|dotnet test|texto-secreto/.test(allText));
     await shot("3-trabalhando");
 
-    // 3) entrega: backend anda até a mesa do TecLeader e volta
+    // 3) entrega: backend anda até a mesa do TechLead e volta
     hook({ hook_event_name: "SubagentStop", agent_type: "sdd:backend", agent_id: "b1b1b1", last_assistant_message: "resposta-secreta" });
-    check("entrega: popup 'backend entregou o resultado ao TecLeader'", await waitLog("backend entregou o resultado ao TecLeader"));
+    check("entrega: popup 'backend entregou o resultado ao TechLead'", await waitLog("backend entregou o resultado ao TechLead"));
     check("entrega: backend caminha", await waitFor("document.querySelector('#roster li[data-agent=backend]').dataset.node==='walking'", 6000));
-    check("entrega: backend chega à mesa do TecLeader", await waitFor("document.querySelector('#roster li[data-agent=backend]').dataset.node==='tec'", 15000));
+    check("entrega: backend chega à mesa do TechLead", await waitFor("document.querySelector('#roster li[data-agent=backend]').dataset.node==='tec'", 15000));
     await shot("4-entrega");
     check("entrega: backend volta à própria mesa e fica ocioso", await waitFor("(function(){var l=document.querySelector('#roster li[data-agent=backend]');return l.dataset.node==='seat'&&l.dataset.state==='idle';})()", 20000), await node("backend"));
 
@@ -192,7 +192,7 @@ function getJson(url) {
     await waitLog("tests entregou o resultado");
     await sleep(2500);
     const frozen = await node("tests");
-    check("pausa: personagem fica parado (não chega à mesa do TecLeader)", frozen === "walking/delivering" || frozen === "seat/delivering", frozen);
+    check("pausa: personagem fica parado (não chega à mesa do TechLead)", frozen === "walking/delivering" || frozen === "seat/delivering", frozen);
     await js("document.getElementById('pause').click()");
     check("retomar: personagem segue e volta ao normal", await waitFor("(function(){var l=document.querySelector('#roster li[data-agent=tests]');return l.dataset.node==='seat'&&l.dataset.state==='idle';})()", 25000), await node("tests"));
 
@@ -210,7 +210,7 @@ function getJson(url) {
     }
     check("reduced-motion: nunca em 'walking' (troca de posição instantânea)", !sawWalking);
     check("reduced-motion: ainda faz a entrega (passa por 'tec')", sawTec);
-    check("reduced-motion: lista de texto continua atualizando", await waitLog("frontend entregou o resultado ao TecLeader"));
+    check("reduced-motion: lista de texto continua atualizando", await waitLog("frontend entregou o resultado ao TechLead"));
     await shot("7-reduced-motion");
     await cdp("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] });
 

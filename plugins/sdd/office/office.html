@@ -77,7 +77,7 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
   <aside>
     <section aria-labelledby="h-now">
       <h2 id="h-now">Agora</h2>
-      <p id="empty">Nenhuma atividade ainda. Envie um pedido ao TecLeader no Claude Code para ver os agentes trabalhando.</p>
+      <p id="empty">Nenhuma atividade ainda. Envie um pedido ao TechLead no Claude Code para ver os agentes trabalhando.</p>
       <ol id="log" role="log" aria-live="polite" aria-relevant="additions"></ol>
     </section>
     <section aria-labelledby="h-roster">
@@ -115,7 +115,7 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
   setLayout(4, 2);
 
   var KNOWN = {
-    tecleader: { slot: 0, label: "TecLeader", plate: "TECLEADER", shirt: "#3b6fd4", hair: "#3a2a1a" },
+    tecleader: { slot: 0, label: "TechLead", plate: "TECHLEAD", shirt: "#3b6fd4", hair: "#3a2a1a" },
     backend: { slot: 1, label: "backend", plate: "BACKEND", shirt: "#2f9e6a", hair: "#222222" },
     frontend: { slot: 2, label: "frontend", plate: "FRONTEND", shirt: "#d4527a", hair: "#7a3b1a" },
     tests: { slot: 3, label: "tests", plate: "TESTS", shirt: "#e0a030", hair: "#4a2c18" },
@@ -324,9 +324,9 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
   function phrase(ev, key) {
     var who = labelOf(key);
     if (ev.e === "start") return who + " chegou";
-    if (ev.e === "stop") return who + " entregou o resultado ao TecLeader";
-    if (ev.e === "prompt") return "TecLeader: recebeu um pedido";
-    if (ev.e === "end") return "TecLeader: aguardando";
+    if (ev.e === "stop") return who + " entregou o resultado ao TechLead";
+    if (ev.e === "prompt") return "TechLead: recebeu um pedido";
+    if (ev.e === "end") return "TechLead: aguardando";
     switch (ev.k) {
       case "read": return who + ": lendo o código";
       case "edit": return who + ": editando arquivos";

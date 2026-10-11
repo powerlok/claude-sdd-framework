@@ -8,6 +8,7 @@ Salinha dos agentes: qualidade visual (`.specs/done/office-visual/spec.md`). Só
 
 - Nitidez: canvas na resolução nativa da tela (`devicePixelRatio`, redimensiona com a janela/zoom); texto (nomes das mesas, "REUNIÃO") em resolução nativa, com placa de contraste; sprites continuam pixel art.
 - Layout: sala maior que ocupa a largura, mesas em fileiras com o nome legível, TecLeader em destaque, sala de reunião proporcional; sem rolagem horizontal em 375 px.
+- Nome exibido do agente principal na salinha: "TechLead" (placa, lista e popup); só exibição, o agente continua `sdd:tecleader`.
 - Balões de fala sem sobreposição e inteiros dentro da sala; teste de regressão (50 casos de página, 35 estáticos).
 
 ## Release v0.7.0 — 2026-10-11
