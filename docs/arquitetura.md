@@ -68,7 +68,7 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.6.4 | padrão | 6 agentes, 8 skills, hook pós-compact |
+| `sdd` | 0.7.0 | padrão | 6 agentes, 9 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
 | `authoring` | 0.2.1 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
@@ -320,6 +320,23 @@ flowchart LR
 
 Agentes não conseguem executar `/compact` nem medir o próprio contexto; o TecLeader pede ao usuário `/context`
 e, se o uso estiver alto, `/compact`.
+
+### Salinha dos agentes (opcional)
+
+Os hooks `office-*.sh` (registrados em `hooks.json` com `"async": true`) gravam eventos mínimos num arquivo na pasta
+temporária do sistema (`sdd-office-<uid>/<sala>/`, sala por projeto identificada por hash do caminho); a página
+`office/office.html`, aberta no navegador via `file://`, relê esse arquivo (reinjeção de script a cada 1 s) e anima
+a sala. Só entram agente, categoria da ferramenta, destino da delegação, tipo do evento, horário e a descrição curta da
+delegação (caminhos e segredos viram `[omitido]`). A preferência (`on`/`off`) fica em `~/.claude/sdd/office.conf`;
+desligada, o hook só a confere e sai. Sem servidor e sem rede. Guia de uso: [README](../README.md#-salinha-dos-agentes-opcional).
+
+```mermaid
+flowchart LR
+    CC[Claude Code<br/>eventos de sessão e ferramentas] -->|hooks async| H[office-*.sh]
+    P[(~/.claude/sdd/office.conf<br/>on / off)] -.->|confere| H
+    H -->|eventos mínimos| E[(arquivo de eventos<br/>pasta temporária)]
+    E -->|file://, relê a cada 1 s| W[office.html<br/>sala em pixel art]
+```
 
 ## 8. Rastreabilidade
 

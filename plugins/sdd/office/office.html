@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Salinha dos agentes (sdd)</title>
+<style>
+:root {
+  --bg: #e6ebf2;
+  --panel: #ffffff;
+  --ink: #1b2230;
+  --muted: #455066;
+  --line: #aeb9cb;
+  --accent: #1d4ed0;
+  --ok: #166534;
+  --warn: #8a4b00;
+  --err: #a31d1d;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font: 16px/1.5 system-ui, "Segoe UI", sans-serif; padding: 16px; }
+h1 { font: 700 1.25rem/1.2 ui-monospace, "Cascadia Mono", Consolas, monospace; margin: 0; }
+h2 { font: 700 1rem/1.3 ui-monospace, "Cascadia Mono", Consolas, monospace; margin: 0 0 8px; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 12px; }
+#status { padding: 2px 10px; border: 2px solid var(--line); border-radius: 4px; background: var(--panel); font-weight: 600; }
+#status[data-state="active"] { border-color: var(--ok); color: var(--ok); }
+#status[data-state="quiet"] { border-color: var(--warn); color: var(--warn); }
+#status[data-state="error"] { border-color: var(--err); color: var(--err); }
+button { font: inherit; min-height: 32px; min-width: 32px; padding: 2px 12px; color: var(--ink); background: var(--panel);
+  border: 2px solid var(--ink); border-radius: 4px; cursor: pointer; }
+button:hover { background: #dbe4f5; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+#notice { margin: 0 0 12px; padding: 10px 12px; border: 2px solid var(--err); background: #fdeaea; color: #5c1010; border-radius: 4px; }
+#notice[hidden] { display: none; }
+.layout { display: grid; grid-template-columns: minmax(0, auto) minmax(260px, 1fr); gap: 16px; align-items: start; }
+.stage { position: relative; display: block; width: fit-content; max-width: 100%; border: 3px solid var(--ink); background: #1b2230; line-height: 0; }
+#cv { display: block; image-rendering: pixelated; image-rendering: crisp-edges; max-width: 100%; }
+#bubbles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.bubble { position: absolute; max-width: 46%; padding: 3px 7px; background: #fffdf2; color: #1b2230; border: 2px solid #1b2230;
+  border-radius: 4px; font: 600 12px/1.3 ui-monospace, "Cascadia Mono", Consolas, monospace; transform: translate(-50%, -100%);
+  overflow-wrap: anywhere; }
+.bubble[hidden] { display: none; }
+aside section { background: var(--panel); border: 2px solid var(--line); border-radius: 4px; padding: 12px; margin-bottom: 12px; }
+#log { list-style: none; margin: 0; padding: 0; }
+#log li { padding: 4px 0; border-bottom: 1px solid #d3dae6; overflow-wrap: anywhere; }
+#log li:first-child { font-weight: 700; }
+#log li.done { color: var(--ok); }
+#log time { color: var(--muted); font: 12px ui-monospace, Consolas, monospace; margin-right: 8px; }
+#empty { margin: 0; color: var(--muted); }
+#empty[hidden] { display: none; }
+#roster { margin: 0; padding-left: 18px; color: var(--ink); }
+.note { margin: 12px 0 0; color: var(--muted); font-size: 0.875rem; }
+@media (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Salinha dos agentes</h1>
+  <span id="status" role="status" data-state="wait">Aguardando agentes...</span>
+  <button id="pause" type="button" aria-pressed="false">Pausar animação</button>
+</header>
+
+<div id="notice" role="alert" hidden>
+  <span>Não foi possível ler os eventos desta sala. Recarregue a página ou rode /sdd:office on no Claude Code para recriá-la.</span>
+  <button id="reload" type="button">Recarregar a página</button>
+</div>
+
+<div class="layout">
+  <div class="stage" id="stage">
+    <canvas id="cv" width="320" height="200" role="img" aria-label="Salinha dos agentes: 1 agente na sala"></canvas>
+    <div id="bubbles" aria-hidden="true"></div>
+  </div>
+  <aside>
+    <section aria-labelledby="h-now">
+      <h2 id="h-now">Agora</h2>
+      <p id="empty">Nenhuma atividade ainda. Envie um pedido ao TecLeader no Claude Code para ver os agentes trabalhando.</p>
+      <ol id="log" role="log" aria-live="polite" aria-relevant="additions"></ol>
+    </section>
+    <section aria-labelledby="h-roster">
+      <h2 id="h-roster">Agentes</h2>
+      <ul id="roster"></ul>
+    </section>
+    <p class="note">Esta tela só mostra o tipo de atividade (por exemplo, "editando arquivos"); nomes de arquivos, comandos e conteúdo não são gravados. Dados ficam na pasta temporária do sistema.</p>
+  </aside>
+</div>
+
+<script>
+"use strict";
+(function () {
+  var W = 320, H = 200;
+  var WORK_MS = 8000, QUIET_MS = 300000, MEET_MS = 12000, BUBBLE_MS = 4000, NARRATE_MS = 1000, POLL_MS = 1000;
+  var SPEED = 60, FRAME_MS = 90, STALE_MS = 30000, MAX_SLOTS = 16;
+  var L_AISLE = 6, R_AISLE = 234, LINE_TEC = 72, DOOR_Y = 158;
+  var MEET_CX = 282, MEET_CY = 148;
+
+  var KNOWN = {
+    tecleader: { slot: 0, label: "TecLeader", plate: "TECLEADER", shirt: "#3b6fd4", hair: "#3a2a1a" },
+    backend: { slot: 1, label: "backend", plate: "BACKEND", shirt: "#2f9e6a", hair: "#222222" },
+    frontend: { slot: 2, label: "frontend", plate: "FRONTEND", shirt: "#d4527a", hair: "#7a3b1a" },
+    tests: { slot: 3, label: "tests", plate: "TESTS", shirt: "#e0a030", hair: "#4a2c18" },
+    security: { slot: 4, label: "security", plate: "SECURITY", shirt: "#7b4fd1", hair: "#161616" },
+    "infra-architect": { slot: 5, label: "infra-architect", plate: "INFRA", shirt: "#2f9fb0", hair: "#b8b8b8" }
+  };
+  var SKINS = ["#f1c9a0", "#d9a679", "#a8744f", "#7a4a2e"];
+
+  var CATEGORIES = { read: 1, edit: 1, run: 1, web: 1, delegate: 1, plan: 1, ask: 1, mcp: 1, other: 1 };
+  var EVENTS = { start: 1, stop: 1, tool: 1, prompt: 1, end: 1 };
+  var RE_AGENT = /^[A-Za-z0-9_.-]{1,32}$/, RE_ID = /^[0-9-]{1,24}$/, RE_DID = /^[A-Za-z0-9]{1,12}$/;
+  var RE_BADTEXT = /[^A-Za-z0-9 .,:;()#_\/+\[\] -￿-]/g;
+
+  function has(o, k) { return Object.prototype.hasOwnProperty.call(o, k); }
+  function $(id) { return document.getElementById(id); }
+
+  var cv = $("cv"), ctx = cv.getContext("2d"), stage = $("stage"), bubblesEl = $("bubbles");
+  ctx.imageSmoothingEnabled = false;
+  var motionQuery = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+  var reduced = !!(motionQuery && motionQuery.matches);
+  if (motionQuery && motionQuery.addEventListener) {
+    motionQuery.addEventListener("change", function () { reduced = motionQuery.matches; });
+  }
+  var paused = false;
+
+  /* ---------------------------------------------------------------- dados */
+
+  function clean(o) {
+    if (!o || typeof o !== "object") return null;
+    var ev = {};
+    if (typeof o.i !== "string" || !RE_ID.test(o.i)) return null;
+    ev.i = o.i;
+    if (typeof o.t !== "number" || !isFinite(o.t) || o.t < 0) return null;
+    ev.t = Math.floor(o.t);
+    if (typeof o.e !== "string" || !has(EVENTS, o.e)) return null;
+    ev.e = o.e;
+    ev.a = typeof o.a === "string" && RE_AGENT.test(o.a) ? o.a : "";
+    ev.d = typeof o.d === "string" && RE_DID.test(o.d) ? o.d : "";
+    ev.k = typeof o.k === "string" && has(CATEGORIES, o.k) ? o.k : "";
+    ev.g = typeof o.g === "string" && RE_AGENT.test(o.g) ? o.g : "";
+    ev.m = typeof o.m === "string" ? o.m.replace(RE_BADTEXT, " ").replace(/\s+/g, " ").trim().slice(0, 80) : "";
+    return ev;
+  }
+
+  /* ------------------------------------------------------------- layout */
+
+  function deskOf(slot) {
+    if (slot === 0) return { x: 100, y: 50, w: 44 };
+    var i = slot - 1;
+    return { x: 14 + (i % 5) * 44, y: 100 + Math.floor(i / 5) * 36, w: 36 };
+  }
+  function seatPt(slot) { var d = deskOf(slot); return { x: d.x + d.w / 2, y: d.y + 6 }; }
+  function lineY(slot) { return deskOf(slot).y + 22; }
+  var MEET_SEATS = [
+    { x: 270, y: 160 }, { x: 294, y: 160 }, { x: 270, y: 140 }, { x: 294, y: 140 }, { x: 282, y: 168 }, { x: 282, y: 132 }
+  ];
+
+  function nodeInfo(c, node) {
+    if (node.type === "seat") {
+      var s = seatPt(c.slot);
+      return { tail: [s], anchor: { x: s.x, y: lineY(c.slot) } };
+    }
+    if (node.type === "tec") {
+      var tx = 96 + (c.slot % 3) * 26;
+      return { tail: [{ x: tx, y: 76 }], anchor: { x: tx, y: LINE_TEC } };
+    }
+    if (node.type === "meet") {
+      var ms = MEET_SEATS[node.seat % MEET_SEATS.length];
+      return { tail: [{ x: 244, y: DOOR_Y }, { x: 256, y: DOOR_Y }, ms], anchor: { x: R_AISLE, y: DOOR_Y } };
+    }
+    return { tail: [{ x: -2, y: 194 }], anchor: { x: L_AISLE, y: 194 } };
+  }
+
+  /* Caminho por corredores (linhas horizontais e dois corredores verticais): nunca atravessa mesas. */
+  function route(c, from, to) {
+    var A = nodeInfo(c, from), B = nodeInfo(c, to), pts = [], i;
+    if (A.tail.length) {
+      for (i = A.tail.length - 2; i >= 0; i--) pts.push(A.tail[i]);
+      pts.push(A.anchor);
+    }
+    var P = A.anchor, Q = B.anchor;
+    if (P.y !== Q.y) {
+      var X = (from.type === "meet" || to.type === "meet") ? R_AISLE : ((P.x + Q.x) / 2 < 120 ? L_AISLE : R_AISLE);
+      pts.push({ x: X, y: P.y }, { x: X, y: Q.y });
+    }
+    pts.push(Q);
+    for (i = 0; i < B.tail.length; i++) pts.push(B.tail[i]);
+    return pts;
+  }
+
+  /* ------------------------------------------------------------ estado */
+
+  var chars = Object.create(null), order = [], dmap = Object.create(null), nextSlot = 6;
+  var lastEventMs = 0, hasEvents = false, quiet = false;
+
+  function hashOf(s) { var h = 7, i; for (i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+
+  function spawn(key, instant) {
+    if (has(chars, key)) return chars[key];
+    var k = has(KNOWN, key) ? KNOWN[key] : null, slot;
+    if (k) slot = k.slot;
+    else {
+      slot = nextSlot < MAX_SLOTS ? nextSlot++ : MAX_SLOTS - 1;
+    }
+    var h = hashOf(key);
+    var c = {
+      key: key, slot: slot,
+      label: k ? k.label : key,
+      plate: k ? k.plate : key.toUpperCase().slice(0, 9),
+      shirt: k ? k.shirt : "hsl(" + (h % 360) + ",55%,45%)",
+      hair: k ? k.hair : "hsl(" + ((h >> 3) % 360) + ",30%,25%)",
+      skin: SKINS[h % SKINS.length],
+      x: 0, y: 0, node: { type: "seat" }, mode: "seated", act: "idle", lastAct: 0,
+      path: [], jobs: [], job: null, wait: 0, carry: false, bubble: null, bubbleUntil: 0, sprites: {}
+    };
+    var s = seatPt(slot);
+    if (instant || key === "tecleader") { c.x = s.x; c.y = s.y; }
+    else {
+      c.x = -2; c.y = 194; c.node = { type: "entry" }; c.act = "arriving"; c.jobs.push({ type: "seat" });
+    }
+    chars[key] = c; order.push(key);
+    return c;
+  }
+
+  function freeMeetSeat() {
+    var used = {}, k, n;
+    for (k in chars) {
+      if (!has(chars, k)) continue;
+      n = chars[k];
+      if (n.node.type === "meet") used[n.node.seat] = 1;
+      if (n.job && n.job.type === "meet") used[n.job.seat] = 1;
+      n.jobs.forEach(function (j) { if (j.type === "meet") used[j.seat] = 1; });
+    }
+    for (var i = 0; i < MEET_SEATS.length; i++) if (!used[i]) return i;
+    return 0;
+  }
+  function hasJob(c, type) {
+    if (c.job && c.job.type === type) return true;
+    return c.jobs.some(function (j) { return j.type === type; });
+  }
+  function goMeeting(c) {
+    if (c.node.type === "meet" || hasJob(c, "meet")) return;
+    c.jobs.push({ type: "meet", seat: freeMeetSeat() });
+    c.act = "meeting";
+  }
+
+  function startJob(c) {
+    if (!c.jobs.length) return;
+    var j = c.jobs.shift(), path = route(c, c.node, j);
+    c.job = j;
+    if (reduced || !path.length) {
+      var last = path.length ? path[path.length - 1] : { x: c.x, y: c.y };
+      c.x = last.x; c.y = last.y; c.path = [];
+      arrive(c);
+    } else { c.path = path; c.mode = "walking"; }
+  }
+
+  function arrive(c) {
+    var j = c.job, now = Date.now();
+    c.job = null; c.mode = "seated"; c.path = [];
+    if (!j) return;
+    c.node = j;
+    if (j.type === "seat") {
+      c.carry = false;
+      c.act = now - c.lastAct < WORK_MS ? "working" : "idle";
+    } else if (j.type === "tec") {
+      c.wait = 1.0;
+    } else if (j.type === "meet") {
+      c.act = "meeting";
+    }
+  }
+
+  function stepChar(c, dt) {
+    if (c.mode === "walking") {
+      var tgt = c.path[0], dx = tgt.x - c.x, dy = tgt.y - c.y, dist = Math.sqrt(dx * dx + dy * dy), st = SPEED * dt;
+      if (dist <= st) {
+        c.x = tgt.x; c.y = tgt.y; c.path.shift();
+        if (!c.path.length) arrive(c);
+      } else { c.x += dx / dist * st; c.y += dy / dist * st; }
+      return;
+    }
+    if (c.wait > 0) { c.wait -= dt; if (c.wait > 0) return; c.carry = false; }
+    startJob(c);
+  }
+
+  function logicTick(now) {
+    var k, c;
+    quiet = hasEvents && now - lastEventMs > QUIET_MS;
+    for (k in chars) {
+      if (!has(chars, k)) continue;
+      c = chars[k];
+      if (quiet && (c.act === "working" || c.act === "meeting")) {
+        c.act = "idle";
+        if (c.node.type !== "seat" && !hasJob(c, "seat")) c.jobs.push({ type: "seat" });
+      }
+      if (c.act === "working" && now - c.lastAct > WORK_MS) c.act = "idle";
+      if (c.act === "meeting" && c.mode === "seated" && now - c.lastAct > MEET_MS) {
+        c.act = "idle";
+        if (!hasJob(c, "seat")) c.jobs.push({ type: "seat" });
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------ eventos */
+
+  function labelOf(key) { return has(KNOWN, key) ? KNOWN[key].label : key; }
+
+  function phrase(ev, key) {
+    var who = labelOf(key);
+    if (ev.e === "start") return who + " chegou";
+    if (ev.e === "stop") return who + " entregou o resultado ao TecLeader";
+    if (ev.e === "prompt") return "TecLeader: recebeu um pedido";
+    if (ev.e === "end") return "TecLeader: aguardando";
+    switch (ev.k) {
+      case "read": return who + ": lendo o código";
+      case "edit": return who + ": editando arquivos";
+      case "run":
+        if (key === "tests") return "tests: rodando validação";
+        if (key === "security") return "security: revisando";
+        return who + ": executando comandos";
+      case "web": return who + ": pesquisando";
+      case "plan": return who + ": atualizando o plano";
+      case "ask": return who + ": aguardando você";
+      case "mcp": return who + ": consultando um serviço externo";
+      case "delegate":
+        if (ev.g) return who + " → delegou " + (ev.m ? (ev.m === "[omitido]" ? "uma tarefa (descrição omitida)" : "\"" + ev.m + "\"") : "uma tarefa") + " ao " + labelOf(ev.g);
+        return who + " → delegou " + (ev.m ? (ev.m === "[omitido]" ? "uma tarefa (descrição omitida)" : "\"" + ev.m + "\"") : "uma tarefa");
+      default: return who + ": trabalhando";
+    }
+  }
+
+  var queue = [], lastNarr = Object.create(null);
+
+  function narrate(text, key, kind) {
+    var now = Date.now();
+    if (lastNarr[key] && lastNarr[key].text === text && now - lastNarr[key].at < 5000) return;
+    lastNarr[key] = { text: text, at: now };
+    queue.push({ text: text, key: key, kind: kind });
+    if (queue.length > 8) queue = queue.slice(-8);
+  }
+
+  function touch(c, now) { c.lastAct = now; }
+
+  function applyLive(ev, now) {
+    var key = ev.a;
+    if (!key && ev.d && has(dmap, ev.d)) key = dmap[ev.d];
+    if (!key || ev.e === "prompt" || ev.e === "end") key = "tecleader";
+    if (ev.d && ev.a) dmap[ev.d] = ev.a;
+    var c = spawn(key, false);
+    lastEventMs = now; hasEvents = true;
+
+    if (ev.e === "start") {
+      touch(c, now);
+      if (key === "security") goMeeting(c);
+      else if (c.act !== "arriving" && c.mode === "seated" && key !== "tecleader") c.act = "working";
+      if (key === "tecleader") c.act = "working";
+      narrate(phrase(ev, key), key, "info");
+    } else if (ev.e === "stop") {
+      if (key !== "tecleader") {
+        touch(c, now);
+        c.act = "delivering"; c.carry = true;
+        c.jobs = [{ type: "tec" }, { type: "seat" }];
+        narrate(phrase(ev, key), key, "done");
+      }
+    } else if (ev.e === "prompt") {
+      touch(c, now); c.act = "working";
+      narrate(phrase(ev, key), key, "info");
+    } else if (ev.e === "end") {
+      c.lastAct = 0; c.act = "idle";
+      narrate(phrase(ev, key), key, "info");
+    } else if (ev.e === "tool") {
+      touch(c, now);
+      if (key === "security") goMeeting(c);
+      else if (c.act === "idle" && c.mode === "seated") c.act = "working";
+      if (ev.k === "delegate") {
+        if (ev.g) {
+          var t = spawn(ev.g, false);
+          touch(t, now);
+          if (ev.g === "security") goMeeting(t);
+        }
+        c.act = c.act === "idle" ? "working" : c.act;
+      }
+      narrate(phrase(ev, key), key, "info");
+    }
+  }
+
+  /* Evento antigo (página aberta depois): só garante os personagens sentados; sem narração nem caminhada. */
+  function applyStale(ev) {
+    var key = ev.a || "tecleader";
+    if (ev.d && ev.a) dmap[ev.d] = ev.a;
+    spawn(key, true);
+    if (ev.g) spawn(ev.g, true);
+    hasEvents = true;
+    lastEventMs = Math.max(lastEventMs, ev.t * 1000);
+  }
+
+  /* --------------------------------------------------------- transporte */
+
+  var batch = [], seen = Object.create(null), loadedOnce = false, failures = 0, inflight = false, inflightSince = 0;
+  window.E = function (o) { if (batch.length < 1000) batch.push(o); };
+
+  function ingest() {
+    var list = batch, nowSeen = Object.create(null), first = !loadedOnce, i, ev, now, age;
+    batch = []; loadedOnce = true;
+    for (i = 0; i < list.length; i++) {
+      ev = clean(list[i]);
+      if (!ev) continue;
+      nowSeen[ev.i] = 1;
+      if (has(seen, ev.i)) continue;
+      now = Date.now();
+      age = now - ev.t * 1000;
+      if (first && age > STALE_MS) applyStale(ev); else applyLive(ev, now);
+    }
+    seen = nowSeen;
+    renderStatus();
+  }
+
+  function showError(on) { $("notice").hidden = !on; }
+
+  function poll() {
+    var now = Date.now();
+    if (inflight && now - inflightSince < 5000) return;
+    inflight = true; inflightSince = now;
+    var s = document.createElement("script");
+    s.src = "events.js?t=" + now;
+    s.onload = function () { inflight = false; s.remove(); failures = 0; showError(false); ingest(); };
+    s.onerror = function () {
+      inflight = false; s.remove(); batch = []; failures++;
+      if (failures >= 2) { showError(true); renderStatus(); }
+    };
+    document.head.appendChild(s);
+  }
+
+  /* ---------------------------------------------------------- interface */
+
+  var logEl = $("log"), emptyEl = $("empty"), rosterEl = $("roster"), statusEl = $("status");
+  var rosterCache = "", statusCache = "", labelCache = "";
+  var ACT_TEXT = { idle: "ocioso", working: "trabalhando", meeting: "em reunião", delivering: "entregando", arriving: "chegando" };
+
+  function pad2(n) { return n < 10 ? "0" + n : "" + n; }
+
+  function addLog(item) {
+    var d = new Date(), li = document.createElement("li"), tm = document.createElement("time"), sp = document.createElement("span");
+    tm.textContent = pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + ":" + pad2(d.getSeconds());
+    sp.textContent = item.text;
+    if (item.kind === "done") li.className = "done";
+    li.appendChild(tm); li.appendChild(sp);
+    logEl.insertBefore(li, logEl.firstChild);
+    while (logEl.children.length > 5) logEl.removeChild(logEl.lastChild);
+    emptyEl.hidden = true;
+  }
+
+  function showBubble(item, now) {
+    var c = chars[item.key];
+    if (!c) return;
+    if (!c.bubble) {
+      c.bubble = document.createElement("div");
+      c.bubble.className = "bubble";
+      bubblesEl.appendChild(c.bubble);
+    }
+    c.bubble.textContent = item.text;
+    c.bubble.hidden = false;
+    c.bubbleUntil = now + BUBBLE_MS;
+  }
+
+  function drain() {
+    var item = queue.shift();
+    if (!item) return;
+    addLog(item);
+    showBubble(item, Date.now());
+  }
+
+  function positionBubbles(now) {
+    var k, c, left;
+    for (k in chars) {
+      if (!has(chars, k)) continue;
+      c = chars[k];
+      if (!c.bubble) continue;
+      if (now > c.bubbleUntil) { c.bubble.hidden = true; continue; }
+      left = Math.max(14, Math.min(86, c.x / W * 100));
+      c.bubble.style.left = left + "%";
+      c.bubble.style.top = Math.max(14, (c.y - 18) / H * 100) + "%";
+    }
+  }
+
+  function renderStatus() {
+    var st, txt;
+    if (!$("notice").hidden && !hasEvents) { st = "error"; txt = "Sem conexão com os eventos"; }
+    else if (!hasEvents) { st = "wait"; txt = "Aguardando agentes..."; }
+    else if (quiet) { st = "quiet"; txt = "Sem atividade (há mais de 5 min)"; }
+    else { st = "active"; txt = "Ativo"; }
+    if (st + txt !== statusCache) { statusCache = st + txt; statusEl.dataset.state = st; statusEl.textContent = txt; }
+
+    var rows = [], working = 0, k, c;
+    for (k in chars) {
+      if (!has(chars, k)) continue;
+      c = chars[k];
+      if (c.act === "working" || c.act === "meeting" || c.act === "delivering") working++;
+      rows.push(c);
+    }
+    var sig = rows.map(function (r) { return r.key + ":" + r.act + ":" + (r.mode === "walking" ? "walking" : r.node.type); }).join("|");
+    if (sig !== rosterCache) {
+      rosterCache = sig;
+      while (rosterEl.firstChild) rosterEl.removeChild(rosterEl.firstChild);
+      rows.forEach(function (r) {
+        var li = document.createElement("li");
+        li.textContent = r.label + ": " + ACT_TEXT[r.act];
+        li.dataset.agent = r.key;
+        li.dataset.state = r.act;
+        li.dataset.node = r.mode === "walking" ? "walking" : r.node.type;
+        rosterEl.appendChild(li);
+      });
+    }
+    var lbl = "Salinha dos agentes: " + rows.length + (rows.length === 1 ? " agente na sala" : " agentes na sala") +
+      ", " + working + " trabalhando";
+    if (lbl !== labelCache) { labelCache = lbl; cv.setAttribute("aria-label", lbl); }
+  }
+
+  /* ------------------------------------------------------------- sprites */
+
+  var HEAD = [
+    "...KKKKKK...", "..KHHHHHHK..", "..KHHHHHHK..", "..KSSSSSSK..", "..KSESSESK..", "..KSSSSSSK..", "...KSSSSK..."
+  ];
+  var TORSO = {
+    down: ["..KTTTTTTK..", ".KTTTTTTTTK.", ".KSTTTTTTSK.", ".KSTTTTTTSK.", "..KTTTTTTK.."],
+    typeA: ["..KTTTTTTK..", ".KTTTTTTTTK.", ".KSTTTTTTTK.", ".KTTTTTTTSK.", "..KTTTTTTK.."],
+    typeB: ["..KTTTTTTK..", ".KTTTTTTTTK.", ".KTTTTTTTSK.", ".KSTTTTTTTK.", "..KTTTTTTK.."]
+  };
+  var LEGS = {
+    stand: ["..KPPPPPPK..", "..KPPKKPPK..", "..KPP..PPK..", "..KDD..DDK.."],
+    open: ["..KPPPPPPK..", "..KPPKKPPK..", ".KPP....PPK.", ".KDD....DDK."],
+    close: ["..KPPPPPPK..", "..KPPKKPPK..", "...KPPPPK...", "...KDDDDK..."]
+  };
+  var FRAMES = [
+    [TORSO.down, LEGS.stand], [TORSO.typeA, LEGS.stand], [TORSO.typeB, LEGS.stand], [TORSO.down, LEGS.open], [TORSO.down, LEGS.close]
+  ];
+
+  function sprite(c, frame) {
+    var id = frame;
+    if (c.sprites[id]) return c.sprites[id];
+    var cvs = document.createElement("canvas"), g, rows, r, col, ch, pal;
+    cvs.width = 12; cvs.height = 16;
+    g = cvs.getContext("2d");
+    rows = HEAD.concat(FRAMES[frame][0], FRAMES[frame][1]);
+    pal = { K: "#1c1c28", H: c.hair, S: c.skin, E: "#1c1c28", T: c.shirt, P: "#2c3350", D: "#15151e" };
+    for (r = 0; r < rows.length; r++) {
+      for (col = 0; col < 12; col++) {
+        ch = rows[r].charAt(col);
+        if (has(pal, ch)) { g.fillStyle = pal[ch]; g.fillRect(col, r, 1, 1); }
+      }
+    }
+    c.sprites[id] = cvs;
+    return cvs;
+  }
+
+  /* -------------------------------------------------------------- desenho */
+
+  function R(g, x, y, w, h, col) { g.fillStyle = col; g.fillRect(Math.round(x), Math.round(y), w, h); }
+
+  var bg = document.createElement("canvas");
+  bg.width = W; bg.height = H;
+  (function drawBackground(g) {
+    var x, y;
+    for (y = 0; y < H; y += 16) for (x = 0; x < 240; x += 16) R(g, x, y, 16, 16, ((x + y) / 16) % 2 ? "#b4c3d8" : "#a9b9d0");
+    for (y = 0; y < H; y += 16) for (x = 244; x < W; x += 16) R(g, x, y, 16, 16, ((x + y) / 16) % 2 ? "#c7b9d8" : "#bcaecf");
+    R(g, 0, 0, W, 36, "#56667f"); R(g, 0, 32, W, 4, "#36425a");
+    [[16, 6], [62, 6], [168, 6], [206, 6]].forEach(function (p) {
+      R(g, p[0], p[1], 28, 22, "#1c2536"); R(g, p[0] + 2, p[1] + 2, 24, 18, "#8fd0f0"); R(g, p[0] + 13, p[1] + 2, 2, 18, "#1c2536"); R(g, p[0] + 2, p[1] + 10, 24, 2, "#1c2536");
+    });
+    R(g, 104, 5, 40, 24, "#1c2536"); R(g, 106, 7, 36, 20, "#f4f6fa");
+    R(g, 110, 11, 14, 2, "#3b6fd4"); R(g, 110, 16, 24, 2, "#2f9e6a"); R(g, 110, 21, 10, 2, "#d4527a");
+    R(g, 240, 36, 4, 104, "#36425a"); R(g, 240, 172, 4, 28, "#36425a");
+    R(g, 244, 0, 76, 36, "#6a5a80"); R(g, 244, 32, 76, 4, "#43385a");
+    R(g, 262, 8, 40, 14, "#43385a"); R(g, 264, 10, 36, 10, "#e8e2f2");
+    R(g, 0, 36, 3, 150, "#36425a"); R(g, 0, 186, 3, 14, "#8a5a2c");
+    var dx, dy, hw;
+    for (dy = -11; dy <= 11; dy++) {
+      hw = Math.round(Math.sqrt(121 - dy * dy));
+      R(g, MEET_CX - hw, MEET_CY + dy, hw * 2, 1, dy < 8 ? "#9a6b3c" : "#6e4a28");
+    }
+    R(g, MEET_CX - 3, MEET_CY - 3, 6, 6, "#b98450");
+    [[230, 190], [6, 40]].forEach(function (p) { R(g, p[0], p[1], 6, 6, "#7a4a2a"); R(g, p[0] - 1, p[1] - 8, 8, 8, "#2f9e5a"); R(g, p[0] + 1, p[1] - 11, 4, 4, "#46c274"); });
+    g.fillStyle = "#e8e2f2"; g.font = "bold 6px monospace"; g.textAlign = "center"; g.textBaseline = "middle";
+    g.fillStyle = "#43385a"; g.fillText("REUNIAO", 282, 15);
+  })(bg.getContext("2d"));
+
+  function drawDesk(c, now) {
+    var d = deskOf(c.slot), working = c.act === "working" && c.mode === "seated" && c.node.type === "seat";
+    R(ctx, d.x, d.y + 2, d.w, 10, "#a8733f"); R(ctx, d.x, d.y + 10, d.w, 2, "#7d5230"); R(ctx, d.x, d.y + 2, d.w, 1, "#c99a63");
+    R(ctx, d.x + 3, d.y - 5, 12, 8, "#20242e");
+    R(ctx, d.x + 4, d.y - 4, 10, 6, working ? ((Math.floor(now / 300) % 2) ? "#7ee8a6" : "#4fb87a") : "#2c3a4a");
+    if (working) { R(ctx, d.x + 5, d.y - 3, 5, 1, "#1c4a30"); R(ctx, d.x + 5, d.y - 1, 7, 1, "#1c4a30"); }
+    R(ctx, d.x + 8, d.y + 3, 2, 2, "#20242e");
+    R(ctx, d.x + d.w - 8, d.y + 4, 4, 4, "#f4f6fa");
+    R(ctx, d.x + 3, d.y + 6, d.w - 6, 5, "#3a2f2a");
+    ctx.fillStyle = "#f3f0e6"; ctx.font = "bold 5px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(c.plate, d.x + d.w / 2, d.y + 9);
+  }
+
+  function frameOf(c, now) {
+    if (c.mode === "walking" && !paused) return 3 + (Math.floor(now / 180) % 2) * 1;
+    if (reduced || paused) return 0;
+    if (c.act === "working" && c.node.type === "seat") return 1 + (Math.floor(now / 250) % 2);
+    if (c.act === "meeting" && c.mode === "seated") return 1 + (Math.floor(now / 700) % 2);
+    return 0;
+  }
+
+  function drawChar(c, now) {
+    var f = frameOf(c, now), bob = (!reduced && !paused && f === 0 && c.mode === "seated" && Math.floor(now / 1000) % 2) ? 1 : 0;
+    var px = Math.round(c.x - 6), py = Math.round(c.y - 16) + bob;
+    ctx.drawImage(sprite(c, f), px, py);
+    if (c.carry) { R(ctx, px + 3, py - 7, 7, 5, "#f4f6fa"); R(ctx, px + 4, py - 6, 5, 1, "#8a94a8"); R(ctx, px + 4, py - 4, 3, 1, "#8a94a8"); }
+    if (c.wait > 0 && c.node.type === "tec") { R(ctx, px + 3, py - 7, 7, 5, "#b8f0c8"); R(ctx, px + 5, py - 6, 3, 3, "#166534"); }
+  }
+
+  function draw(now) {
+    ctx.drawImage(bg, 0, 0);
+    var list = order.map(function (k) { return chars[k]; }), seatedAtDesk = [], others = [];
+    list.forEach(function (c) { (c.mode === "seated" && c.node.type === "seat" ? seatedAtDesk : others).push(c); });
+    seatedAtDesk.forEach(function (c) { drawChar(c, now); });
+    var deskSlots = {};
+    list.forEach(function (c) { deskSlots[c.slot] = c; });
+    Object.keys(KNOWN).forEach(function (k) { if (!has(chars, k)) { var g = KNOWN[k]; drawDesk({ slot: g.slot, plate: g.plate, act: "idle", mode: "seated", node: { type: "seat" } }, now); } });
+    list.forEach(function (c) { drawDesk(c, now); });
+    others.sort(function (a, b) { return a.y - b.y; });
+    others.forEach(function (c) { drawChar(c, now); });
+  }
+
+  /* ---------------------------------------------------------------- laço */
+
+  function fit() {
+    var vw = document.documentElement.clientWidth - 40, avail = vw > 860 ? Math.floor(vw * 0.62) : vw;
+    if (avail < W) { cv.style.width = "100%"; cv.style.height = "auto"; return; }
+    var s = Math.max(1, Math.min(4, Math.floor(avail / W)));
+    cv.style.width = W * s + "px"; cv.style.height = H * s + "px";
+  }
+  window.addEventListener("resize", fit);
+
+  var lastTs = 0, acc = 0;
+  function frame(ts) {
+    var dt = Math.min(ts - lastTs, 250) / 1000;
+    lastTs = ts; acc += dt;
+    if (acc * 1000 >= FRAME_MS) {
+      var now = Date.now(), moveDt = (paused ? 0 : acc);
+      acc = 0;
+      var k;
+      for (k in chars) if (has(chars, k)) stepChar(chars[k], moveDt);
+      draw(now);
+      positionBubbles(now);
+    }
+    window.requestAnimationFrame(frame);
+  }
+
+  $("pause").addEventListener("click", function () {
+    paused = !paused;
+    this.setAttribute("aria-pressed", paused ? "true" : "false");
+    this.textContent = paused ? "Retomar animação" : "Pausar animação";
+  });
+  $("reload").addEventListener("click", function () { window.location.reload(); });
+
+  spawn("tecleader", true);
+  fit();
+  renderStatus();
+  setInterval(poll, POLL_MS);
+  setInterval(function () { logicTick(Date.now()); renderStatus(); }, 500);
+  setInterval(drain, NARRATE_MS);
+  poll();
+  window.requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

@@ -2,6 +2,27 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.7.0 — 2026-10-11
+
+Salinha dos agentes, opcional (`.specs/done/agents-office/spec.md`; sem release/tag: `marketplace.json` e o `ref` do template seguem em 0.6.4).
+
+- REQ-001 (opt-in): desligada por padrão; o TecLeader oferece uma vez (recusa grava `off`); nova skill `office` com
+  `/sdd:office on|off|status`; preferência em `~/.claude/sdd/office.conf` (por usuário, fora do repositório).
+- REQ-002 (abertura automática): com `on`, a sessão nova abre o navegador padrão uma vez (`cmd.exe /c start`, `open`,
+  `xdg-open`); falha ao abrir não interrompe a sessão.
+- REQ-003 (eventos): hooks `office-event.sh`, `office-pref.sh` e `office-start.sh` registrados em `hooks.json`.
+- REQ-004 (privacidade): grava só agente, categoria da ferramenta, destino da delegação, tipo do evento, horário e
+  descrição curta da delegação (caminhos e termos de segredo viram `[omitido]`); nunca conteúdo, comandos, prompts,
+  saídas ou caminhos. Arquivos na pasta temporária do sistema, sala por projeto (hash do caminho).
+- REQ-005 (tela): `office/office.html`, sala em pixel art 16 bits com uma mesa por agente, popup com o processo atual,
+  botão "Pausar animação", respeita `prefers-reduced-motion`; sem dependências de terceiros, sem servidor, sem rede.
+- Custo: hooks com `"async": true`; no Windows cada hook abre um bash (~165 ms) fora do caminho crítico; desligada, o
+  hook só confere a preferência. Em CLI sem suporte a `async`, bloquearia ~165 ms por evento.
+- REQ-006 (docs e versão): README, `docs/primeiros-passos.md`, manual, `docs/arquitetura.md` e `CLAUDE.md`; `sdd` 0.7.0.
+- Testes: 363 (shell + página); `bash plugins/sdd/hooks/tests/run-all.sh` (~4 min no Windows; `--no-page` pula a página).
+  Segurança revisada em 3 voltas (aprovada). Validado em Chrome 155 e Edge 154 no Windows, Claude Code 2.1.296; não
+  testado em macOS, Linux nem Firefox.
+
 ## docs — 2026-10-11
 
 Guia de primeiro uso (`.specs/done/first-run-guide/spec.md`), sem mudança nos plugins (sem bump).

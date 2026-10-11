@@ -3,7 +3,7 @@
 Guia para quem **nunca usou** o Claude SDD Framework nem plugins do Claude Code. Siga na ordem: cada passo diz o que
 **fazer**, o que **você vai ver** e como **conferir** que deu certo antes de seguir.
 
-Testado com o Claude Code 2.1.296 e a versão `v0.6.4` do framework.
+Testado com o Claude Code 2.1.296 e a versão `v0.6.4` do framework (a salinha dos agentes, opcional, chega no `sdd` 0.7.0).
 
 ## Índice
 
@@ -16,6 +16,7 @@ Testado com o Claude Code 2.1.296 e a versão `v0.6.4` do framework.
 - [O que versionar](#o-que-versionar)
 - [Equipe: o que cada dev faz](#equipe-o-que-cada-dev-faz)
 - [Workspace com vários repositórios](#workspace-com-vários-repositórios)
+- [Salinha dos agentes (opcional)](#salinha-dos-agentes-opcional)
 - [Atualizar a versão](#atualizar-a-versão)
 - [Problemas comuns](#problemas-comuns)
 
@@ -281,6 +282,23 @@ trabalhar (é lá que ficam o settings, o `CLAUDE.md` e o `.specs/`), não na pa
 Para trabalho que envolve mais de um projeto, veja [Trabalhar entre projetos](../README.md#-trabalhar-entre-projetos)
 no README.
 
+## Salinha dos agentes (opcional)
+
+Uma página local, aberta no navegador, mostra uma sala em pixel art com uma mesa por agente e o que cada um está fazendo
+(ex.: "backend: editando arquivos"). Vem **desligada**; sem dependências de terceiros, sem servidor, sem rede.
+
+- **Aceitar na primeira conversa:** o TecLeader oferece uma vez, no fim da primeira resposta (e no fim do onboarding).
+  Responda que quer; se recusar, ela fica desligada.
+- **Ligar ou desligar depois:** `/sdd:office on`, `/sdd:office off` ou `/sdd:office status` (na primeira vez o Claude
+  pede para você aprovar o comando), ou peça ao TecLeader. O `on` já abre a tela e, nas sessões seguintes, ela abre
+  sozinha no navegador padrão.
+- **Onde fica a preferência:** `~/.claude/sdd/office.conf`, por usuário, nunca no repositório. A página guarda só agente,
+  tipo de ferramenta e horário (nunca conteúdo de arquivos, comandos ou prompts), na pasta temporária do sistema.
+- **Requisitos:** bash (Git Bash no Windows) e navegador moderno. Validada no Windows (Chrome, Edge); não testada em macOS,
+  Linux nem Firefox.
+
+Detalhes e limites: [README](../README.md#-salinha-dos-agentes-opcional).
+
 ## Atualizar a versão
 
 1. No `.claude/settings.json` do projeto, troque o `"ref"` pela nova tag (ex.: de `"v0.6.4"` para a tag nova).
@@ -307,5 +325,6 @@ no README.
 | `/plugin` › Errors: "enabled in project settings but isn't installed here" | O settings foi copiado (ou veio pelo git), mas o plugin não foi instalado nesta máquina | `claude plugin install sdd@claude-sdd-framework --scope project` na raiz do projeto |
 | Verificação de onboarding (hook) sem efeito no Windows | Git for Windows ausente (o hook usa `bash`) | Instale o Git for Windows; sem ele, o TecLeader faz a mesma verificação lendo os arquivos |
 | `git diff` mostra o `.claude/settings.json` alterado logo após o install | O `plugin install` reordena as chaves | Sem mudança de conteúdo; pode commitar ou descartar |
+| A salinha dos agentes não abre | Preferência desligada, navegador padrão não definido ou Git Bash ausente | Rode `/sdd:office status` (se `off`, `/sdd:office on`); defina um navegador padrão; instale o Git for Windows (e confira que o `bash` do PATH não é o do WSL) |
 
 Outros problemas: [Solução de problemas](manual-de-uso.html#problemas) no manual.

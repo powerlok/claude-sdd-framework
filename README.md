@@ -5,13 +5,13 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.6.4-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.7.0-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
 ![idioma](https://img.shields.io/badge/docs-pt--BR-555)
 
-[Início rápido](#-início-rápido) · [Primeiros passos](docs/primeiros-passos.md) · [Como funciona](#-como-funciona) · [O time](#-o-time) · [Manual de uso](docs/manual-de-uso.html) · [Arquitetura](docs/arquitetura.md)
+[Início rápido](#-início-rápido) · [Primeiros passos](docs/primeiros-passos.md) · [Como funciona](#-como-funciona) · [O time](#-o-time) · [Manual de uso](docs/manual-de-uso.html) · [Arquitetura](docs/arquitetura.md) · [Salinha dos agentes](#-salinha-dos-agentes-opcional)
 
 </div>
 
@@ -95,7 +95,7 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
    [`templates/project-settings.git.json`](templates/project-settings.git.json) para `.claude/settings.json`
    (veja as [proteções do template](#-proteções-do-template)).
 
-3. Instale o plugin no projeto e confira com `claude plugin list` (`sdd` 0.6.4, `project`, `enabled`):
+3. Instale o plugin no projeto e confira com `claude plugin list` (`sdd` 0.7.0, `project`, `enabled`):
 
    ```bash
    claude plugin install sdd@claude-sdd-framework --scope project
@@ -221,6 +221,40 @@ Três modos, com efeitos diferentes (verificados na documentação oficial e em 
 - O `CLAUDE.md` de um projeto só vale para ele; o de um projeto de referência é dado, não instrução. Use a variável
   acima só para repositórios confiáveis.
 
+## 🏢 Salinha dos agentes (opcional)
+
+Uma página HTML local, aberta no navegador, mostra uma **sala em pixel art 16 bits** com uma mesa por agente
+(tecleader, backend, frontend, tests, security, infra-architect; agentes novos ganham mesa). Os personagens aparecem
+trabalhando, entregando, em revisão ou ociosos, e um popup mostra o processo atual (ex.: "TecLeader → delegou uma
+tarefa ao backend", "backend: editando arquivos", "tests: rodando validação"). Sem dependências de terceiros, sem
+servidor, sem rede.
+
+**Desligada por padrão.** O TecLeader oferece uma vez (no fim da primeira resposta e no fim do onboarding; recusar
+grava `off`). Depois, liga e desliga a qualquer momento:
+
+| Comando | Efeito |
+|---|---|
+| `/sdd:office on` | Liga e abre a tela na hora (na primeira vez o Claude pede para você aprovar o comando) |
+| `/sdd:office off` | Desliga; o hook só confere a preferência e sai |
+| `/sdd:office status` | Mostra a preferência atual |
+
+Também dá para pedir ao TecLeader. A preferência fica em `~/.claude/sdd/office.conf` (respeita `CLAUDE_CONFIG_DIR`),
+por usuário, nunca no repositório. Para apagar, remova o arquivo.
+
+- **Abre sozinha:** com `on`, cada sessão nova abre o navegador padrão uma vez (Windows `cmd.exe /c start`, macOS `open`,
+  Linux `xdg-open`); falha ao abrir não interrompe a sessão.
+- **Privacidade:** grava só agente, categoria da ferramenta (read/edit/run/web/delegate/plan/ask/mcp/other), agente de
+  destino da delegação, tipo do evento, horário e a descrição curta da delegação (caminhos, termos de segredo e senhas
+  viram `[omitido]`). Nunca grava conteúdo de arquivos, comandos, prompts, saídas ou caminhos. Os arquivos ficam na
+  pasta temporária do sistema (`sdd-office-<uid>/<sala>/`), nunca no repositório; a sala é por projeto (hash do caminho).
+- **Custo:** os hooks usam `"async": true`; no Windows cada hook abre um bash (~165 ms) fora do caminho crítico. Em
+  versão do CLI sem suporte a `async`, cada hook bloquearia ~165 ms por evento.
+- **Limites:** exige bash (Git Bash no Windows; atenção ao bash do WSL no PATH) e navegador moderno. Validada em Chrome 155
+  e Edge 154 no Windows, com Claude Code 2.1.296; **não testada** em macOS, Linux nem Firefox. A página usa `file://` com
+  reinjeção de script a cada 1 s: política corporativa que bloqueie `file://` impede a atualização (a página avisa).
+  Tem botão "Pausar animação" e respeita `prefers-reduced-motion`.
+- **Segurança:** revisada em 3 voltas (aprovada); 363 testes (shell + página).
+
 ## 🔁 Atualização
 
 ```bash
@@ -275,7 +309,7 @@ e repassa aos demais agentes apenas os requisitos validados.
 |---|---|
 | [Primeiros passos](docs/primeiros-passos.md) | Primeiro uso passo a passo: código existente ou projeto do zero, o que versionar, problemas comuns |
 | [Manual de uso](docs/manual-de-uso.html) | 18 exemplos passo a passo, solução de problemas. Baixe e abra no navegador (funciona offline) |
-| [Arquitetura](docs/arquitetura.md) | Componentes, carregamento de skills, resolução da stack, segurança |
+| [Arquitetura](docs/arquitetura.md) | Componentes, carregamento de skills, resolução da stack, hooks e salinha dos agentes, segurança |
 | [CHANGELOG](CHANGELOG.md) | Histórico de versões |
 | [`.specs/INDEX.md`](.specs/INDEX.md) | Índice das specs: ativas em `.specs/<feature>/`, concluídas arquivadas em `.specs/done/` |
 
@@ -323,6 +357,7 @@ claude-sdd-framework/
 - A verificação de onboarding no início da sessão é um hook em bash (no Windows, requer Git Bash no PATH);
   sem ele, o TecLeader faz a mesma verificação lendo os arquivos.
 - Stacks sem referência (ex.: Vue, Java, Go) usam os princípios gerais; o agente declara a lacuna.
+- A salinha dos agentes (opcional) só foi validada no Windows (Chrome e Edge); macOS, Linux e Firefox não foram testados.
 - Caminho `.mcp.json` (Jira, GitHub, GitLab, Azure DevOps) ainda não validado em rede com inspeção TLS (ex.: Zscaler).
 
 ## 📄 Licença

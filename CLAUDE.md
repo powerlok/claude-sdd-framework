@@ -36,6 +36,8 @@ Ativas em `.specs/<feature>/` (`spec.md`, `tasks.md`); concluídas em `.specs/do
 - Antes de cada bump de versão (obrigatório): `claude plugin validate ./plugins/sdd --strict`,
   `claude plugin validate ./plugins/authoring --strict` e `claude plugin validate .` (marketplace); depois bump de
   `version`, CHANGELOG e versões no README e em `docs/` (ver "Versão × release")
+- Testar a salinha dos agentes (hooks + página): `bash plugins/sdd/hooks/tests/run-all.sh` (~4 min no Windows;
+  `--no-page` pula a página)
 - Testar um agente sem instalar: `claude -p "<prompt>" --plugin-dir ./plugins/sdd --agent sdd:<agente> --allowedTools "..."`
   (prompt logo após `-p`; `--allowedTools` é variádica)
 - Inspecionar carregamento: `--output-format stream-json --verbose` (evento `init`: agentes, skills, MCP)
