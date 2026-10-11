@@ -94,7 +94,7 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
    {
      "extraKnownMarketplaces": {
        "claude-sdd-framework": {
-         "source": { "source": "git", "url": "https://github.com/powerlok/claude-sdd-framework.git" }
+         "source": { "source": "git", "url": "https://github.com/powerlok/claude-sdd-framework.git", "ref": "v0.6.4" }
        }
      },
      "enabledPlugins": { "sdd@claude-sdd-framework": true },
@@ -108,8 +108,9 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
    `~/.ssh`, `~/.aws`, `~/.azure`, `~/.config/gh`, `~/.kube`, `~/.docker/config.json`); e as formas usuais de push
    forçado/destrutivo (`--force*`, `-f`, `+refspec`, `--mirror`, `--delete`/`-d`). Push comum pede confirmação
    (`permissions.ask`).
-   Para fixar uma versão do framework, acrescente `"ref"` em `source` (branch ou tag, ex.: `"ref": "v0.6.4"`); sem
-   `ref`, vale a branch padrão do repositório.
+   O template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.6.4"`). Para subir de versão: troque o `ref` pela nova
+   tag e rode `claude plugin marketplace update claude-sdd-framework` e `claude plugin update sdd@claude-sdd-framework
+   --scope project`. Sem `ref`, vale a branch padrão do repositório (sempre a última versão).
 
    > **Limites:** o deny é defesa em profundidade, não barreira. O deny de `Read` cobre as ferramentas de arquivo e os
    > comandos de arquivo que o Claude Code reconhece no Bash (`cat`, `head`, `tail`, `sed`, `tee`, redirecionamentos),
@@ -278,6 +279,10 @@ claude plugin validate .                    # marketplace
 ```
 
 Depois: bump de `version` no `plugin.json` alterado, seção no [CHANGELOG](CHANGELOG.md) e versões no README e em `docs/`.
+**Versão × release:** toda mudança em plugin sobe a `version` (commit em `main`, sem tag). **Release** é o conjunto
+pronto para consumo (validações acima, segurança aprovada quando aplicável, sem defeito aberto, CHANGELOG fechado):
+`metadata.version` do `marketplace.json`, tag anotada `vX.Y.Z`, `"ref"` do template e seção `## Release vX.Y.Z` no
+CHANGELOG. A tag versiona o marketplace inteiro; só é criada com confirmação. Detalhes em [CLAUDE.md](CLAUDE.md).
 
 Testar um agente sem instalar (prompt logo após `-p`, pois `--allowedTools` aceita vários valores):
 

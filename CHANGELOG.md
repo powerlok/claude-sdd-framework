@@ -2,6 +2,16 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## Release v0.6.4 — 2026-10-11
+
+Primeira release com tag. Inclui: `sdd` 0.6.4, `authoring` 0.2.1.
+A tag `v0.6.4` aponta para o commit `d936397` (conteúdo dos plugins); `metadata.version` e o `ref` do template vieram
+no commit seguinte, sem mudança nos plugins (tag não movida: exigiria push forçado).
+
+- `marketplace.json`: `metadata.version` = `0.6.4` (a tag versiona o marketplace inteiro).
+- `templates/project-settings.git.json` fixa a versão com `"ref": "v0.6.4"` (`.specs/done/pin-ref/spec.md`).
+- Regra "Versão × release" deste repositório (`CLAUDE.md`, README): bump sem tag; release com tag só com confirmação.
+
 ## sdd 0.6.4 — 2026-10-11
 
 Conformidade com a documentação oficial do Claude Code (`.specs/done/docs-conformance/spec.md`; reteste no CLI 2.1.296).

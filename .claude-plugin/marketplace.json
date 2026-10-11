@@ -1,7 +1,12 @@
 {
   "name": "claude-sdd-framework",
   "description": "Marketplace do processo de Desenvolvimento Orientado por Especificação (SDD): plugin sdd (padrão) e catálogo opcional de autoria.",
-  "owner": { "name": "Paulo Laredo" },
+  "owner": {
+    "name": "Paulo Laredo"
+  },
+  "metadata": {
+    "version": "0.6.4"
+  },
   "plugins": [
     {
       "name": "sdd",

@@ -3,7 +3,8 @@
     "claude-sdd-framework": {
       "source": {
         "source": "git",
-        "url": "https://github.com/powerlok/claude-sdd-framework.git"
+        "url": "https://github.com/powerlok/claude-sdd-framework.git",
+        "ref": "v0.6.4"
       }
     }
   },
