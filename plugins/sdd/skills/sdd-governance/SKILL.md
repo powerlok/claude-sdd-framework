@@ -41,6 +41,7 @@ Os agentes vêm do plugin e são chamados com o prefixo `sdd:`:
 - `sdd:techlead` (agente da sessão principal)
 - `sdd:backend`
 - `sdd:frontend`
+- `sdd:mobile`
 - `sdd:security`
 - `sdd:tests`
 - `sdd:infra-architect`
@@ -140,7 +141,7 @@ O TechLead deve:
 
 ## Responsabilidade dos Agentes
 
-### Implementadores (`backend`, `frontend`)
+### Implementadores (`backend`, `frontend`, `mobile`)
 
 Responsáveis por: design técnico (quando obrigatório), análise técnica,
 implementação, testes da própria feature (unitários, integração local,

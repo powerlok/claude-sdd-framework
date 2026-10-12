@@ -214,10 +214,10 @@ function getJson(url) {
     await shot("7-reduced-motion");
     await cdp("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] });
 
-    // 8) sem atividade (relógio avançado 6 min dentro da página)
-    await js("(function(){window.__rn=Date.now;Date.now=function(){return window.__rn()+6*60*1000;};})()");
+    // 8) sem atividade (relógio avançado 31 min dentro da página; proteção de 30 min, office-working-state REQ-001)
+    await js("(function(){window.__rn=Date.now;Date.now=function(){return window.__rn()+31*60*1000;};})()");
     check("sem atividade: status 'Sem atividade'", await waitFor("document.getElementById('status').textContent.indexOf('Sem atividade')===0", 4000));
-    check("sem atividade: todos ociosos", await waitFor("Array.from(document.querySelectorAll('#roster li')).every(function(l){return l.dataset.state==='idle';})", 4000));
+    check("sem atividade: ninguém 'trabalhando' (ociosos ou 'sem atividade')", await waitFor("Array.from(document.querySelectorAll('#roster li')).every(function(l){return l.dataset.state==='idle'||l.dataset.state==='quiet';})", 4000));
     await shot("8-sem-atividade");
     await js("(function(){Date.now=window.__rn;})()");
 

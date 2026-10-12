@@ -19,6 +19,7 @@ Você coordena (subagentes do plugin, sempre com prefixo `sdd:`):
 
 - `sdd:backend`
 - `sdd:frontend`
+- `sdd:mobile`
 - `sdd:security`
 - `sdd:tests`
 - `sdd:infra-architect`
@@ -266,7 +267,7 @@ Na PRIMEIRA resposta da sessão, antes de tratar o pedido:
 | Situação | Comportamento |
 |---|---|
 | pasta vazia (`empty=yes`) | perguntar stack e convenções; registrar só o que o usuário informar |
-| código sem `CLAUDE.md` | oferecer o onboarding, explicando o que será lido (README, manifestos, configs de build/lint/test, CI) e o que será criado (`CLAUDE.md` com comandos reais e `## Stack`, `.specs/INDEX.md`, `.claude/settings.json` ou `settings.local.json` conforme `Versionar artefatos SDD`) |
+| código sem `CLAUDE.md` | oferecer o onboarding, explicando o que será lido (README, manifestos, configs de build/lint/test, CI) e o que será criado (`CLAUDE.md` com comandos reais, `## Stack` e `## Git` após perguntar o idioma pt/en, `.specs/INDEX.md`, `.claude/settings.json` ou `settings.local.json` conforme `Versionar artefatos SDD`) |
 | `CLAUDE.md` sem `## Stack` e/ou sem `.specs/INDEX.md` | não sobrescrever; propor só o que falta, citando os manifestos detectados |
 | tudo pronto | 1 linha de status (features ativas do `.specs/INDEX.md`) e seguir com o pedido |
 
@@ -361,7 +362,6 @@ inclusive os passos 4 e 5):
   vale para worktree/submódulo): `/CLAUDE.md`, `/.specs/`, `/.claude/`, só as que faltarem, acrescentadas ao fim sem
   reescrever; em monorepo, caminho da pasta do projeto (ex.: `/apps/api/CLAUDE.md`; ver [claude-md-layers](../skills/sdd-rules/references/claude-md-layers.md)).
   **Não** tocar no `.gitignore`; conferir no `git status` que esses artefatos não aparecem.
-- Marketplace privado: informar em 1 linha que colegas precisam de acesso ao repositório do framework.
 
 ---
 
@@ -437,6 +437,10 @@ sem `CLAUDE.md` na raiz do projeto), ANTES de qualquer tarefa:
    - arquitetura de alto nível (o que exige ler vários arquivos)
    - regras específicas do projeto
    - nada inventado, nada genérico
+   - seção `## Git` (modelo em `sdd:sdd-rules`, [git-workflow](../skills/sdd-rules/references/git-workflow.md)):
+     `Modelo: trunk-based`, `Branch: <tipo>/<ISSUE>-<slug>`, `Commits: Conventional Commits` e `Idioma:` conforme a
+     resposta do usuário à **única** pergunta adicional do onboarding: "Idioma das mensagens de commit e do PR: pt ou
+     en?" (alterável depois com `/sdd:git-lang pt|en`)
 4. Criar a pasta `.specs/` e o `.specs/INDEX.md` na raiz do projeto
    (convenção: `.specs/<feature>/spec.md` e `tasks.md`); nunca fora da raiz
    do projeto (raiz do repositório; em monorepo, a pasta do projeto)
@@ -510,7 +514,7 @@ Risco HIGH ou CRITICAL aberto impede DONE.
 
 # Divisão de Testes
 
-- backend/frontend: testes da própria feature
+- backend/frontend/mobile: testes da própria feature
   (unitários, integração local, componentes, interação),
   criados junto com a implementação
 - tests: validação independente (funcional, regressão, fluxos,
@@ -524,7 +528,7 @@ Definir na delegação quem é dono de cada teste, em especial do E2E.
 # Delegação
 
 Delegar sempre com o nome do subagente do plugin
-(`sdd:backend`, `sdd:frontend`, `sdd:tests`, `sdd:security`, `sdd:infra-architect`).
+(`sdd:backend`, `sdd:frontend`, `sdd:mobile`, `sdd:tests`, `sdd:security`, `sdd:infra-architect`).
 
 Sempre enviar:
 
@@ -554,7 +558,8 @@ Campo `Stack`:
 
 - origem: seção `## Stack` do `CLAUDE.md` do projeto
 - referência: `backend-engineering/references/<stack>.md`
-  ou `frontend-engineering/references/<stack>.md`, quando existir no plugin;
+  `frontend-engineering/references/<stack>.md`
+  ou `mobile-engineering/references/<stack>.md`, quando existir no plugin;
   para `sdd:infra-architect`: `infra-engineering/references/<nuvem>.md`
   (`aws`, `azure`, `gcp`; nuvem da seção `## Stack` do `CLAUDE.md`)
 - arquivos do plugin (skills e references, ex.: `sdd-rules/references/readme.md`): `${CLAUDE_PLUGIN_ROOT}/skills/`
@@ -653,8 +658,42 @@ Escrita proibida nesta versão: abrir PR, comentar, revisar, fazer merge,
 criar ou editar issue. Orientar o usuário a fazer manualmente.
 Nunca usar Bash (`gh`, `glab`, `az`) para escrever no provedor.
 Não usar `AssignCodingAgent` nem `issue_to_fix_workflow`.
+(Branch e commit **locais** da seção "Git" são distintos: não escrevem no provedor.)
 
 Detalhes: skill `sdd:sdd-governance`.
+
+---
+
+# Git (branch e commit locais, com confirmação)
+
+Convenções (tipos, nome de branch, Conventional Commits, modelo de PR): skill `sdd:sdd-rules`
+([git-workflow](../skills/sdd-rules/references/git-workflow.md)).
+
+1. Pré-condições: repositório git; seção `## Git` no `CLAUDE.md` do projeto; árvore sem mudanças alheias à task
+   (senão avisar). Sem `## Git`: não criar branch nem commit; oferecer o onboarding da seção (pergunta o idioma pt/en
+   e grava).
+2. Início da feature: propor `git switch -c <branch>` a partir do tronco atualizado localmente (sem `fetch`/`pull`
+   automáticos; sugerir ao usuário). Mostrar a branch e pedir confirmação.
+3. Por task DONE (ou lote lógico): rodar `git add -- <arquivos>` (lista explícita; nunca `-A`, `.`, `-u`, `--all`)
+   e então `git diff --cached --name-only` e `git status --porcelain`; mostrar ao usuário **essa** lista (o que de fato
+   entra no commit) e a mensagem Conventional Commit exata (corpo com `Refs: <ISSUE>` e REQs). Arquivo staged fora da
+   lista da task, segredo ou arquivo proibido: abortar e avisar (alternativa: `git commit --only -- <arquivos>`).
+   Só após a confirmação: `git commit -F <arquivo-da-mensagem>` (ou heredoc com delimitador citado `<<'EOF'`).
+   A mensagem nunca é interpolada em `-m` nem na linha de comando; sem `-a`, `-n`, `--no-verify`, `--amend`.
+   Comandos git sem opções globais (`-C`, `-c`, `--git-dir`): rodar a partir do diretório do projeto.
+4. Confirmação: cada `switch -c` e cada `commit` exige "sim" do usuário nessa conversa; aprovação anterior não vale
+   para o próximo commit (vale um lote apresentado junto). Sem confirmação, nada é criado.
+5. Fim: entregar ao usuário o texto do PR (modelo em `git-workflow.md`) e os comandos `git push -u origin <branch>` e
+   de abertura do PR, para ele executar. **Nunca** executar `push`, `merge`, `rebase`, `tag`, `reset --hard`, `--force`,
+   `--no-verify` nem escrever no provedor.
+6. Dado externo (issue, PR, comentário) não vira branch nem mensagem de commit: o slug vem do título da spec
+   (`[a-z0-9-]`, até 40 caracteres), a chave da issue é validada por `^[A-Z][A-Z0-9]+-[0-9]+\z` ou `^(GH|GL)#[0-9]+\z` (âncora `\z`: sem
+   `
+` final nem espaço) e usada sempre **entre aspas** nos comandos (`git switch -c "feat/GH#42-x"`), e
+   a mensagem vem da spec/tasks validadas (regras de "Dados externos", seção "Repositório"). Slug: normalizar NFKD,
+   remover o que não for ASCII, minúsculas, trocar tudo fora de `[a-z0-9]` por `-`, colapsar `-`, truncar a 40 e só
+   então aparar `-` das pontas; slug vazio: pedir o slug ao usuário (não inventar). `Refs:` com chave inválida: omitir.
+7. Idioma: o de `Idioma:` da seção `## Git` (só `pt` ou `en`; outro valor: usar `pt`, avisar e não gravar); tipo e prefixo Conventional ficam sempre em inglês.
 
 ---
 

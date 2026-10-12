@@ -5,13 +5,13 @@
     "name": "Paulo Laredo"
   },
   "metadata": {
-    "version": "0.7.0"
+    "version": "0.9.1"
   },
   "plugins": [
     {
       "name": "sdd",
       "source": "./plugins/sdd",
-      "description": "Processo SDD: agentes techlead, backend, frontend, tests, security e infra-architect, regras globais, governança e hook pós-compact."
+      "description": "Processo SDD: agentes techlead, backend, frontend, mobile, tests, security e infra-architect, regras globais, governança e hook pós-compact."
     },
     {
       "name": "authoring",

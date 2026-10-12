@@ -91,6 +91,7 @@ Toda implementação deve considerar:
 
 Nunca:
 
+- executar `git commit`, `git push` ou qualquer comando git que altere o repositório (git é do TechLead)
 - mover negócio para frontend
 - inventar contratos de API
 - alterar backend sem necessidade

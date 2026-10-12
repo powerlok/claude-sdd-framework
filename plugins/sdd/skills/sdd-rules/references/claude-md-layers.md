@@ -77,7 +77,6 @@ Opção no `CLAUDE.md` do projeto, seção `## SDD`: `Versionar artefatos SDD: s
   `CLAUDE.md.bak-<AAAA-MM-DD>` (substituído pelo curto de workspace, ou nenhum com um só projeto). Nunca apagar.
 - Não seguir symlinks; destinos dentro da raiz do repositório; nomes de feature simples (sem `..`, `/`, `\`,
   caracteres de controle); conflitos verificados antes de qualquer escrita.
-- Marketplace privado: informar em 1 linha que colegas precisam de acesso ao repositório do framework.
 
 ## Trabalho entre projetos
 

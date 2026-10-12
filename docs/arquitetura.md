@@ -31,6 +31,7 @@ flowchart TD
     subgraph IMP[Implementadores · sonnet]
         BE[sdd:backend]
         FE[sdd:frontend]
+        MB[sdd:mobile]
     end
 
     subgraph SEC[Revisão de segurança · opus]
@@ -47,12 +48,14 @@ flowchart TD
 
     TL -->|"delega task (com campo Stack:)"| BE
     TL -->|"delega task (com campo Stack:)"| FE
+    TL -->|"delega task (com campo Stack:)"| MB
     TL -->|"revisão (quando aplicável)"| SC
     TL -->|solicita validação| TS
     TL -->|solicita decisão| IA
 
     BE -.->|resumo + evidências| TL
     FE -.->|resumo + evidências| TL
+    MB -.->|resumo + evidências| TL
     SC -.->|APROVADO / RISCO IDENTIFICADO| TL
     TS -.->|VALIDADO / REPROVADO| TL
     IA -.->|decisão + critérios INF-xxx| TL
@@ -118,9 +121,9 @@ claude-sdd-framework/
 ├── plugins/
 │   ├── sdd/
 │   │   ├── .claude-plugin/plugin.json # name, version (semver), description
-│   │   ├── agents/                   # techlead, backend, frontend, tests, security, infra-architect
+│   │   ├── agents/                   # techlead, backend, frontend, mobile, tests, security, infra-architect
 │   │   ├── hooks/hooks.json          # SessionStart (compact)
-│   │   └── skills/                   # sdd-rules, sdd-governance, backend/frontend-engineering, ...
+│   │   └── skills/                   # sdd-rules, sdd-governance, backend/frontend/mobile-engineering, git-lang, ...
 │   └── authoring/skills/             # skill-development, agent-development
 ├── templates/                        # settings (local/git), CLAUDE.md de projeto, .mcp.json (Jira, GitHub, GitLab, Azure)
 ├── docs/                             # este documento e o manual de uso
@@ -199,6 +202,7 @@ Na delegação e no settings, os agentes são chamados com o prefixo do plugin (
 | `sdd:techlead` | Orquestrador: tech lead, scrum master, coordenador SDD; único que encerra tasks | opus | Read, Edit, Write, Grep, Glob, Bash, Agent, Skill + 4 ferramentas de leitura do Jira em dois prefixos + ferramentas de leitura do provedor de código (seção 9) | nenhuma (carrega via ferramenta `Skill`, seção 6) |
 | `sdd:backend` | Implementador backend agnóstico de linguagem (DDD, SOLID, Clean/Hexagonal, TDD) | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, backend-engineering, bug-diagnosis, domain-modeling |
 | `sdd:frontend` | Implementador frontend agnóstico de framework (UX/UI, acessibilidade, performance, E2E) | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, frontend-engineering, bug-diagnosis |
+| `sdd:mobile` | Implementador mobile (React Native/Expo na referência atual; acessibilidade, permissões, armazenamento seguro, testes) | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, mobile-engineering, bug-diagnosis |
 | `sdd:tests` | Validador (QA): requisitos, regressão, integração, API, performance, E2E | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, bug-diagnosis |
 | `sdd:security` | Revisor de segurança (AppSec); somente revisa | opus | Read, Grep, Glob, Bash | sdd-rules |
 | `sdd:infra-architect` | Decisões de infraestrutura local e em nuvem (AWS, Azure, Google Cloud) | opus | Read, Write, Grep, Glob | sdd-rules, domain-modeling, infra-engineering |
@@ -210,6 +214,7 @@ flowchart LR
     subgraph Implementa
         BE[sdd:backend]
         FE[sdd:frontend]
+        MB[sdd:mobile]
     end
     subgraph Revisa
         SC[sdd:security]
@@ -245,12 +250,14 @@ com arquivos, testes, comandos, evidências, riscos e a stack/referência lida; 
 
 | Skill | Conteúdo | Quem usa |
 |---|---|---|
-| `sdd-rules` | regras globais (antes de alterar, SDD, escopo, qualidade, segurança, documentação, evidências, encerramento); `references/` com `readme.md`, `final-run.md`, `reproducibility.md` | todos |
+| `sdd-rules` | regras globais (antes de alterar, SDD, escopo, qualidade, segurança, documentação, evidências, encerramento); `references/` com `readme.md`, `final-run.md`, `reproducibility.md`, `git-workflow.md` | todos |
 | `sdd-governance` | papéis, estados, correção, escalonamento, evidências, contexto, Jira e repositório somente leitura | techlead |
 | `requirements-grilling` | protocolo de perguntas antes de escrever ou aprovar uma spec | techlead |
 | `backend-engineering` | princípios backend agnósticos + `references/dotnet.md`, `references/python.md` | backend |
 | `frontend-engineering` | princípios frontend agnósticos + `references/react.md`, `references/web-interface.md` | frontend |
-| `bug-diagnosis` | diagnóstico em 5 fases (o `tests` usa a fase de reprodução) | backend, frontend, tests |
+| `mobile-engineering` | princípios mobile agnósticos + `references/react-native-expo.md` | mobile |
+| `git-lang` | comando `/sdd:git-lang pt\|en` (só edita a linha `Idioma:` da seção `## Git`; `disable-model-invocation`) | usuário |
+| `bug-diagnosis` | diagnóstico em 5 fases (o `tests` usa a fase de reprodução) | backend, frontend, mobile, tests |
 | `domain-modeling` | glossário, modelo de domínio, critério e modelo de ADR | backend, infra-architect |
 | `infra-engineering` | princípios de nuvem + `references/aws.md`, `azure.md`, `gcp.md`; regra não relaxável: nunca aplicar sem confirmação | infra-architect |
 
@@ -261,6 +268,7 @@ Referências de stack existentes:
 | Backend | `.NET` (`dotnet.md`), Python (`python.md`) | exercitadas nos pilotos (ASP.NET Core e FastAPI) |
 | Frontend | React (`react.md`) | SPA em React (sem renderização no servidor) |
 | Frontend | `web-interface.md` | checklist de revisão de interface, para qualquer stack |
+| Mobile | React Native/Expo (`react-native-expo.md`) | Flutter, Swift e Kotlin: sem referência (`referência: nenhuma` + lacuna) |
 | Frontend | Angular | `references/angular.md` (adapta-se à versão do projeto: v20, v21, v22) |
 
 As `references/` **não** são pré-carregadas: o agente lê só a da stack informada.
@@ -298,7 +306,7 @@ flowchart LR
         TL[sdd:techlead] -->|"ferramenta Skill<br/>início da sessão e após compact"| R1[sdd:sdd-rules<br/>sdd:sdd-governance<br/>sdd:requirements-grilling]
     end
     subgraph Subagentes
-        SA[sdd:backend / frontend /<br/>tests / security / infra-architect] -->|"skills: no frontmatter<br/>pré-carregadas"| R2[sdd-rules + skills do papel]
+        SA[sdd:backend / frontend / mobile /<br/>tests / security / infra-architect] -->|"skills: no frontmatter<br/>pré-carregadas"| R2[sdd-rules + skills do papel]
         SA -->|Read sob demanda| R3[references/ da stack]
     end
 ```
@@ -357,6 +365,8 @@ Requisito sem teste é reportado pelo `sdd:tests` como lacuna de cobertura e imp
 | Regras não relaxáveis | `sdd-rules` e `templates/CLAUDE.md` | regras do projeto não podem relaxar segredos/credenciais, verificação SSL, confirmação de ações irreversíveis, Jira somente leitura e menor privilégio |
 | `security` não altera o projeto | `tools:` sem Edit/Write | tem Bash para verificações; a proibição de alterar vale pelo prompt |
 | `infra-architect` não executa | `tools:` sem Bash | limitado de fato |
+| Git local com confirmação | `techlead.md`, `sdd-rules/references/git-workflow.md` | o TechLead só cria branch e commit local após confirmação explícita (branch, mensagem e arquivos listados) e com a seção `## Git` no `CLAUDE.md`; nunca `push`, `merge`, `rebase`, `--force`, `--no-verify`; slug sanitizado e dado externo não vira mensagem |
+| Git destrutivo negado | `permissions.deny` em `templates/project-settings.git.json` | `git reset --hard`, `git clean -f*`, `git commit --no-verify`/`-n`, `git branch -D`, `git config*`, `git checkout -- `, `git restore*`; `git push *` segue em `ask`; `commit` e `switch -c` não estão em `allow` |
 | Hook seguro | `hooks.json` | apenas `echo` |
 | Credenciais do GitHub | README | nunca usuário/senha/token na URL; SSH ou gerenciador de credenciais do git |
 | Conteúdo de terceiros | rodapés das skills | origem `repo@commit` e licença SPDX; `authoring` reescrito com texto próprio |

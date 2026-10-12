@@ -20,6 +20,7 @@ Detalhes sob demanda (ler quando o assunto se aplicar):
 - [references/final-run.md](references/final-run.md): execução final (demonstração ao usuário)
 - [references/reproducibility.md](references/reproducibility.md): reprodutibilidade e o que nunca versionar
 - [references/claude-md-layers.md](references/claude-md-layers.md): camadas do `CLAUDE.md` e versionamento dos artefatos SDD
+- [references/git-workflow.md](references/git-workflow.md): fluxo Git (trunk-based, Conventional Commits, branch, modelo de PR)
 
 ---
 

@@ -274,7 +274,7 @@ tr:last-child td { border-bottom: 0; }
     <li class="opt">Technical Design<small>quando obrigatório</small></li>
     <li>Task<small>em <code>tasks.md</code></small></li>
     <li>Test Design<small>rastreio REQ → teste</small></li>
-    <li>Implementation<small>backend / frontend</small></li>
+    <li>Implementation<small>backend / frontend / mobile</small></li>
     <li class="opt">Security Review<small>quando aplicável</small></li>
     <li>Validation<small>agente <code>tests</code></small></li>
     <li>Correction<small>até aprovar</small></li>
@@ -287,7 +287,7 @@ tr:last-child td { border-bottom: 0; }
     <thead><tr><th>Tipo</th><th>Agentes</th><th>Pode</th><th>Não pode</th></tr></thead>
     <tbody>
       <tr><td>Coordenador</td><td><code>sdd:techlead</code></td><td>delegar, aprovar design, encerrar (DONE)</td><td>ser implementador</td></tr>
-      <tr><td>Implementadores</td><td><code>sdd:backend</code>, <code>sdd:frontend</code></td><td>implementar e testar a própria feature</td><td>encerrar tasks</td></tr>
+      <tr><td>Implementadores</td><td><code>sdd:backend</code>, <code>sdd:frontend</code>, <code>sdd:mobile</code></td><td>implementar e testar a própria feature</td><td>encerrar tasks</td></tr>
       <tr><td>Revisão de segurança</td><td><code>sdd:security</code></td><td>reportar riscos com severidade e evidência</td><td>implementar, corrigir, encerrar</td></tr>
       <tr><td>Validador</td><td><code>sdd:tests</code></td><td>validar requisitos, regressão, E2E, aceite</td><td>corrigir produção, encerrar</td></tr>
       <tr><td>Arquitetural</td><td><code>sdd:infra-architect</code></td><td>decisões de infraestrutura</td><td>implementar mudanças</td></tr>
@@ -304,7 +304,7 @@ tr:last-child td { border-bottom: 0; }
   <h3>Pré-requisitos <span class="badge verified">Verificado</span></h3>
   <ul>
     <li>Claude Code <strong>2.1.288</strong> ou superior (<code>claude --version</code>; testado no 2.1.296).</li>
-    <li>Git com acesso ao repositório privado. Teste: <code>git ls-remote https://github.com/powerlok/claude-sdd-framework.git</code>. O Claude Code usa as credenciais git da máquina (HTTPS com gerenciador de credenciais, ex.: <code>gh auth setup-git</code>, ou SSH).</li>
+    <li>Git com acesso de rede ao GitHub (o repositório é público; não precisa de credencial). Teste: <code>git ls-remote https://github.com/powerlok/claude-sdd-framework.git</code>. O Claude Code usa o git da máquina; se um proxy ou firewall bloquear o github.com, ajuste a rede antes.</li>
     <li>Windows: Git for Windows (o hook do plugin usa <code>bash</code>) e <code>claude</code> no PATH (ver <a href="#problemas">Solução de problemas</a>).</li>
     <li>Opcional: conector <strong>Atlassian</strong> no claude.ai, para ler issues do Jira.</li>
   </ul>
@@ -313,13 +313,13 @@ tr:last-child td { border-bottom: 0; }
   <ol>
     <li><strong>Uma vez por máquina</strong>, registre o marketplace na versão desejada (tag):</li>
   </ol>
-  <div class="code" data-label="bash"><pre><code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.7.0"</code></pre></div>
+  <div class="code" data-label="bash"><pre><code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.1"</code></pre></div>
   <ol start="2">
     <li><strong>Na raiz do projeto</strong> (raiz do repositório git; no projeto do zero, antes rode <code>git init</code>), copie o arquivo <strong>inteiro</strong> <a href="../templates/project-settings.git.json"><code>templates/project-settings.git.json</code></a> para <code>.claude/settings.json</code>. Só esse arquivo não carrega o plugin.</li>
     <li>Instale o plugin no projeto e confira:</li>
   </ol>
   <div class="code" data-label="bash"><pre><code>claude plugin install sdd@claude-sdd-framework --scope project
-claude plugin list        # sdd 0.7.0, Scope: project, enabled</code></pre></div>
+claude plugin list        # sdd 0.9.1, Scope: project, enabled</code></pre></div>
   <ol start="4">
     <li>Abra <code>claude</code> na raiz do projeto e aceite o diálogo de confiança da pasta (sem confiar, o plugin do projeto não carrega). A primeira resposta é do TechLead ("Sou o TechLead"), com a situação do projeto. Se instalou com a sessão aberta, use <code>/reload-plugins</code> ou abra nova sessão.</li>
     <li>Sem <code>CLAUDE.md</code>, o TechLead faz o onboarding: com <strong>código existente</strong>, pergunta "Faço o onboarding agora?" e, com o seu sim, lê o código e cria <code>CLAUDE.md</code> e <code>.specs/INDEX.md</code>; no <strong>projeto do zero</strong>, pergunta a stack (linguagem, framework, versão), a nuvem/infra (ou "nenhuma") e as convenções, assume que os artefatos são versionados (<code>Versionar artefatos SDD: sim</code>; você pode pedir <code>não</code>) e só cria os arquivos depois do seu ok. Ele nunca faz commit.</li>
@@ -349,7 +349,7 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
 <section class="sec" id="configurar" aria-labelledby="h-conf">
   <h2 id="h-conf"><span class="n">3.</span>Configurar o projeto</h2>
   <h3><code>CLAUDE.md</code> e a seção <code>## Stack</code></h3>
-  <p>O modelo em <a href="../templates/CLAUDE.md"><code>templates/CLAUDE.md</code></a> tem estas seções: Visão do projeto, <strong>Stack</strong>, Comandos, Arquitetura e Regras específicas do projeto. A seção <code>## Stack</code> é a fonte da stack para <code>sdd:backend</code> e <code>sdd:frontend</code>.</p>
+  <p>O modelo em <a href="../templates/CLAUDE.md"><code>templates/CLAUDE.md</code></a> tem estas seções: Visão do projeto, <strong>Stack</strong>, Comandos, Arquitetura e Regras específicas do projeto. A seção <code>## Stack</code> é a fonte da stack para <code>sdd:backend</code>, <code>sdd:frontend</code> e <code>sdd:mobile</code>. A seção opcional <code>## Git</code> (modelo, branch, commits, <code>Idioma: pt | en</code>) habilita o fluxo Git do TechLead.</p>
   <div class="code" data-label="markdown (trecho do modelo)"><pre><code>## Stack
 
 ### Backend
@@ -389,7 +389,7 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
   <p>Mudança em mais de um projeto: o plano separa projetos <strong>alterados</strong> e de <strong>referência</strong> e pede <strong>uma</strong> confirmação; cada projeto alterado ganha spec e tasks, ligadas por <code>Relacionada a:</code>; cada task mexe em um único repositório; nunca há commit. O <code>CLAUDE.md</code> de um projeto só vale para ele, e o de um projeto de referência é dado, não instrução.</p>
 
   <h3 id="salinha">Salinha dos agentes (opcional)</h3>
-  <p>Página HTML local, aberta no navegador, com uma <strong>sala em pixel art 16 bits</strong> e uma mesa por agente (techlead, backend, frontend, tests, security, infra-architect; agentes novos ganham mesa). Os personagens aparecem trabalhando, entregando, em revisão ou ociosos, e um popup mostra o processo atual (ex.: "TechLead → delegou uma tarefa ao backend", "backend: editando arquivos", "tests: rodando validação"). Sem dependências de terceiros, sem servidor, sem rede.</p>
+  <p>Página HTML local, aberta no navegador, com uma <strong>sala em pixel art 16 bits</strong> e uma mesa por agente (techlead, backend, frontend, mobile, tests, security, infra-architect; agentes novos ganham mesa). Os personagens aparecem trabalhando, entregando, em revisão ou ociosos, e um popup mostra o processo atual (ex.: "TechLead → delegou uma tarefa ao backend", "backend: editando arquivos", "tests: rodando validação"). Sem dependências de terceiros, sem servidor, sem rede.</p>
   <p><strong>Desligada por padrão.</strong> O TechLead oferece uma vez (no fim da primeira resposta e no fim do onboarding; recusar grava <code>off</code>). Depois, liga e desliga a qualquer momento:</p>
   <div class="table-wrap"><table>
     <thead><tr><th>Comando</th><th>Efeito</th></tr></thead>
@@ -413,7 +413,11 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
     </tbody>
   </table></div>
   <p>Os dois declaram o marketplace em <code>extraKnownMarketplaces</code>, habilitam <code>sdd@claude-sdd-framework</code> em <code>enabledPlugins</code>, definem <code>"agent": "sdd:techlead"</code> e bloqueiam em <code>permissions.deny</code> as 16 ferramentas de escrita do Atlassian (8 do conector claude.ai e 8 do MCP remoto), além das de escrita dos provedores de repositório, da leitura de segredos (<code>.env</code>/<code>.env.*</code>, também na edição, exceto <code>.env.example</code>/<code>.sample</code>/<code>.template</code>; chaves e certificados; credenciais de npm, PyPI, git e <code>netrc</code>; estado e variáveis do Terraform; e, na home, <code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.azure</code>, <code>~/.config/gh</code>, <code>~/.kube</code>, <code>~/.docker/config.json</code>) e das formas usuais de push forçado/destrutivo (<code>--force*</code>, <code>-f</code>, <code>+refspec</code>, <code>--mirror</code>, <code>--delete</code>/<code>-d</code>); push comum pede confirmação (<code>permissions.ask</code>). <span class="badge verified">Verificado</span></p>
-  <p><strong>Limites:</strong> o deny é defesa em profundidade, não barreira. O deny de <code>Read</code> cobre as ferramentas de arquivo e os comandos de arquivo que o Claude Code reconhece no Bash (<code>cat</code>, <code>head</code>, <code>tail</code>, <code>sed</code>, <code>tee</code>, redirecionamentos), mas não um <code>grep -r</code> sem citar o arquivo nem um script (Python, Node) que abre o arquivo por conta própria. Padrões <code>**/</code> valem a partir da pasta onde a sessão começou; arquivos da home usam <code>~/</code>. O deny de <code>Bash</code> não pega o mesmo comando escrito de outro jeito (<code>sh -c '...'</code>, caminho absoluto do programa, <code>git -C . push</code>); flags combinadas (<code>-uf</code>) e <code>:refspec</code> caem só na confirmação (<code>ask</code>). No Windows sem Git Bash (ferramenta PowerShell), as regras <code>Bash(...)</code> não se aplicam ao PowerShell. Para bloqueio no sistema operacional, use o <a href="https://code.claude.com/docs/en/sandboxing">sandbox</a> do Claude Code (<a href="https://code.claude.com/docs/en/permissions">documentação de permissões</a>). O template <code>project-settings.git.json</code> fixa a versão com <code>"ref": "v0.7.0"</code> (tag). Para subir de versão, troque o <code>ref</code> pela nova tag e rode <code>claude plugin marketplace update</code> e <code>claude plugin update</code>; sem <code>ref</code>, vale a branch padrão.</p>
+  <p><strong>Limites:</strong> o deny é defesa em profundidade, não barreira. O deny de <code>Read</code> cobre as ferramentas de arquivo e os comandos de arquivo que o Claude Code reconhece no Bash (<code>cat</code>, <code>head</code>, <code>tail</code>, <code>sed</code>, <code>tee</code>, redirecionamentos), mas não um <code>grep -r</code> sem citar o arquivo nem um script (Python, Node) que abre o arquivo por conta própria. Padrões <code>**/</code> valem a partir da pasta onde a sessão começou; arquivos da home usam <code>~/</code>. O deny de <code>Bash</code> não pega o mesmo comando escrito de outro jeito (<code>sh -c '...'</code>, caminho absoluto do programa, <code>git -C . push</code>); flags combinadas (<code>-uf</code>) e <code>:refspec</code> caem só na confirmação (<code>ask</code>). No Windows sem Git Bash (ferramenta PowerShell), as regras <code>Bash(...)</code> não se aplicam ao PowerShell. Para bloqueio no sistema operacional, use o <a href="https://code.claude.com/docs/en/sandboxing">sandbox</a> do Claude Code (<a href="https://code.claude.com/docs/en/permissions">documentação de permissões</a>). O template <code>project-settings.git.json</code> fixa a versão com <code>"ref": "v0.9.1"</code> (tag). Para subir de versão, troque o <code>ref</code> pela nova tag e rode <code>claude plugin marketplace update</code> e <code>claude plugin update</code>; sem <code>ref</code>, vale a branch padrão.</p>
+
+  <h3>Fluxo Git (opcional)</h3>
+  <p>Com a seção <code>## Git</code> no <code>CLAUDE.md</code> do projeto (modelo trunk-based, Conventional Commits, branch <code>&lt;tipo&gt;/&lt;ISSUE&gt;-&lt;slug&gt;</code>, <code>Idioma: pt | en</code>, perguntado no onboarding), o <code>sdd:techlead</code> pode criar a <strong>branch</strong> e <strong>commits locais</strong>, sempre <strong>depois da sua confirmação</strong>: ele mostra antes a branch, a mensagem e a lista explícita de arquivos. Nunca faz <code>push</code>, <code>merge</code>, <code>rebase</code>, <code>--force</code> nem <code>--no-verify</code>; o texto do PR é entregue a você para abrir manualmente. Sem a seção, nada é criado. Para trocar o idioma: <code>/sdd:git-lang pt</code> ou <code>/sdd:git-lang en</code>. As convenções estão em <code>skills/sdd-rules/references/git-workflow.md</code>.</p>
+  <p>Os templates de settings também negam <code>git reset --hard</code>, <code>git clean -f*</code>, <code>git commit --no-verify</code>/<code>-n</code>, <code>git branch -D</code>, <code>git config*</code>, <code>git checkout -- </code> e <code>git restore*</code>; <code>git push *</code> continua em <code>ask</code>. Quem já tem o settings aplicado deve reaplicar ou mesclar o novo deny.</p>
 </section>
 
 <!-- 4 -->
@@ -424,6 +428,7 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
     <article class="card"><h3><span class="avatar" aria-hidden="true">TL</span><code>sdd:techlead</code></h3><p>Coordena, aprova e encerra. Roda como agente da sessão principal; cria spec e tasks, delega e consolida.</p><span class="tag">não implementa</span><span class="tag">Jira leitura</span></article>
     <article class="card"><h3><span class="avatar" aria-hidden="true">BE</span><code>sdd:backend</code></h3><p>APIs, domínio, persistência, testes unitários e de integração, conforme a <code>## Stack</code>.</p><span class="tag">implementa</span></article>
     <article class="card"><h3><span class="avatar" aria-hidden="true">FE</span><code>sdd:frontend</code></h3><p>Interfaces web, UX, acessibilidade, testes de componente, conforme a <code>## Stack</code>.</p><span class="tag">implementa</span></article>
+    <article class="card"><h3><span class="avatar" aria-hidden="true">MB</span><code>sdd:mobile</code></h3><p>Apps mobile (React Native/Expo), acessibilidade, permissões, armazenamento seguro, testes, conforme a <code>## Stack</code>.</p><span class="tag">implementa</span></article>
     <article class="card"><h3><span class="avatar" aria-hidden="true">TS</span><code>sdd:tests</code></h3><p>Validação independente: regressão, E2E, aceite.</p><span class="tag">valida</span></article>
     <article class="card"><h3><span class="avatar" aria-hidden="true">SC</span><code>sdd:security</code></h3><p>Revisão de segurança, somente leitura. Parecer APROVADO ou RISCO IDENTIFICADO.</p><span class="tag">somente leitura</span></article>
     <article class="card"><h3><span class="avatar" aria-hidden="true">IA</span><code>sdd:infra-architect</code></h3><p>Decisões de infraestrutura, com critérios verificáveis.</p><span class="tag">não implementa</span></article>
@@ -437,6 +442,8 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
       <tr><td><code>sdd:sdd-governance</code></td><td>papéis, estados, escalonamento, Jira somente leitura</td></tr>
       <tr><td><code>sdd:backend-engineering</code></td><td>princípios de backend; references por stack</td></tr>
       <tr><td><code>sdd:frontend-engineering</code></td><td>princípios de frontend; references por stack</td></tr>
+      <tr><td><code>sdd:mobile-engineering</code></td><td>princípios de mobile; reference React Native/Expo</td></tr>
+      <tr><td><code>sdd:git-lang</code></td><td>comando <code>/sdd:git-lang pt|en</code>: idioma de commits e PR (seção <code>## Git</code>)</td></tr>
       <tr><td><code>sdd:requirements-grilling</code></td><td>perguntas para fechar requisitos ambíguos</td></tr>
       <tr><td><code>sdd:bug-diagnosis</code></td><td>diagnóstico de defeitos em 5 fases</td></tr>
       <tr><td><code>sdd:domain-modeling</code></td><td>glossário, modelo de domínio, ADR</td></tr>
@@ -453,9 +460,10 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
       <tr><td>Backend</td><td>.NET</td><td><code>backend-engineering/references/dotnet.md</code></td></tr>
       <tr><td>Backend</td><td>Python</td><td><code>backend-engineering/references/python.md</code></td></tr>
       <tr><td>Frontend</td><td>React</td><td><code>frontend-engineering/references/react.md</code> (e <code>web-interface.md</code>)</td></tr>
+      <tr><td>Mobile</td><td>React Native/Expo</td><td><code>mobile-engineering/references/react-native-expo.md</code></td></tr>
     </tbody>
   </table></div>
-  <p>Outras stacks usam os princípios gerais e o agente declara a lacuna no relato. Referências disponíveis: backend .NET e Python; frontend React e Angular. <span class="badge verified">Verificado</span></p>
+  <p>Outras stacks usam os princípios gerais e o agente declara a lacuna no relato. Referências disponíveis: backend .NET e Python; frontend React e Angular; mobile React Native/Expo (Flutter, Swift e Kotlin: sem referência). <span class="badge verified">Verificado</span></p>
 </section>
 
 <!-- 5 -->
@@ -520,14 +528,14 @@ claude plugin list</code></pre></div></div>
     <div class="steps">
       <div class="step"><h4>Pedido</h4><p>Seu time publicou o marketplace no GitHub e você quer usá-lo sem clonar manualmente.</p></div>
       <div class="step"><h4>O que o TechLead faz</h4><p>Nada nesta etapa. O Claude Code usa as credenciais git da sua máquina para acessar o repositório.</p></div>
-      <div class="step"><h4>O que você responde</h4><p>Uma vez na máquina, registre o marketplace na versão fixada: <code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.7.0"</code>. No projeto, copie o arquivo <strong>inteiro</strong> <code>templates/project-settings.git.json</code> para <code>&lt;projeto&gt;/.claude/settings.json</code>; ele já declara o marketplace com o <code>ref</code>:</p>
+      <div class="step"><h4>O que você responde</h4><p>Uma vez na máquina, registre o marketplace na versão fixada: <code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.1"</code>. No projeto, copie o arquivo <strong>inteiro</strong> <code>templates/project-settings.git.json</code> para <code>&lt;projeto&gt;/.claude/settings.json</code>; ele já declara o marketplace com o <code>ref</code>:</p>
         <div class="code" data-label="json (trecho)"><pre><code>"extraKnownMarketplaces": {
   "claude-sdd-framework": {
-    "source": { "source": "git", "url": "https://github.com/powerlok/claude-sdd-framework.git", "ref": "v0.7.0" }
+    "source": { "source": "git", "url": "https://github.com/powerlok/claude-sdd-framework.git", "ref": "v0.9.1" }
   }
 }</code></pre></div>
         <div class="callout danger" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18h.01"/></svg><div><span class="t">Perigo</span><p>Sem usuário, senha ou token na URL. Use SSH ou HTTPS com o gerenciador de credenciais.</p></div></div></div>
-      <div class="step"><h4>Resultado</h4><p>Na raiz do projeto, instale com <code>claude plugin install sdd@claude-sdd-framework --scope project</code> e confirme com <code>claude plugin list</code> (<code>sdd</code> 0.7.0, Scope: project, enabled). O <code>settings.json</code> sozinho <strong>não</strong> instala o plugin: cada dev roda o <code>install</code>. Passo a passo completo: <a href="primeiros-passos.md">primeiros-passos.md</a>.</p></div>
+      <div class="step"><h4>Resultado</h4><p>Na raiz do projeto, instale com <code>claude plugin install sdd@claude-sdd-framework --scope project</code> e confirme com <code>claude plugin list</code> (<code>sdd</code> 0.9.1, Scope: project, enabled). O <code>settings.json</code> sozinho <strong>não</strong> instala o plugin: cada dev roda o <code>install</code>. Passo a passo completo: <a href="primeiros-passos.md">primeiros-passos.md</a>.</p></div>
     </div>
   </article>
 
@@ -872,7 +880,7 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
     <p>É comportamento do Claude Code: <code>skills:</code> só pré-carrega em subagentes. O TechLead carrega <code>sdd:sdd-rules</code> e <code>sdd:sdd-governance</code> com a ferramenta <code>Skill</code> no início da sessão e após compact. Se uma skill não carregar, ele segue com a governança do próprio agente e avisa você.</p></article>
 
   <article class="trouble"><h3>"not found in marketplace" ao instalar</h3>
-    <p>O marketplace não está registrado na máquina (verificado numa máquina nova: <code>Plugin "sdd" not found in marketplace "claude-sdd-framework"</code>). Rode uma vez <code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.7.0"</code> e repita o <code>install</code>. Se já estiver registrado, rode <code>claude plugin marketplace update claude-sdd-framework</code>.</p></article>
+    <p>O marketplace não está registrado na máquina (verificado numa máquina nova: <code>Plugin "sdd" not found in marketplace "claude-sdd-framework"</code>). Rode uma vez <code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.1"</code> e repita o <code>install</code>. Se já estiver registrado, rode <code>claude plugin marketplace update claude-sdd-framework</code>.</p></article>
 
   <article class="trouble"><h3>A salinha dos agentes não abre</h3>
     <p>Confira a preferência com <code>/sdd:office status</code> (se estiver <code>off</code>, rode <code>/sdd:office on</code>), se há um navegador padrão definido e se o Git Bash está instalado (no Windows o hook usa <code>bash</code>; o bash do WSL no PATH pode atrapalhar). Política corporativa que bloqueie <code>file://</code> impede a atualização da página.</p></article>

@@ -8,6 +8,7 @@ for t in "$D"/req00[1-5]-*.test.sh; do
 done
 if [ "${1:-}" != "--no-page" ]; then
   echo "== req005-page.test.js"; node "$D/req005-page.test.js" || rc=1
+  echo "== req006-working.test.js"; node "$D/req006-working.test.js" || rc=1
 fi
 [ "$rc" -eq 0 ] && echo "TODOS OS TESTES PASSARAM" || echo "HÁ FALHAS"
 exit $rc

@@ -8,7 +8,8 @@ com `Relacionada a: done/<feature>`).
 
 | Feature | Estado | Início | Origem | Resumo |
 |---|---|---|---|---|
-| — | — | — | — | nenhuma |
+| [repo-publico-salinha-mobile](repo-publico-salinha-mobile/spec.md) | DONE | 2026-10-12 | pedido do usuário | Docs sem premissa de repo privado e agente `mobile` na salinha (`sdd` 0.9.1) |
+| [mobile-git-workflow](mobile-git-workflow/spec.md) | TODO | 2026-10-11 | pedido do usuário | Agente `sdd:mobile` (React Native/Expo) e fluxo Git trunk-based com Conventional Commits (`sdd` 0.9.0) |
 
 ## Concluídas
 
@@ -30,3 +31,4 @@ com `Relacionada a: done/<feature>`).
 | [agents-office](done/agents-office/spec.md) | 2026-10-11 | pedido do usuário | Salinha dos agentes no navegador: opt-in, abre sozinha, popup do processo, sem terceiros (`sdd` 0.7.0) |
 | [office-visual](done/office-visual/spec.md) | 2026-10-11 | pedido do usuário | Salinha: texto nítido, layout melhor, balões sem sobreposição (`sdd` 0.7.1) |
 | [rename-techlead](done/rename-techlead/spec.md) | 2026-10-11 | pedido do usuário | Renomear `sdd:tecleader` para `sdd:techlead`, com agente obsoleto de migração (`sdd` 0.8.0, mudança incompatível) |
+| [office-working-state](done/office-working-state/spec.md) | 2026-10-12 | pedido do usuário | Salinha: agente ativo aparece trabalhando até o stop (`sdd` 0.8.1; publicada na release v0.9.1) |
