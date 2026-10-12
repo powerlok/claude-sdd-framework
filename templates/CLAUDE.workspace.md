@@ -9,7 +9,7 @@
 
 Vai aqui: só o que vale para todos os repositórios abaixo.
 NÃO vai aqui: `## Stack`, comandos, arquitetura, `## Repositório`, `## SDD` e regras de um projeto
-(ficam no `CLAUDE.md` do projeto); regras do processo (ficam no plugin `sdd`).
+(ficam no `CLAUDE.md` do projeto; `## Git`, idioma de commits/PR, também é por projeto); regras do processo (ficam no plugin `sdd`).
 
 ## Projetos
 

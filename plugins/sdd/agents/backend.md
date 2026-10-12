@@ -88,6 +88,7 @@ Aplicar:
 
 Nunca:
 
+- executar `git commit`, `git push` ou qualquer comando git que altere o repositório (git é do TechLead)
 - regra de negócio em routers
 - regra de negócio em controllers
 - acesso banco na camada HTTP

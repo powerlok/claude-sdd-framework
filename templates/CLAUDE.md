@@ -13,7 +13,7 @@
 
 ## Stack
 
-Fonte da stack para os agentes `sdd:backend`, `sdd:frontend` e `sdd:infra-architect`.
+Fonte da stack para os agentes `sdd:backend`, `sdd:frontend`, `sdd:mobile` e `sdd:infra-architect`.
 
 ### Backend
 
@@ -29,6 +29,16 @@ Fonte da stack para os agentes `sdd:backend`, `sdd:frontend` e `sdd:infra-archit
 - Framework e versão: <FRAMEWORK X.Y>
 - Gerenciador de pacotes/build: <GERENCIADOR>
 - Referência do plugin: `frontend-engineering/references/<stack>.md` <OU "SEM REFERÊNCIA">
+
+### Mobile
+
+Opcional. Remover se o projeto não tem app mobile.
+
+- Plataforma: <REACT NATIVE COM EXPO | FLUTTER | SWIFT | KOTLIN>
+- Linguagem e versão: <LINGUAGEM X.Y>
+- Framework e versão: <EX.: EXPO SDK NN>
+- Gerenciador de pacotes/build: <GERENCIADOR>
+- Referência do plugin: `mobile-engineering/references/<stack>.md` <OU "SEM REFERÊNCIA">
 
 ### Infra
 
@@ -66,6 +76,18 @@ sem ela, o `sdd:techlead` não consulta nenhum provedor.
 - Provedor: <github | bitbucket | gitlab | azure-devops>
 - Repositório: <owner/repo | workspace/repo | group/project | org/project/repo>
 - Acesso: <mcp (padrão, recomendado) | cli (não recomendado: usa o login do `gh`/`glab`/`az`, que costuma ter escrita; só com token somente leitura, ex.: `GH_TOKEN` = PAT fine-grained read-only)>
+
+## Git
+
+Opcional. Habilita o fluxo Git do `sdd:techlead` (branch e commit local, sempre com confirmação). Sem esta seção,
+nenhuma branch nem commit é criado. O idioma é perguntado no onboarding; para alterar depois: `/sdd:git-lang pt|en`.
+
+```text
+Modelo: trunk-based
+Branch: <tipo>/<ISSUE>-<slug>   (sem issue: <tipo>/<slug>)
+Commits: Conventional Commits
+Idioma: pt | en
+```
 
 ## Regras específicas do projeto
 

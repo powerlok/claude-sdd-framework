@@ -8,6 +8,7 @@ com `Relacionada a: done/<feature>`).
 
 | Feature | Estado | Início | Origem | Resumo |
 |---|---|---|---|---|
+| [mobile-git-workflow](mobile-git-workflow/spec.md) | TODO | 2026-10-11 | pedido do usuário | Agente `sdd:mobile` (React Native/Expo) e fluxo Git trunk-based com Conventional Commits (`sdd` 0.9.0) |
 | — | — | — | — | nenhuma |
 
 ## Concluídas

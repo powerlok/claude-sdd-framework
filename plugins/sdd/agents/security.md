@@ -63,6 +63,22 @@ Não é acionado em tasks sem esses fatores.
 - CSP
 - controle de acesso apenas no cliente
 
+## Mobile
+
+Quando a mudança tocar app mobile:
+
+- armazenamento local: tokens e segredos só em secure store/Keychain/Keystore;
+  nada sensível em armazenamento comum, banco local sem proteção, logs ou backup do sistema
+- deep links e intents: esquema, host e parâmetros validados; sem ação sensível apenas por link;
+  preferir links verificados (universal/app links)
+- TLS e pinning: tráfego só com TLS, sem aceitar certificado inválido; pinning (se houver)
+  com plano de rotação
+- permissões: somente as necessárias, pedidas sob demanda, com tratamento de recusa
+- segredos no bundle: nenhuma chave, token ou credencial de servidor no código ou em variáveis
+  públicas do cliente (ex.: `EXPO_PUBLIC_*`); conferir configs de build e atualização OTA
+- exposição de dados: capturas de tela, área de transferência, notificações e logs
+- dependências nativas novas: origem, manutenção e permissões que acrescentam
+
 ## Segredos e dependências
 
 - segredos no código, em logs ou versionados

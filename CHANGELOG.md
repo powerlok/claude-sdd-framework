@@ -2,6 +2,25 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.9.0 — 2026-10-11
+
+Agente mobile (React Native/Expo) e fluxo Git (`.specs/mobile-git-workflow/spec.md`). Não é release (sem tag, sem mudança de `ref` nem de `metadata.version`).
+
+- REQ-001/REQ-002/REQ-004: `agents/mobile.md` (`sdd:mobile`, sonnet) e skill `mobile-engineering` com `references/react-native-expo.md`; Flutter, Swift e Kotlin seguem a regra de `referência: nenhuma` + lacuna registrada.
+- REQ-003: `agents/techlead.md` delega a `sdd:mobile` (lista de subagentes e campo `Stack`); `agents/security.md` ganha checklist mobile.
+- REQ-005: `skills/sdd-rules/references/git-workflow.md` (trunk-based, Conventional Commits, `<tipo>/<ISSUE>-<slug>`, modelo de descrição de PR).
+- REQ-006: seção `## Git` no `CLAUDE.md` do projeto (idioma perguntado no onboarding) e skill `git-lang` (`/sdd:git-lang pt|en`).
+- REQ-007/REQ-009: o TechLead cria branch e commit **locais** só após confirmação (branch, mensagem e arquivos listados); nunca `push`, `merge`, `rebase`, `--force`, `--no-verify`; slug sanitizado e dado externo não vira mensagem.
+- REQ-008: `templates/project-settings.git.json` (e `.local.json`) ganhou `deny` para os destrutivos do git (`reset --hard/--merge/--keep`, `clean*`, `checkout .`/`-f`/`--`, `switch -f`, `restore*`, `stash drop/clear`, `update-ref`, `reflog expire`, `rebase`, `merge`, `tag`, `branch -D`, `config*`, `commit --amend/--no-verify/-n/-a`, `add -A/./-u`, `git -c`) também com opções globais entre `git` e o subcomando (`git -C . ...`), e `Edit/Write` em `.git/**` e `~/.gitconfig`; `ask` para `git commit/add/switch/checkout/branch/push` e `eas login/build/update/submit`. Limite conhecido: wrappers (`bash -c`, `sh -c`, caminho absoluto do git) não são cobertos por padrões.
+- REQ-010: `README.md`, `docs/arquitetura.md`, `docs/manual-de-uso.html`, `templates/CLAUDE.md` (seções `### Mobile` e `## Git`) e `plugin.json`/`marketplace.json` (descrições) atualizados; `sdd` 0.9.0.
+- Pendente: a salinha dos agentes ainda não mostra `mobile` (mesa e personagem), porque `office/office.html` está em uso pela feature `office-working-state`.
+
+### Migração
+
+1. Atualize o plugin: `claude plugin marketplace update claude-sdd-framework` e `claude plugin update sdd@claude-sdd-framework --scope project`.
+2. Projetos existentes sem `## Git` no `CLAUDE.md` **não** criam branch nem commit (comportamento anterior mantido). Para habilitar, rode o onboarding da seção com o TechLead (pergunta o idioma) ou copie o exemplo de `templates/CLAUDE.md`.
+3. O template de settings ganhou `deny`: reaplique o template ou mescle as novas regras no `.claude/settings.json` do projeto.
+
 ## sdd 0.8.0 — 2026-10-11
 
 Renomeação do agente principal (`.specs/done/rename-techlead/spec.md`): `sdd:tecleader` → `sdd:techlead` (o nome estava errado).

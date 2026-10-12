@@ -42,7 +42,7 @@ flowchart LR
     S --> D{Design<br/>obrigatório?}
     D -->|sim| DS[design.md aprovado]
     D -->|não| I
-    DS --> I[sdd:backend / sdd:frontend<br/>implementação + testes]
+    DS --> I[sdd:backend / sdd:frontend / sdd:mobile<br/>implementação + testes]
     I --> SR{Segurança<br/>aplicável?}
     SR -->|sim| SEC[sdd:security]
     SR -->|não| V
@@ -61,6 +61,7 @@ Estados de cada task: `TODO → IN_PROGRESS → IMPLEMENTED → SECURITY_REVIEW 
 | `sdd:techlead` | Orquestra, cria specs e tasks, aprova design, encerra (sessão principal) | opus |
 | `sdd:backend` | APIs, domínio, persistência e testes, na stack do projeto | sonnet |
 | `sdd:frontend` | Interfaces, UX, acessibilidade e testes, na stack do projeto | sonnet |
+| `sdd:mobile` | Apps mobile (React Native/Expo), acessibilidade, permissões e testes, na stack do projeto | sonnet |
 | `sdd:tests` | Validação independente: regressão, contratos, E2E, aceite | sonnet |
 | `sdd:security` | Revisão de segurança (AppSec, dependências, segredos), somente leitura | opus |
 | `sdd:infra-architect` | Arquitetura de infraestrutura na nuvem do projeto (AWS, Azure, Google Cloud), trade-offs e rollback; nunca aplica mudança | opus |
@@ -72,10 +73,22 @@ Estados de cada task: `TODO → IN_PROGRESS → IMPLEMENTED → SECURITY_REVIEW 
 | `sdd-rules` · `sdd-governance` | Regras globais, papéis, estados, escalonamento |
 | `backend-engineering` | Princípios + referências **.NET** e **Python** |
 | `frontend-engineering` | Princípios + referências **React** e **Angular** e checklist de interface web |
+| `mobile-engineering` | Princípios mobile + referência **React Native/Expo** (outras plataformas: sem referência, lacuna declarada) |
+| `git-lang` | Comando `/sdd:git-lang pt\|en`: idioma de commits e PR (seção `## Git` do `CLAUDE.md`) |
 | `requirements-grilling` | Perguntas certas para fechar requisitos antes da spec |
 | `bug-diagnosis` | Diagnóstico de bugs em 5 fases, com teste de regressão |
 | `domain-modeling` | Glossário, modelo de domínio e registro de decisões (ADR) |
 | `infra-engineering` | Princípios de nuvem + referências **AWS**, **Azure** e **Google Cloud** (IaC só com prévia; mudança real exige confirmação) |
+
+### Fluxo Git (opcional, por projeto)
+
+Com a seção `## Git` no `CLAUDE.md` do projeto (modelo trunk-based, Conventional Commits, branch `<tipo>/<ISSUE>-<slug>`,
+`Idioma: pt | en`, perguntado no onboarding), o `sdd:techlead` pode criar a **branch** e **commits locais**, sempre
+**depois da sua confirmação** (mostra antes branch, mensagem e lista explícita de arquivos). Ele nunca faz `push`,
+`merge`, `rebase`, `--force` nem `--no-verify`; o texto do PR é entregue a você para abrir manualmente. Sem a seção
+`## Git`, nada é criado. Convenções: `skills/sdd-rules/references/git-workflow.md`. Troque o idioma com
+`/sdd:git-lang pt` ou `/sdd:git-lang en`. O `templates/project-settings.git.json` nega por padrão operações destrutivas
+(`git reset --hard`, `git clean -f*`, `git commit --no-verify`, `git branch -D`, `git config*` etc.).
 
 Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, para criar novas skills e agentes.
 
@@ -224,7 +237,7 @@ Três modos, com efeitos diferentes (verificados na documentação oficial e em 
 ## 🏢 Salinha dos agentes (opcional)
 
 Uma página HTML local, aberta no navegador, mostra uma **sala em pixel art 16 bits** com uma mesa por agente
-(techlead, backend, frontend, tests, security, infra-architect; agentes novos ganham mesa). Os personagens aparecem
+(techlead, backend, frontend, mobile, tests, security, infra-architect; agentes novos ganham mesa). Os personagens aparecem
 trabalhando, entregando, em revisão ou ociosos, e um popup mostra o processo atual (ex.: "TechLead → delegou uma
 tarefa ao backend", "backend: editando arquivos", "tests: rodando validação"). Sem dependências de terceiros, sem
 servidor, sem rede.
@@ -339,7 +352,7 @@ Testar um agente sem instalar (prompt logo após `-p`, pois `--allowedTools` ace
 claude -p "<prompt>" --plugin-dir ./plugins/sdd --agent sdd:backend --allowedTools "Read,Glob,Grep"
 ```
 
-Para adicionar uma stack: crie `plugins/sdd/skills/<backend|frontend>-engineering/references/<stack>.md`,
+Para adicionar uma stack: crie `plugins/sdd/skills/<backend|frontend|mobile>-engineering/references/<stack>.md`,
 registre na tabela do `SKILL.md`, suba a versão em `plugin.json` e registre no CHANGELOG.
 
 ```text
