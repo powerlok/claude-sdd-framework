@@ -2,6 +2,16 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## Release v0.9.1 — 2026-10-12
+
+Inclui: `sdd` 0.9.1 (acumula 0.8.0, 0.8.1, 0.9.0 e 0.9.1), `authoring` 0.2.1.
+
+- `marketplace.json`: `metadata.version` = `0.9.1`; tag `v0.9.1` aponta para o commit que traz essa versão.
+- `templates/project-settings.git.json` e a documentação de instalação fixam `v0.9.1` (`#v0.9.1` / `"ref": "v0.9.1"`).
+- Não existe tag `v0.8.1`: a 0.8.1 foi fechada depois de a 0.9.1 ser commitada, então vai nesta release.
+- **Mudança incompatível desde a v0.7.0:** `"agent": "sdd:tecleader"` passa a `"sdd:techlead"` (ver 0.8.0).
+- Limites conhecidos: piloto real da 0.8.1 no Claude Code (subagente com comando longo) e validação ponta a ponta de delegação, `/sdd:git-lang` e permissões da 0.9.0 não foram executados; salinha validada só no Windows (Chrome).
+
 ## sdd 0.9.1 — 2026-10-12
 
 Repositório público nos docs e agente `mobile` na salinha (`.specs/repo-publico-salinha-mobile/spec.md`). Não é release (sem tag).
@@ -28,6 +38,16 @@ Agente mobile (React Native/Expo) e fluxo Git (`.specs/mobile-git-workflow/spec.
 1. Atualize o plugin: `claude plugin marketplace update claude-sdd-framework` e `claude plugin update sdd@claude-sdd-framework --scope project`.
 2. Projetos existentes sem `## Git` no `CLAUDE.md` **não** criam branch nem commit (comportamento anterior mantido). Para habilitar, rode o onboarding da seção com o TechLead (pergunta o idioma) ou copie o exemplo de `templates/CLAUDE.md`.
 3. O template de settings ganhou `deny`: reaplique o template ou mescle as novas regras no `.claude/settings.json` do projeto.
+
+## sdd 0.8.1 — 2026-10-12
+
+Salinha: o agente ativo aparece trabalhando até o stop (`.specs/done/office-working-state/spec.md`). Fechada depois da 0.9.1; publicada na release v0.9.1.
+
+- REQ-001: o agente fica "trabalhando" de `SubagentStart` até `SubagentStop` (TechLead: do prompt até o Stop), mesmo sem eventos de ferramenta; `WORK_MS` (8 s) só vale para quem não está ativo. A proteção passa de 5 para 30 min sem eventos e mostra "sem atividade", estado distinto de "ocioso".
+- REQ-002: página aberta no meio da execução reconstrói o estado a partir de `events.js` (start/prompt sem stop/end = ativo, desde o horário gravado).
+- REQ-003: roster e log mostram o tempo ativo ("tests: trabalhando há N min") só com horários já gravados; allowlist inalterada.
+- REQ-004: hooks e formato dos eventos inalterados (só `office/office.html`); revisão de segurança dispensada.
+- REQ-005: `hooks/tests/req006-working.test.js` (tempo virtual, Chrome headless) e ajustes em `req005-page.test.js`/`run-all.sh`; suíte completa passou.
 
 ## sdd 0.8.0 — 2026-10-11
 

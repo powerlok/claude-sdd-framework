@@ -50,6 +50,7 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
 #log time { color: var(--muted); font: 12px ui-monospace, Consolas, monospace; margin-right: 8px; }
 #empty { margin: 0; color: var(--muted); }
 #empty[hidden] { display: none; }
+#roster li[data-state="quiet"] { color: var(--warn); }
 #roster { margin: 0; padding-left: 18px; color: var(--ink); }
 .note { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 0.875rem; }
 @media (max-width: 700px) { aside { grid-template-columns: minmax(0, 1fr); } }
@@ -94,7 +95,10 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
   /* Mundo em unidades lógicas; o canvas tem tamanho CSS x devicePixelRatio e a escala (sc) vem de largura/W.
      Retângulos e mobília são arredondados ao pixel do dispositivo; sprites usam escala inteira; texto é nativo. */
   var W = 420, H = 272, sc = 1, dpr = 1, cols = 4, rows = 2, maxSlot = 5;
-  var WORK_MS = 8000, QUIET_MS = 300000, MEET_MS = 12000, BUBBLE_MS = 4000, NARRATE_MS = 1000, POLL_MS = 1000;
+  var WORK_MS = 8000, QUIET_MS = 1800000, MEET_MS = 12000, BUBBLE_MS = 4000, NARRATE_MS = 1000, POLL_MS = 1000;
+  /* WORK_MS só vale para quem NÃO está ativo (sem start/prompt aberto). Ativo = trabalhando de SubagentStart até
+     SubagentStop (TechLead: do prompt até o Stop); QUIET_MS (30 min sem nenhum evento) é só a proteção contra
+     start sem stop (sessão encerrada à força) e mostra "sem atividade", não "ocioso". */
   var SPEED = 60, FRAME_MS = 90, STALE_MS = 30000, MAX_SLOTS = 16;
   var L_AISLE = 8, LINE_TEC = 112, DESK_X0 = 18, DESK_W = 54, PITCH_X = 70, ROW0 = 128, PITCH_Y = 70, ROOM_W = 114;
   var TEC_W = 64, TEC_Y = 66, MEET_RX = 34, MEET_RY = 20, MEET_CY = 150, DOOR_Y = 210;
@@ -226,7 +230,7 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
       shirt: k ? k.shirt : "hsl(" + (h % 360) + ",55%,45%)",
       hair: k ? k.hair : "hsl(" + ((h >> 3) % 360) + ",30%,25%)",
       skin: SKINS[h % SKINS.length],
-      x: 0, y: 0, node: { type: "seat" }, mode: "seated", act: "idle", lastAct: 0,
+      x: 0, y: 0, node: { type: "seat" }, mode: "seated", act: "idle", lastAct: 0, active: false, since: 0, lastMin: 0,
       path: [], jobs: [], job: null, wait: 0, carry: false, bubble: null, bubbleUntil: 0, sprites: {}
     };
     var s = seatPt(slot);
@@ -279,7 +283,7 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
     c.node = j;
     if (j.type === "seat") {
       c.carry = false;
-      c.act = now - c.lastAct < WORK_MS ? "working" : "idle";
+      c.act = c.active ? (quiet ? "quiet" : "working") : (now - c.lastAct < WORK_MS ? "working" : "idle");
     } else if (j.type === "tec") {
       c.wait = 1.0;
     } else if (j.type === "meet") {
@@ -301,16 +305,22 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
   }
 
   function logicTick(now) {
-    var k, c;
+    var k, c, mins;
     quiet = hasEvents && now - lastEventMs > QUIET_MS;
     for (k in chars) {
       if (!has(chars, k)) continue;
       c = chars[k];
       if (quiet && (c.act === "working" || c.act === "meeting")) {
-        c.act = "idle";
+        c.act = c.active ? "quiet" : "idle";
+        if (c.active) narrate(c.label + ": sem atividade há mais de " + (QUIET_MS / 60000) + " min", c.key, "info");
         if (c.node.type !== "seat" && !hasJob(c, "seat")) c.jobs.push({ type: "seat" });
       }
-      if (c.act === "working" && now - c.lastAct > WORK_MS) c.act = "idle";
+      if (c.active && !quiet) {
+        if ((c.act === "idle" || c.act === "quiet") && c.mode === "seated" && c.node.type === "seat") c.act = "working";
+        mins = Math.floor((now - c.since) / 60000);
+        if (mins >= 1 && mins !== c.lastMin) { c.lastMin = mins; narrate(c.label + ": trabalhando há " + mins + " min", c.key, "info"); }
+      }
+      if (!c.active && c.act === "working" && now - c.lastAct > WORK_MS) c.act = "idle";
       if (c.act === "meeting" && c.mode === "seated" && now - c.lastAct > MEET_MS) {
         c.act = "idle";
         if (!hasJob(c, "seat")) c.jobs.push({ type: "seat" });
@@ -368,6 +378,7 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
 
     if (ev.e === "start") {
       touch(c, now);
+      if (key !== "techlead") { c.active = true; c.since = now; c.lastMin = 0; }
       if (key === "security") goMeeting(c);
       else if (c.act !== "arriving" && c.mode === "seated" && key !== "techlead") c.act = "working";
       if (key === "techlead") c.act = "working";
@@ -375,15 +386,17 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
     } else if (ev.e === "stop") {
       if (key !== "techlead") {
         touch(c, now);
+        c.active = false;
         c.act = "delivering"; c.carry = true;
         c.jobs = [{ type: "tec" }, { type: "seat" }];
         narrate(phrase(ev, key), key, "done");
       }
     } else if (ev.e === "prompt") {
       touch(c, now); c.act = "working";
+      if (!c.active) { c.active = true; c.since = now; c.lastMin = 0; }
       narrate(phrase(ev, key), key, "info");
     } else if (ev.e === "end") {
-      c.lastAct = 0; c.act = "idle";
+      c.lastAct = 0; c.act = "idle"; c.active = false;
       narrate(phrase(ev, key), key, "info");
     } else if (ev.e === "tool") {
       touch(c, now);
@@ -401,14 +414,20 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
     }
   }
 
-  /* Evento antigo (página aberta depois): só garante os personagens sentados; sem narração nem caminhada. */
+  /* Evento antigo (página aberta depois): reconstrói o estado (start/prompt sem stop/end = ativo, desde o horário
+     gravado); sem narração nem caminhada. */
   function applyStale(ev) {
-    var key = ev.a || "techlead";
+    var key = ev.a || "techlead", c, ms = ev.t * 1000;
+    if (!ev.a && ev.d && has(dmap, ev.d)) key = dmap[ev.d];
+    if (ev.e === "prompt" || ev.e === "end") key = "techlead";
     if (ev.d && ev.a) dmap[ev.d] = ev.a;
-    spawn(key, true);
+    c = spawn(key, true);
     if (ev.g) spawn(ev.g, true);
     hasEvents = true;
-    lastEventMs = Math.max(lastEventMs, ev.t * 1000);
+    lastEventMs = Math.max(lastEventMs, ms);
+    if (ms > c.lastAct) c.lastAct = ms;
+    if ((ev.e === "start" && key !== "techlead") || ev.e === "prompt") { c.active = true; c.since = ms; c.lastMin = 0; c.act = "working"; }
+    else if ((ev.e === "stop" && key !== "techlead") || ev.e === "end") { c.active = false; c.act = "idle"; }
   }
 
   /* --------------------------------------------------------- transporte */
@@ -452,7 +471,7 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
 
   var logEl = $("log"), emptyEl = $("empty"), rosterEl = $("roster"), statusEl = $("status");
   var rosterCache = "", statusCache = "", labelCache = "";
-  var ACT_TEXT = { idle: "ocioso", working: "trabalhando", meeting: "em reunião", delivering: "entregando", arriving: "chegando" };
+  var ACT_TEXT = { idle: "ocioso", quiet: "sem atividade", working: "trabalhando", meeting: "em reunião", delivering: "entregando", arriving: "chegando" };
 
   function pad2(n) { return n < 10 ? "0" + n : "" + n; }
 
@@ -523,7 +542,7 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
     var st, txt;
     if (!$("notice").hidden && !hasEvents) { st = "error"; txt = "Sem conexão com os eventos"; }
     else if (!hasEvents) { st = "wait"; txt = "Aguardando agentes..."; }
-    else if (quiet) { st = "quiet"; txt = "Sem atividade (há mais de 5 min)"; }
+    else if (quiet) { st = "quiet"; txt = "Sem atividade (há mais de " + (QUIET_MS / 60000) + " min)"; }
     else { st = "active"; txt = "Ativo"; }
     if (st + txt !== statusCache) { statusCache = st + txt; statusEl.dataset.state = st; statusEl.textContent = txt; }
 
@@ -534,13 +553,15 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
       if (c.act === "working" || c.act === "meeting" || c.act === "delivering") working++;
       rows.push(c);
     }
-    var sig = rows.map(function (r) { return r.key + ":" + r.act + ":" + (r.mode === "walking" ? "walking" : r.node.type); }).join("|");
+    var now = Date.now();
+    function since(r) { return r.active && r.act === "working" && now - r.since >= 60000 ? Math.floor((now - r.since) / 60000) : 0; }
+    var sig = rows.map(function (r) { return r.key + ":" + r.act + ":" + (r.mode === "walking" ? "walking" : r.node.type) + ":" + since(r); }).join("|");
     if (sig !== rosterCache) {
       rosterCache = sig;
       while (rosterEl.firstChild) rosterEl.removeChild(rosterEl.firstChild);
       rows.forEach(function (r) {
         var li = document.createElement("li");
-        li.textContent = r.label + ": " + ACT_TEXT[r.act];
+        li.textContent = r.label + ": " + ACT_TEXT[r.act] + (since(r) ? " há " + since(r) + " min" : "");
         li.dataset.agent = r.key;
         li.dataset.state = r.act;
         li.dataset.node = r.mode === "walking" ? "walking" : r.node.type;
