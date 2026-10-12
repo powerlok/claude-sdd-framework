@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.8.0-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.9.1-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -240,7 +240,8 @@ Uma página HTML local, aberta no navegador, mostra uma **sala em pixel art 16 b
 (techlead, backend, frontend, mobile, tests, security, infra-architect; agentes novos ganham mesa). Os personagens aparecem
 trabalhando, entregando, em revisão ou ociosos, e um popup mostra o processo atual (ex.: "TechLead → delegou uma
 tarefa ao backend", "backend: editando arquivos", "tests: rodando validação"). Sem dependências de terceiros, sem
-servidor, sem rede.
+servidor, sem rede. Um agente fica "trabalhando" do início ao fim da tarefa, mesmo sem eventos no intervalo (o
+popup mostra "há N min"); a página aberta depois reconstrói o estado, e 30 min sem nenhum evento viram "sem atividade".
 
 **Desligada por padrão.** O TechLead oferece uma vez (no fim da primeira resposta e no fim do onboarding; recusar
 grava `off`). Depois, liga e desliga a qualquer momento:

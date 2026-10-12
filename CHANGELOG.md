@@ -14,7 +14,7 @@ Inclui: `sdd` 0.9.1 (acumula 0.8.0, 0.8.1, 0.9.0 e 0.9.1), `authoring` 0.2.1.
 
 ## sdd 0.9.1 — 2026-10-12
 
-Repositório público nos docs e agente `mobile` na salinha (`.specs/repo-publico-salinha-mobile/spec.md`). Não é release (sem tag).
+Repositório público nos docs e agente `mobile` na salinha (`.specs/done/repo-publico-salinha-mobile/spec.md`). Não é release (sem tag).
 
 - REQ-001: removida a premissa de repositório privado (`docs/manual-de-uso.html`, `docs/primeiros-passos.md`, regra "Marketplace privado" em `agents/techlead.md` e `claude-md-layers.md`); a falha de acesso passa a ser tratada como problema de rede (proxy/firewall).
 - REQ-002: `office/office.html`: `mobile` ganha mesa própria (slot 6, placa MOBILE); agentes desconhecidos passam a ocupar do slot 7 em diante.

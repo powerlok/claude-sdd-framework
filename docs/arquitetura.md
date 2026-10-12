@@ -71,7 +71,7 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.8.0 | padrão | 6 agentes, 9 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
+| `sdd` | 0.9.1 | padrão | 7 agentes (mais o obsoleto `tecleader`), 11 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
 | `authoring` | 0.2.1 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
