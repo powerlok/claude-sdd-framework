@@ -2,6 +2,14 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.9.1 — 2026-10-12
+
+Repositório público nos docs e agente `mobile` na salinha (`.specs/repo-publico-salinha-mobile/spec.md`). Não é release (sem tag).
+
+- REQ-001: removida a premissa de repositório privado (`docs/manual-de-uso.html`, `docs/primeiros-passos.md`, regra "Marketplace privado" em `agents/techlead.md` e `claude-md-layers.md`); a falha de acesso passa a ser tratada como problema de rede (proxy/firewall).
+- REQ-002: `office/office.html`: `mobile` ganha mesa própria (slot 6, placa MOBILE); agentes desconhecidos passam a ocupar do slot 7 em diante.
+- REQ-003: `req005-static.test.sh` verifica o item acima.
+
 ## sdd 0.9.0 — 2026-10-11
 
 Agente mobile (React Native/Expo) e fluxo Git (`.specs/mobile-git-workflow/spec.md`). Não é release (sem tag, sem mudança de `ref` nem de `metadata.version`).

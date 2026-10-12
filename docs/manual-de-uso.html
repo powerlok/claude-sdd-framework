@@ -304,7 +304,7 @@ tr:last-child td { border-bottom: 0; }
   <h3>Pré-requisitos <span class="badge verified">Verificado</span></h3>
   <ul>
     <li>Claude Code <strong>2.1.288</strong> ou superior (<code>claude --version</code>; testado no 2.1.296).</li>
-    <li>Git com acesso ao repositório privado. Teste: <code>git ls-remote https://github.com/powerlok/claude-sdd-framework.git</code>. O Claude Code usa as credenciais git da máquina (HTTPS com gerenciador de credenciais, ex.: <code>gh auth setup-git</code>, ou SSH).</li>
+    <li>Git com acesso de rede ao GitHub (o repositório é público; não precisa de credencial). Teste: <code>git ls-remote https://github.com/powerlok/claude-sdd-framework.git</code>. O Claude Code usa o git da máquina; se um proxy ou firewall bloquear o github.com, ajuste a rede antes.</li>
     <li>Windows: Git for Windows (o hook do plugin usa <code>bash</code>) e <code>claude</code> no PATH (ver <a href="#problemas">Solução de problemas</a>).</li>
     <li>Opcional: conector <strong>Atlassian</strong> no claude.ai, para ler issues do Jira.</li>
   </ul>

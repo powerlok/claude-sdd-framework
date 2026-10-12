@@ -120,7 +120,8 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
     frontend: { slot: 2, label: "frontend", plate: "FRONTEND", shirt: "#d4527a", hair: "#7a3b1a" },
     tests: { slot: 3, label: "tests", plate: "TESTS", shirt: "#e0a030", hair: "#4a2c18" },
     security: { slot: 4, label: "security", plate: "SECURITY", shirt: "#7b4fd1", hair: "#161616" },
-    "infra-architect": { slot: 5, label: "infra-architect", plate: "INFRA", shirt: "#2f9fb0", hair: "#b8b8b8" }
+    "infra-architect": { slot: 5, label: "infra-architect", plate: "INFRA", shirt: "#2f9fb0", hair: "#b8b8b8" },
+    mobile: { slot: 6, label: "mobile", plate: "MOBILE", shirt: "#d0553a", hair: "#2a1d12" }
   };
   var SKINS = ["#f1c9a0", "#d9a679", "#a8744f", "#7a4a2e"];
 
@@ -205,7 +206,7 @@ aside section { margin: 0 !important; background: var(--panel); border: 2px soli
 
   /* ------------------------------------------------------------ estado */
 
-  var chars = Object.create(null), order = [], dmap = Object.create(null), nextSlot = 6;
+  var chars = Object.create(null), order = [], dmap = Object.create(null), nextSlot = 7;
   var lastEventMs = 0, hasEvents = false, quiet = false;
 
   function hashOf(s) { var h = 7, i; for (i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }

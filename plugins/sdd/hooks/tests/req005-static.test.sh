@@ -17,5 +17,6 @@ check "req005 foco visível definido" grep -q ':focus-visible' "$H"
 check "req005 textContent usado para dados" grep -q 'textContent' "$H"
 check "req005 lang pt-BR" grep -q '<html lang="pt-BR">' "$H"
 check "req005 'use strict'" grep -q '"use strict"' "$H"
+check "req005 agente mobile conhecido (slot 6; próximo slot dinâmico 7)" bash -c 'grep -q "mobile: { slot: 6," "$1" && grep -q "nextSlot = 7;" "$1"' _ "$H"
 drop_sandbox 2>/dev/null
 finish

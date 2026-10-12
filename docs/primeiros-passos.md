@@ -31,18 +31,15 @@ Você registra o marketplace **uma vez na máquina** e instala o plugin **em cad
 | Pré-requisito | Como conferir |
 |---|---|
 | Claude Code **2.1.288 ou superior** (testado no 2.1.296) | `claude --version` |
-| Git com acesso a este repositório (privado) | `git ls-remote https://github.com/powerlok/claude-sdd-framework.git` lista as referências, sem erro |
+| Git com acesso de rede a este repositório (público, sem credencial) | `git ls-remote https://github.com/powerlok/claude-sdd-framework.git` lista as referências, sem erro |
 | **Windows:** Git for Windows (o hook do plugin usa `bash`) | `bash --version` no terminal |
 | **Windows:** `claude` no PATH | `claude --version` funciona no terminal que você vai usar |
 
-**Acesso ao repositório.** O Claude Code usa as credenciais do git da sua máquina, sem pedir senha:
-
-- HTTPS: pelo gerenciador de credenciais do git (ex.: `gh auth setup-git`, se você usa o GitHub CLI);
-- ou SSH, com a chave carregada no agente.
+**Acesso ao repositório.** O repositório é público: o Claude Code usa o git da sua máquina e não precisa de credencial.
 
 > **Nunca** coloque usuário, senha ou token na URL (`https://user:token@...`).
 
-Se o `git ls-remote` acima falhar, resolva o acesso antes de seguir: os passos seguintes fazem o mesmo acesso.
+Se o `git ls-remote` acima falhar, resolva a rede antes de seguir (proxy, firewall ou DNS bloqueando o github.com): os passos seguintes fazem o mesmo acesso.
 
 **Windows: `claude` não encontrado.** O instalador nativo coloca o `claude.exe` em `%USERPROFILE%\.local\bin`.
 Adicione ao PATH da sessão:
@@ -324,7 +321,7 @@ Detalhes e limites: [README](../README.md#-salinha-dos-agentes-opcional).
 |---|---|---|
 | `claude` não encontrado (Windows) | `%USERPROFILE%\.local\bin` fora do PATH | PowerShell: `$env:Path += ";$HOME\.local\bin"`; Git Bash: `export PATH="$PATH:$HOME/.local/bin"` |
 | `Plugin "sdd" not found in marketplace` ao instalar | Marketplace não registrado nesta máquina, ou desatualizado | Rode o [passo 1](#1-instalar-na-máquina-uma-vez) (`marketplace add`); se já registrado, `claude plugin marketplace update claude-sdd-framework` |
-| Falha de clone ou de autenticação no `marketplace add` | Git sem acesso ao repositório privado | Teste `git ls-remote https://github.com/powerlok/claude-sdd-framework.git`; configure credenciais (gerenciador de credenciais/`gh auth setup-git` ou SSH); nunca token na URL |
+| Falha de clone ou de autenticação no `marketplace add` | Rede bloqueando o github.com (proxy/firewall/DNS) | Teste `git ls-remote https://github.com/powerlok/claude-sdd-framework.git`; ajuste a rede; nunca token na URL |
 | Resposta genérica, sem "Sou o TechLead" | Plugin não instalado no projeto; pasta não confiada; ou sessão aberta antes do install | Rode o `plugin install` na raiz; aceite o diálogo de confiança; `/reload-plugins` ou nova sessão |
 | `/plugin` › Errors: "enabled in project settings but isn't installed here" | O settings foi copiado (ou veio pelo git), mas o plugin não foi instalado nesta máquina | `claude plugin install sdd@claude-sdd-framework --scope project` na raiz do projeto |
 | A sessão abre com o agente "OBSOLETO" (`sdd:tecleader`) em vez do TechLead | O `settings` ainda aponta para o nome antigo, renomeado na 0.8.0 | Troque `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` (ou `settings.local.json`) e reinicie (ou `/reload-plugins`) |

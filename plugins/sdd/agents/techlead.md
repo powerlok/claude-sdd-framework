@@ -362,7 +362,6 @@ inclusive os passos 4 e 5):
   vale para worktree/submódulo): `/CLAUDE.md`, `/.specs/`, `/.claude/`, só as que faltarem, acrescentadas ao fim sem
   reescrever; em monorepo, caminho da pasta do projeto (ex.: `/apps/api/CLAUDE.md`; ver [claude-md-layers](../skills/sdd-rules/references/claude-md-layers.md)).
   **Não** tocar no `.gitignore`; conferir no `git status` que esses artefatos não aparecem.
-- Marketplace privado: informar em 1 linha que colegas precisam de acesso ao repositório do framework.
 
 ---
 

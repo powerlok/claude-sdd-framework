@@ -8,6 +8,7 @@ com `Relacionada a: done/<feature>`).
 
 | Feature | Estado | Início | Origem | Resumo |
 |---|---|---|---|---|
+| [repo-publico-salinha-mobile](repo-publico-salinha-mobile/spec.md) | DONE | 2026-10-12 | pedido do usuário | Docs sem premissa de repo privado e agente `mobile` na salinha (`sdd` 0.9.1) |
 | [mobile-git-workflow](mobile-git-workflow/spec.md) | TODO | 2026-10-11 | pedido do usuário | Agente `sdd:mobile` (React Native/Expo) e fluxo Git trunk-based com Conventional Commits (`sdd` 0.9.0) |
 | — | — | — | — | nenhuma |
 
