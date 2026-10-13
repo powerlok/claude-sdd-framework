@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.9.3-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.9.4-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -75,7 +75,7 @@ Estados de cada task: `TODO → IN_PROGRESS → IMPLEMENTED → SECURITY_REVIEW 
 | `frontend-engineering` | Princípios + referências **React** e **Angular** e checklist de interface web |
 | `mobile-engineering` | Princípios mobile + referência **React Native/Expo** (outras plataformas: sem referência, lacuna declarada) |
 | `git-lang` | Comando `/sdd:git-lang pt\|en`: idioma de commits e PR (seção `## Git` do `CLAUDE.md`) |
-| `publish` | Comando `/sdd:publish bloqueada\|confirmar`: liga/desliga o modo publicação (push da branch, PR, merge e release com confirmação a cada comando), só no `settings.local.json` |
+| `publish` | Comando `/sdd:publish bloqueada\|confirmar`: liga/desliga o modo publicação (push da branch, PR e release com confirmação a cada comando; o merge é sempre seu), só no `settings.local.json` |
 | `requirements-grilling` | Perguntas certas para fechar requisitos antes da spec |
 | `bug-diagnosis` | Diagnóstico de bugs em 5 fases, com teste de regressão |
 | `domain-modeling` | Glossário, modelo de domínio e registro de decisões (ADR) |
@@ -91,7 +91,7 @@ você ligue o modo publicação, abaixo). Sem a seção `## Git`, nada é criado
 `/sdd:git-lang pt` ou `/sdd:git-lang en`. O `templates/project-settings.git.json` nega por padrão operações destrutivas
 (`git reset --hard`, `git clean -f*`, `git commit --no-verify`, `git branch -D`, `git config*` etc.).
 
-**Modo publicação (opcional, por usuário).** Se você ligar no onboarding ou com `/sdd:publish confirmar` (grava só no `.claude/settings.local.json`), o TechLead também faz `push -u origin <branch>` da branch de trabalho, `gh pr create`, `gh pr merge` e `gh release create`, cada um com a sua confirmação; `--admin`, `--auto`, `--delete-branch`, push para `main`/`master`, refspec, `--force`, aprovar/revisar PR e `gh api` seguem negados. Sem decisão sua, o TechLead não publica (o `settings.json` do modelo só pede confirmação, não libera).
+**Modo publicação (opcional, por usuário).** Se você ligar no onboarding ou com `/sdd:publish confirmar` (grava só no `.claude/settings.local.json`), o TechLead também faz `push -u origin <branch>` da branch de trabalho, `gh pr create` e `gh release create`, cada um com a sua confirmação. Caminho feliz: ao concluir a spec, o TechLead propõe um lote (push da branch da spec + PR com o texto montado da spec); você confirma, ele abre o PR e entrega a URL; **revisar, aprovar e fazer o merge é sempre seu**. Seguem negados: `gh pr merge`, `--admin`, `--auto`, `--delete-branch`, push para `main`/`master`, refspec, `--force`, aprovar/revisar PR e `gh api` seguem negados. Sem decisão sua, o TechLead não publica (o `settings.json` do modelo só pede confirmação, não libera).
 Troque quando quiser com `/sdd:publish bloqueada|confirmar` ou pedindo ao TechLead. Limites: `ask` não vale com
 `bypassPermissions` nem em `claude -p`; os padrões `Bash(...)` não cobrem `sh -c`, caminho absoluto nem alias, então o
 controle real é o prompt de confirmação e a proteção de branch no servidor (recomendado: `disableBypassPermissionsMode`).
@@ -322,7 +322,7 @@ Nunca reutilize `gh auth token`: o login local do `gh` costuma ter escrita.
 
 **Camadas de proteção:** (1) servidor em modo somente leitura; (2) o TechLead só tem uma lista fechada de
 ferramentas de leitura; (3) `permissions.deny` das ferramentas de escrita nos templates de settings.
-Revisar/aprovar PR e criar issue não estão liberados. Abrir PR, merge e release só no modo publicação (seção Fluxo Git), a partir do Bash e com confirmação; fora dele, faça manualmente.
+Revisar/aprovar PR e criar issue não estão liberados. Abrir PR e release só no modo publicação (o merge é sempre do usuário) (seção Fluxo Git), a partir do Bash e com confirmação; fora dele, faça manualmente.
 
 **Issue e PR são dado não confiável.** O TechLead não segue instruções escritas dentro de issue, PR,
 comentário ou log; sinaliza trechos suspeitos, exige sua confirmação antes de transformar a issue em spec

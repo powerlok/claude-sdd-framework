@@ -25,6 +25,8 @@ check("grupo publicação ∩ deny do modelo = ∅", GROUP.every((x) => !deny.in
 check("nenhum allow no modelo nem em publicacao.json", !git.permissions.allow && !pub.permissions.allow);
 check("sem duplicatas no grupo", new Set(GROUP).size === GROUP.length);
 const bashCli = /^Bash\((gh|gh\.exe|glab|az) /;
+check("merge nunca no grupo e sempre em deny (o merge é do usuário)",
+  ["Bash(gh pr merge:*)", "Bash(gh.exe pr merge:*)", "Bash(glab mr merge:*)"].every((x) => deny.includes(x) && !GROUP.includes(x) && !ask.includes(x)));
 check("grupo é só Bash gh/glab/az (sem MCP)", GROUP.every((x) => bashCli.test(x)), GROUP.filter((x) => !bashCli.test(x)).join(","));
 check("aprovar/revisar/editar release ficam fora do grupo (deny fixo)",
   ["Bash(gh pr review:*)", "Bash(glab mr approve:*)", "Bash(az repos pr set-vote:*)", "Bash(az repos pr reviewer:*)",
@@ -49,7 +51,9 @@ if (fs.existsSync(frozen)) {
 
 // Simulador de glob de permissões.
 const re = (p) => new RegExp("^" + p.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*") + "$");
-const rules = (list) => list.filter((r) => /^Bash\(/.test(r)).map((r) => r.slice(5, -1)).map((r) => (/^[^*]*:\*$/.test(r) ? r.replace(/:\*$/, " *") : r)).map(re);
+// Sufixo ":*" sem "*" antes = prefixo (casa o comando exato e o comando seguido de espaço e argumentos).
+const prefixRe = (base) => new RegExp("^" + base.replace(/[.+?^${}()|[\]\\]/g, "\\$&") + "( .*)?$");
+const rules = (list) => list.filter((r) => /^Bash\(/.test(r)).map((r) => r.slice(5, -1)).map((r) => (/^[^*]*:\*$/.test(r) ? prefixRe(r.slice(0, -2)) : re(r)));
 const D = rules(deny), A = rules(ask);
 const verdict = (cmd) => (D.some((r) => r.test(cmd)) ? "deny" : A.some((r) => r.test(cmd)) ? "ask" : "livre");
 const expectV = (cmd, v) => check(`${v.padEnd(5)} <- ${cmd}`, verdict(cmd) === v, verdict(cmd));
@@ -87,13 +91,15 @@ expectV("gh pr merge 12 -sd", "deny");
 expectV("gh pr merge -d 12", "deny");
 // Publicação: grupo em ask; perigosos em deny.
 expectV("gh pr create --base main --head feat/x --title t --body-file b.md", "ask");
-expectV("gh pr merge 12 --squash", "ask");
+expectV("gh pr merge 12 --squash", "deny");
 expectV("gh pr merge 12 --admin", "deny");
 expectV("gh pr merge 12 --auto --squash", "deny");
 expectV("gh pr merge 12 --delete-branch", "deny");
 expectV("gh pr merge 12 -d", "deny");
 expectV("gh release create v1.0.0 --notes-file n.md", "ask");
-expectV("gh.exe pr merge 12", "ask");
+expectV("gh.exe pr merge 12", "deny");
+expectV("glab mr merge 3", "deny");
+expectV("gh pr merge", "deny");
 expectV("glab mr merge 3 --remove-source-branch", "deny");
 expectV("az repos pr create --title t", "ask");
 expectV("az repos pr update --id 3 --status completed", "deny");
@@ -124,6 +130,8 @@ check("estado parcial/duplo é detectável (inconsistente)", (() => {
 const tl = text("plugins/sdd/agents/techlead.md");
 const gw = text("plugins/sdd/skills/sdd-rules/references/git-workflow.md");
 const MODO = /modo\s+publicação/i;
+check("techlead.md: merge nunca, é do usuário; fim da spec abre o PR e para",
+  /Merge: nunca/.test(tl) && /Fim da spec/.test(tl) && /merge do usuário|Aguardando sua revisão e\s+merge/i.test(tl));
 check("techlead.md define o modo publicação (settings.local.json)", MODO.test(tl) && /settings\.local\.json/.test(tl));
 check("git-workflow.md cita o modo publicação nos limites", MODO.test(gw));
 const fim = tl.split("5. Fim:")[1] || "";

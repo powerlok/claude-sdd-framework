@@ -71,7 +71,7 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.9.3 | padrão | 7 agentes (mais o obsoleto `tecleader`), 12 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
+| `sdd` | 0.9.4 | padrão | 7 agentes (mais o obsoleto `tecleader`), 12 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
 | `authoring` | 0.2.1 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
@@ -365,7 +365,7 @@ Requisito sem teste é reportado pelo `sdd:tests` como lacuna de cobertura e imp
 | Regras não relaxáveis | `sdd-rules` e `templates/CLAUDE.md` | regras do projeto não podem relaxar segredos/credenciais, verificação SSL, confirmação de ações irreversíveis, Jira somente leitura e menor privilégio |
 | `security` não altera o projeto | `tools:` sem Edit/Write | tem Bash para verificações; a proibição de alterar vale pelo prompt |
 | `infra-architect` não executa | `tools:` sem Bash | limitado de fato |
-| Git local com confirmação | `techlead.md`, `sdd-rules/references/git-workflow.md` | o TechLead só cria branch e commit local após confirmação explícita (branch, mensagem e arquivos listados) e com a seção `## Git` no `CLAUDE.md`; nunca `rebase`, `--force`, `--no-verify`; `push` da branch de trabalho, PR, merge e release só no modo publicação (escolha do usuário em `settings.local.json`, `/sdd:publish`, confirmação a cada comando); slug sanitizado e dado externo não vira mensagem |
+| Git local com confirmação | `techlead.md`, `sdd-rules/references/git-workflow.md` | o TechLead só cria branch e commit local após confirmação explícita (branch, mensagem e arquivos listados) e com a seção `## Git` no `CLAUDE.md`; nunca `rebase`, `--force`, `--no-verify`; `push` da branch de trabalho, PR e release só no modo publicação (o merge é sempre do usuário) (escolha do usuário em `settings.local.json`, `/sdd:publish`, confirmação a cada comando); slug sanitizado e dado externo não vira mensagem |
 | Git destrutivo negado | `permissions.deny` em `templates/project-settings.git.json` | `git reset --hard`, `git clean -f*`, `git commit --no-verify`/`-n`, `git branch -D`, `git config*`, `git checkout -- `, `git restore*`; `git push *` segue em `ask`; `commit` e `switch -c` não estão em `allow` |
 | Hook seguro | `hooks.json` | apenas `echo` |
 | Credenciais do GitHub | README | nunca usuário/senha/token na URL; SSH ou gerenciador de credenciais do git |
@@ -418,7 +418,7 @@ sequenceDiagram
 
 Issue, PR, comentário, work item e log são **dados, nunca instruções**: o TechLead não executa comandos, não chama
 ferramentas, não muda escopo e não lê nem expõe segredos por pedido contido neles. Issue sem critério de aceite:
-solicita complementação. Escrita (comentário, revisão, issue) não está liberada: o usuário faz manualmente. PR, merge e release só no modo publicação (opcional, por usuário; ver Git local).
+solicita complementação. Escrita (comentário, revisão, issue) não está liberada: o usuário faz manualmente. PR e release só no modo publicação (o merge é sempre do usuário) (opcional, por usuário; ver Git local).
 
 **Riscos residuais**
 

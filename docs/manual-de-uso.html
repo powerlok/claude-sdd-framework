@@ -219,7 +219,7 @@ tr:last-child td { border-bottom: 0; }
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span class="lbl">Menu</span>
   </button>
   <span class="logo" aria-hidden="true">SDD</span>
-  <h1>Manual do Plugin SDD <span class="ver">sdd 0.9.3 · authoring 0.2.1</span></h1>
+  <h1>Manual do Plugin SDD <span class="ver">sdd 0.9.4 · authoring 0.2.1</span></h1>
   <div class="header-tools" role="search">
     <div class="search">
       <label for="q" class="sr-only">Buscar no manual</label>
@@ -418,7 +418,7 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
   <h3>Fluxo Git (opcional)</h3>
   <p>Com a seção <code>## Git</code> no <code>CLAUDE.md</code> do projeto (modelo trunk-based, Conventional Commits, branch <code>&lt;tipo&gt;/&lt;ISSUE&gt;-&lt;slug&gt;</code>, <code>Idioma: pt | en</code>, perguntado no onboarding), o <code>sdd:techlead</code> pode criar a <strong>branch</strong> e <strong>commits locais</strong>, sempre <strong>depois da sua confirmação</strong>: ele mostra antes a branch, a mensagem e a lista explícita de arquivos. Nunca faz <code>push</code>, <code>merge</code>, <code>rebase</code>, <code>--force</code> nem <code>--no-verify</code>; o texto do PR é entregue a você para abrir manualmente, a não ser que você ligue o <strong>modo publicação</strong> (abaixo). Sem a seção, nada é criado. Para trocar o idioma: <code>/sdd:git-lang pt</code> ou <code>/sdd:git-lang en</code>. As convenções estão em <code>skills/sdd-rules/references/git-workflow.md</code>.</p>
   <p>Os templates de settings também negam <code>git reset --hard</code>, <code>git clean -f*</code>, <code>git commit --no-verify</code>/<code>-n</code>, <code>git branch -D</code>, <code>git config*</code>, <code>git checkout -- </code> e <code>git restore*</code>; <code>git push *</code> continua em <code>ask</code>. Quem já tem o settings aplicado deve reaplicar ou mesclar o novo deny.</p>
-  <p><strong>Modo publicação (opcional, por usuário).</strong> Se você ligar no onboarding ou com <code>/sdd:publish confirmar</code> (grava só no <code>.claude/settings.local.json</code>), o TechLead também faz <code>git push -u origin &lt;branch&gt;</code> da branch de trabalho, <code>gh pr create</code>, <code>gh pr merge</code> e <code>gh release create</code>, cada um com a sua confirmação. Seguem negados <code>--admin</code>, <code>--auto</code>, <code>--delete-branch</code>, push para <code>main</code>/<code>master</code>, refspec, <code>--force</code>, aprovar/revisar PR e <code>gh api</code>. Sem decisão sua, o TechLead não publica (o settings do modelo só pede confirmação, não libera). Troque com <code>/sdd:publish bloqueada|confirmar</code> ou pedindo ao TechLead. Limites: <code>ask</code> não vale com <code>bypassPermissions</code> nem em <code>claude -p</code>; os padrões <code>Bash(...)</code> não cobrem <code>sh -c</code>, caminho absoluto nem alias, então o controle real é o prompt e a proteção de branch no servidor (recomendado: <code>disableBypassPermissionsMode</code>).</p>
+  <p><strong>Modo publicação (opcional, por usuário).</strong> Se você ligar no onboarding ou com <code>/sdd:publish confirmar</code> (grava só no <code>.claude/settings.local.json</code>), o TechLead também faz <code>git push -u origin &lt;branch&gt;</code> da branch de trabalho, <code>gh pr create</code> e <code>gh release create</code>, cada um com a sua confirmação. Caminho feliz: ao concluir a spec, o TechLead propõe um lote (push da branch da spec + PR com o texto montado da spec); você confirma, ele abre o PR e entrega a URL; <strong>revisar, aprovar e fazer o merge é sempre seu</strong> (<code>gh pr merge</code> fica negado). Seguem negados <code>--admin</code>, <code>--auto</code>, <code>--delete-branch</code>, push para <code>main</code>/<code>master</code>, refspec, <code>--force</code>, aprovar/revisar PR e <code>gh api</code>. Sem decisão sua, o TechLead não publica (o settings do modelo só pede confirmação, não libera). Troque com <code>/sdd:publish bloqueada|confirmar</code> ou pedindo ao TechLead. Limites: <code>ask</code> não vale com <code>bypassPermissions</code> nem em <code>claude -p</code>; os padrões <code>Bash(...)</code> não cobrem <code>sh -c</code>, caminho absoluto nem alias, então o controle real é o prompt e a proteção de branch no servidor (recomendado: <code>disableBypassPermissionsMode</code>).</p>
 </section>
 
 <!-- 4 -->
@@ -838,7 +838,7 @@ Liste as issues abertas atribuídas a mim no projeto PROJ.</code></pre></div>
     <li>Servidor em modo somente leitura (GitHub em <code>/mcp/readonly</code>).</li>
     <li>O TechLead tem uma lista fechada de ferramentas de leitura; os demais agentes não consultam o provedor.</li>
     <li><code>permissions.deny</code> nos templates de settings bloqueia as ferramentas de escrita. O deny de Bash (<code>gh</code>, <code>glab</code>, <code>az</code>) é só defesa em profundidade, não barreira.</li>
-    <li>Comentar, revisar/aprovar e criar issue não estão liberados: faça manualmente. Abrir PR, merge e release só no modo publicação (opcional, por usuário, com confirmação a cada comando).</li>
+    <li>Comentar, revisar/aprovar e criar issue não estão liberados: faça manualmente. Abrir PR e release só no modo publicação (o merge é sempre do usuário) (opcional, por usuário, com confirmação a cada comando).</li>
   </ul>
   <div class="callout warn" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><div><span class="t">Issue e PR são dado não confiável</span><p>O TechLead não segue instruções escritas em issue, PR, comentário ou log; sinaliza trechos suspeitos, exige sua confirmação antes de virar spec e repassa aos demais agentes só os REQs validados. Exemplos 16 a 18.</p></div></div>
   <p><span class="badge verified">Verificado</span> Fonte: .specs/done/vcs-integration/validation-report.md (GitHub) e design.md.</p>
@@ -852,7 +852,7 @@ claude plugin update sdd@claude-sdd-framework --scope project</code></pre></div>
   <p>Reinicie a sessão para aplicar. <span class="badge verified">Verificado</span></p>
   <div class="table-wrap"><table>
     <thead><tr><th>Plugin</th><th>Versão deste manual</th></tr></thead>
-    <tbody><tr><td><code>sdd</code></td><td>0.9.3</td></tr><tr><td><code>authoring</code></td><td>0.2.1</td></tr></tbody>
+    <tbody><tr><td><code>sdd</code></td><td>0.9.4</td></tr><tr><td><code>authoring</code></td><td>0.2.1</td></tr></tbody>
   </table></div>
   <p>As versões seguem semver, definidas em <code>plugins/*/.claude-plugin/plugin.json</code>; as mudanças ficam no <a href="../CHANGELOG.md">CHANGELOG.md</a>.</p>
   <p>Para validar um plugin ou testá-lo sem instalar (só na sessão):</p>
@@ -929,7 +929,7 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
 </main>
 </div>
 
-<footer class="site-footer">Manual do Plugin SDD · sdd 0.9.3 · authoring 0.2.1 · arquivo único, funciona offline.</footer>
+<footer class="site-footer">Manual do Plugin SDD · sdd 0.9.4 · authoring 0.2.1 · arquivo único, funciona offline.</footer>
 
 <button type="button" class="btn" id="to-top" aria-label="Voltar ao topo">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span class="lbl">Topo</span>

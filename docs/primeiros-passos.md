@@ -182,7 +182,7 @@ Se você instalou o plugin com uma sessão já aberta, rode `/reload-plugins` ou
 
 - diz que a pasta é um repositório git com manifestos (ex.: `package.json`), sem `CLAUDE.md` e sem `.specs/`;
 - explica o que vai ler e o que vai criar;
-- pergunta: **"Faço o onboarding agora?"**, e, para a seção `## Git`, o idioma das mensagens de commit e do PR (`pt` ou `en`) e se ele pode publicar (push da branch, PR, merge, release) com confirmação a cada comando (padrão: não; fica só no seu `.claude/settings.local.json`).
+- pergunta: **"Faço o onboarding agora?"**, e, para a seção `## Git`, o idioma das mensagens de commit e do PR (`pt` ou `en`) e se ele pode publicar (push da branch, PR, release; o merge é sempre seu) com confirmação a cada comando (padrão: não; fica só no seu `.claude/settings.local.json`).
 
 A resposta inicial pode citar mesclar o `.claude/settings.json` com o modelo; se ele já estiver igual ao modelo, nada
 muda.
@@ -195,7 +195,7 @@ o seu `.claude/settings.json` com o modelo, e para rodar comandos de leitura (ex
   `## Arquitetura`, `## Convenções`, `## Git` e `## SDD`;
 - `.specs/INDEX.md` (índice das specs).
 
-Ele **não faz commit** neste passo (com a seção `## Git`, ele só cria branch e commit locais depois da sua confirmação, e só faz `push`, PR, merge ou release se você ligar o modo publicação, com confirmação a cada comando). Revise o `CLAUDE.md` gerado e corrija o que estiver errado antes do primeiro pedido. Se o
+Ele **não faz commit** neste passo (com a seção `## Git`, ele só cria branch e commit locais depois da sua confirmação, e só faz `push`, PR ou release se você ligar o modo publicação, com confirmação a cada comando). Revise o `CLAUDE.md` gerado e corrija o que estiver errado antes do primeiro pedido. Se o
 `CLAUDE.md` sair com a nota "comandos ainda não executados", aprove a execução (ou peça para rodar depois) e confira
 os comandos registrados.
 

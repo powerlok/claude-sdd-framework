@@ -8,6 +8,7 @@ com `Relacionada a: done/<feature>`).
 
 | Feature | Estado | Início | Origem | Resumo |
 |---|---|---|---|---|
+| [spec-pr-flow](spec-pr-flow/spec.md) | IN_PROGRESS | 2026-10-13 | pedido do usuário | Fim da spec: commit na branch da spec e PR para o usuário revisar; o merge é do usuário (`sdd` 0.9.4) |
 | [publish-opt-in](publish-opt-in/spec.md) | TODO | 2026-10-12 | pedido do usuário | Publicação (PR/merge/release) como escolha do usuário no onboarding: `ask` em vez de `deny` fixo (`sdd` 0.10.0) |
 | [mobile-git-workflow](mobile-git-workflow/spec.md) | TODO | 2026-10-11 | pedido do usuário | Agente `sdd:mobile` (React Native/Expo) e fluxo Git trunk-based com Conventional Commits (`sdd` 0.9.0) |
 

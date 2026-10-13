@@ -1,6 +1,6 @@
 ---
 name: publish
-description: Liga ou desliga o modo publicação do projeto (push da branch de trabalho, PR, merge e release pelo TechLead, com confirmação a cada comando). Uso /sdd:publish confirmar ou /sdd:publish bloqueada.
+description: Liga ou desliga o modo publicação do projeto (push da branch de trabalho, PR e release pelo TechLead, com confirmação a cada comando; o merge é sempre do usuário). Uso /sdd:publish confirmar ou /sdd:publish bloqueada.
 argument-hint: bloqueada|confirmar
 disable-model-invocation: true
 allowed-tools: Read, Edit, Bash(git ls-files -- .claude/settings.local.json), Bash(git check-ignore -q .claude/settings.local.json)
@@ -33,5 +33,5 @@ Move o grupo de publicação de `templates/project-settings.publicacao.json` ent
 ## Resposta (pt-BR, curta)
 
 - Sucesso: "Publicação agora é `<estado>` neste projeto (só `settings.local.json`; `allow` intocado)". Se `confirmar`,
-  lembrar: cada push, PR, merge ou release pede sua confirmação; `ask` não vale com `bypassPermissions` nem em `claude -p`.
+  lembrar: cada push, PR ou release pede sua confirmação (o merge é sempre seu); `ask` não vale com `bypassPermissions` nem em `claude -p`.
 - Recusa: dizer o motivo (valor inválido, arquivo rastreado, arquivo ausente, `allow` perigoso); nada foi alterado.

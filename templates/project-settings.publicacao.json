@@ -2,15 +2,12 @@
   "permissions": {
     "ask": [
       "Bash(gh pr create:*)",
-      "Bash(gh pr merge:*)",
       "Bash(gh pr comment:*)",
       "Bash(gh release create:*)",
       "Bash(gh.exe pr create:*)",
-      "Bash(gh.exe pr merge:*)",
       "Bash(gh.exe pr comment:*)",
       "Bash(gh.exe release create:*)",
       "Bash(glab mr create:*)",
-      "Bash(glab mr merge:*)",
       "Bash(glab mr note:*)",
       "Bash(az repos pr create:*)"
     ]

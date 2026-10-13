@@ -2,6 +2,20 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.9.4 — 2026-10-13
+
+Fim da spec abre o PR; o merge é do usuário (`.specs/spec-pr-flow/spec.md`). Não é release (sem tag).
+
+- REQ-001/REQ-002: `gh pr merge`, `gh.exe pr merge` e `glab mr merge` saem do grupo de publicação e ficam em `deny` fixo; o
+  TechLead nunca faz merge, em nenhum modo (mudança em relação à 0.9.2, que o permitia com confirmação).
+- REQ-003/REQ-005: caminho feliz no `techlead.md` (seção "Publicação", "Fim da spec"): uma branch e um PR por spec; com a spec DONE
+  e o modo `confirmar`, o TechLead apresenta um lote (push + PR com o texto integral), executa após a confirmação, entrega a URL do
+  PR e para ("Aguardando sua revisão e merge").
+- REQ-004: modelo de PR em `git-workflow.md` com validação, segurança e "Aguardando revisão e merge do usuário".
+- REQ-006: `req007-publicacao.test.js` (merge em `deny`, fora do grupo e do `ask`); docs; `sdd` 0.9.4.
+- Migração: reaplique ou mescle o `deny`/`ask` dos modelos; um `settings.local.json` com o grupo da 0.9.2 em `ask` pode listar
+  `gh pr merge`: ele passa a ser negado pelo `deny` do modelo, sem ação sua.
+
 ## sdd 0.9.3 — 2026-10-13
 
 Salinha: não abrir de novo quando já estiver aberta (`.specs/done/office-single-open/spec.md`). Não é release (sem tag).
