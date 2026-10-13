@@ -435,9 +435,10 @@ solicita complementação. Escrita (comentário, revisão, issue) não está lib
 - `version` semver em `plugins/*/.claude-plugin/plugin.json`; mudanças registradas no [CHANGELOG](../CHANGELOG.md).
 - **MAJOR:** muda contrato de delegação, nomes de agentes ou estados. **MINOR:** nova skill ou referência.
   **PATCH:** texto ou correção.
-- Após editar o plugin instalado: bump de `version`, depois
+- Após editar o plugin instalado (marketplace local ou branch, sem `ref`): bump de `version`, depois
   `claude plugin marketplace update claude-sdd-framework` e
-  `claude plugin update sdd@claude-sdd-framework --scope project`; reiniciar a sessão para aplicar.
+  `claude plugin update sdd@claude-sdd-framework --scope project`; reiniciar a sessão para aplicar. Com `ref` (tag): edite o
+  `ref` da entrada no `~/.claude/settings.json`, `claude plugin marketplace add "...#vNOVA"` e `plugin update` (ver primeiros-passos).
 - Validar a estrutura antes de publicar: `claude plugin validate .`, `./plugins/sdd`, `./plugins/authoring`.
 
 ## 11. Evidências de validação
