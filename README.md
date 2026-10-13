@@ -104,7 +104,11 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
 **Pré-requisitos:** Claude Code ≥ 2.1.288 e Git com acesso a este repositório (teste:
 `git ls-remote https://github.com/powerlok/claude-sdd-framework.git`). No Windows, também Git for Windows.
 
-1. **Uma vez por máquina**, registre o marketplace na versão desejada (tag):
+1. **Uma vez por máquina**, registre o marketplace na versão desejada (tag). Antes, rode `claude plugin marketplace list`:
+   se `claude-sdd-framework` **não aparece**, execute o comando abaixo (cria o `~/.claude/settings.json` se não existir); se
+   **já aparece** sem versão ou com outra (erro `its source doesn't match its extraKnownMarketplaces entry`), siga o
+   [passo C dos primeiros passos](docs/primeiros-passos.md#passo-c-já-registrado-sem-versão-ou-com-outra-versão) (edite o `ref` da
+   entrada no `~/.claude/settings.json` e repita o `add`; não use `marketplace remove`):
 
    ```bash
    claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.4"
@@ -189,9 +193,10 @@ chaves e certificados; credenciais de npm, PyPI, git e `netrc`; estado e variáv
 forçado/destrutivo (`--force*`, `-f`, `+refspec`, `--mirror`, `--delete`/`-d`). Push comum pede confirmação
 (`permissions.ask`).
 
-**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.9.4"`). Para subir de versão: troque o
-`ref` pela nova tag e rode `claude plugin marketplace update claude-sdd-framework` e
-`claude plugin update sdd@claude-sdd-framework --scope project`. Sem `ref`, vale a branch padrão do repositório
+**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.9.4"`). Quem decide a versão na máquina é a entrada
+`claude-sdd-framework` do `~/.claude/settings.json`; para subir de versão, troque o `ref` dela, rode
+`claude plugin marketplace add "...git#vNOVA"` e `claude plugin update sdd@claude-sdd-framework --scope project`
+([passo a passo](docs/primeiros-passos.md#atualizar-a-versão)). Sem `ref`, vale a branch padrão do repositório
 (sempre a última versão).
 
 > **Limites:** o deny é defesa em profundidade, não barreira. O deny de `Read` cobre as ferramentas de arquivo e os
@@ -278,10 +283,11 @@ por usuário, nunca no repositório. Para apagar, remova o arquivo.
 
 ## 🔁 Atualização
 
-```bash
-claude plugin marketplace update claude-sdd-framework
-claude plugin update sdd@claude-sdd-framework --scope project
-```
+**Versão fixada por tag (recomendado):** troque o `ref` da entrada `claude-sdd-framework` no `~/.claude/settings.json`, rode
+`claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#vNOVA"` e, em cada projeto,
+`claude plugin update sdd@claude-sdd-framework --scope project` ([passo a passo](docs/primeiros-passos.md#atualizar-a-versão)).
+**Sem `ref` (branch):** `claude plugin marketplace update claude-sdd-framework` e `claude plugin update sdd@claude-sdd-framework --scope project`.
+Não use `claude plugin marketplace remove` (desinstala o plugin dos projetos).
 
 Reinicie a sessão para aplicar. Versões seguem semver; veja o [CHANGELOG](CHANGELOG.md).
 

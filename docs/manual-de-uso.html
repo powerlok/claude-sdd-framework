@@ -311,7 +311,7 @@ tr:last-child td { border-bottom: 0; }
 
   <h3>A partir do GitHub <span class="badge verified">Verificado</span></h3>
   <ol>
-    <li><strong>Uma vez por máquina</strong>, registre o marketplace na versão desejada (tag):</li>
+    <li><strong>Uma vez por máquina</strong>, registre o marketplace na versão desejada (tag). Antes, rode <code>claude plugin marketplace list</code>: se <code>claude-sdd-framework</code> <strong>não aparece</strong>, execute o comando abaixo (cria o <code>~/.claude/settings.json</code> se não existir); se <strong>já aparece</strong> sem versão ou com outra (erro <code>its source doesn't match its extraKnownMarketplaces entry</code>), edite o <code>ref</code> da entrada no <code>~/.claude/settings.json</code> e repita o <code>add</code> (não use <code>marketplace remove</code>, que desinstala o plugin dos projetos). Passo a passo: <a href="primeiros-passos.md#passo-c-já-registrado-sem-versão-ou-com-outra-versão">primeiros-passos.md</a>:</li>
   </ol>
   <div class="code" data-label="bash"><pre><code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.4"</code></pre></div>
   <ol start="2">
@@ -687,8 +687,10 @@ Qual o estado das tasks?</code></pre></div></div>
     <p class="src">Fonte: README.md (Atualização); validation-report.md (update 0.1.1 para 0.1.2 executado).</p>
     <div class="steps">
       <div class="step"><h4>Pedido</h4><p>Saiu uma versão nova do plugin e você quer atualizar.</p>
-        <div class="code" data-label="bash"><pre><code>claude plugin marketplace update claude-sdd-framework
-claude plugin update sdd@claude-sdd-framework --scope project</code></pre></div></div>
+        <div class="code" data-label="bash"><pre><code># versão fixada por tag: troque o ref da entrada no ~/.claude/settings.json e registre de novo
+claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#vNOVA"
+claude plugin update sdd@claude-sdd-framework --scope project
+# sem ref (branch): marketplace update + plugin update</code></pre></div></div>
       <div class="step"><h4>O que o TechLead faz</h4><p>Nada: é uma operação da CLI. A versão segue semver em <code>plugins/*/.claude-plugin/plugin.json</code>.</p></div>
       <div class="step"><h4>O que você responde</h4><p>Reinicie a sessão para aplicar ("Restart to apply changes"). Leia o <a href="../CHANGELOG.md">CHANGELOG.md</a> para saber o que mudou.</p></div>
       <div class="step"><h4>Resultado</h4><p>Conferido com <code>claude plugin list</code>. Exemplo real do histórico: a 0.1.2 corrigiu os agentes para indicar o caminho das references via <code>${CLAUDE_PLUGIN_ROOT}</code>, evitando que o agente buscasse a referência no disco.</p></div>
@@ -847,9 +849,11 @@ Liste as issues abertas atribuídas a mim no projeto PROJ.</code></pre></div>
 <!-- 9 -->
 <section class="sec" id="atualizacao" aria-labelledby="h-upd">
   <h2 id="h-upd"><span class="n">10.</span>Atualização e versões</h2>
-  <div class="code" data-label="bash"><pre><code>claude plugin marketplace update claude-sdd-framework
-claude plugin update sdd@claude-sdd-framework --scope project</code></pre></div>
-  <p>Reinicie a sessão para aplicar. <span class="badge verified">Verificado</span></p>
+  <div class="code" data-label="bash"><pre><code># versão fixada por tag: troque o ref da entrada no ~/.claude/settings.json e registre de novo
+claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#vNOVA"
+claude plugin update sdd@claude-sdd-framework --scope project
+# sem ref (branch): claude plugin marketplace update claude-sdd-framework, depois o plugin update acima</code></pre></div>
+  <p>Não use <code>claude plugin marketplace remove</code>: ele desinstala o plugin dos projetos. Reinicie a sessão para aplicar. <span class="badge verified">Verificado</span></p>
   <div class="table-wrap"><table>
     <thead><tr><th>Plugin</th><th>Versão deste manual</th></tr></thead>
     <tbody><tr><td><code>sdd</code></td><td>0.9.4</td></tr><tr><td><code>authoring</code></td><td>0.2.1</td></tr></tbody>
@@ -884,7 +888,7 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
     <p>O marketplace não está registrado na máquina (verificado numa máquina nova: <code>Plugin "sdd" not found in marketplace "claude-sdd-framework"</code>). Rode uma vez <code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.4"</code> e repita o <code>install</code>. Se já estiver registrado, rode <code>claude plugin marketplace update claude-sdd-framework</code>.</p></article>
 
   <article class="trouble"><h3>"Failed to add marketplace ... its source doesn't match its extraKnownMarketplaces entry"</h3>
-    <p>O seu <code>~/.claude/settings.json</code> (ou o settings gerenciado) já declara <code>claude-sdd-framework</code> com uma fonte diferente da do comando (por exemplo, sem <code>ref</code>, e o comando usa <code>#vX.Y.Z</code>). Rode <code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git"</code>, exatamente a fonte da entrada, ou edite a entrada acrescentando <code>"ref": "vX.Y.Z"</code> em <code>source</code> e rode o <code>add</code> com o mesmo <code>#vX.Y.Z</code>. Depois, <code>claude plugin marketplace update claude-sdd-framework</code>.</p></article>
+    <p>O seu <code>~/.claude/settings.json</code> (ou o settings gerenciado) já declara <code>claude-sdd-framework</code> com uma fonte diferente da do comando (por exemplo, sem <code>ref</code>, e o comando usa <code>#vX.Y.Z</code>). Rode <code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git"</code>, exatamente a fonte da entrada, ou edite a entrada acrescentando <code>"ref": "vX.Y.Z"</code> em <code>source</code> e rode o <code>add</code> com o mesmo <code>#vX.Y.Z</code>; em projetos já instalados, <code>claude plugin update sdd@claude-sdd-framework --scope project</code>. Não use <code>marketplace remove</code> (desinstala o plugin dos projetos) nem <code>marketplace update</code> logo depois de editar o <code>ref</code> à mão (o marketplace some até o <code>add</code>).</p></article>
   <article class="trouble"><h3>A salinha dos agentes não abre</h3>
     <p>Confira a preferência com <code>/sdd:office status</code> (se estiver <code>off</code>, rode <code>/sdd:office on</code>), se há um navegador padrão definido e se o Git Bash está instalado (no Windows o hook usa <code>bash</code>; o bash do WSL no PATH pode atrapalhar). Política corporativa que bloqueie <code>file://</code> impede a atualização da página.</p></article>
 

@@ -56,13 +56,32 @@ export PATH="$PATH:$HOME/.local/bin"
 
 ## 1. Instalar na máquina (uma vez)
 
-**Faça** (em qualquer pasta):
+O marketplace fica registrado no **seu usuário** (`~/.claude/settings.json`, em `extraKnownMarketplaces`). Se esse arquivo
+não existir, o próprio comando abaixo o cria. Quem decide a versão do plugin nesta máquina é essa entrada (o `ref` do
+`.claude/settings.json` de cada projeto só vale em máquina que ainda não tem o marketplace).
+
+**Primeiro, veja em que situação você está** (só leitura):
+
+```bash
+claude plugin marketplace list
+```
+
+Procure `claude-sdd-framework` na lista e leia a linha `Source:`.
+
+| O que a lista mostra | Situação | O que fazer |
+|---|---|---|
+| `claude-sdd-framework` não aparece | **A. Primeira vez nesta máquina** (ou o `~/.claude/settings.json` nem existe) | Faça o **passo A** |
+| `Source: Git (https://github.com/powerlok/claude-sdd-framework.git@v0.9.4)` | **B. Já registrado na versão desejada** | Nada a fazer aqui; siga para o [passo 2](#2-preparar-o-projeto) |
+| Aparece sem `@...` (sem versão fixada) ou com outra versão (ex.: `@v0.9.1`) | **C. Já registrado com outra fonte** | Faça o **passo C**. Se rodar o `add` com `#v0.9.4` sem fazer isso, dá o erro `its source doesn't match its extraKnownMarketplaces entry` |
+
+### Passo A: primeira vez
 
 ```bash
 claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.4"
 ```
 
-O `#v0.9.4` escolhe a versão (tag). O comando clona o repositório nessa tag e registra o marketplace no seu usuário.
+O `#v0.9.4` escolhe a versão (tag). O comando clona o repositório nessa tag, registra o marketplace e grava a entrada no
+`~/.claude/settings.json` (criando o arquivo se não existir).
 
 **Você vai ver** algo como:
 
@@ -71,15 +90,57 @@ Cloning ... (ref: v0.9.4)
 Successfully added marketplace: claude-sdd-framework (declared in user settings)
 ```
 
-**Confira:**
+**Confira:** `claude plugin marketplace list` mostra `Source: Git (https://github.com/powerlok/claude-sdd-framework.git@v0.9.4)`.
+Rodar o mesmo `add` de novo é seguro (responde que já está no disco).
+
+### Passo C: já registrado sem versão ou com outra versão
+
+Escolha **uma** das duas saídas.
+
+**C1. Seguir a entrada atual (sem fixar versão).** Use exatamente a fonte que está no seu settings, sem `#`:
 
 ```bash
-claude plugin marketplace list
+claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git"
 ```
 
-`claude-sdd-framework` aparece na lista. Se o clone falhar, veja [Problemas comuns](#problemas-comuns).
+Você acompanha a branch principal (`main`). Serve para experimentar; para equipe, prefira fixar a versão (C2).
 
-> Só faça isso de novo em outra máquina. Para trocar de versão, veja [Atualizar a versão](#atualizar-a-versão).
+**C2. Fixar a versão (recomendado).**
+
+1. Abra o `~/.claude/settings.json` (Windows: `%USERPROFILE%\.claude\settings.json`) e, na entrada
+   `claude-sdd-framework`, acrescente (ou troque) o `ref` dentro de `source`:
+
+   ```json
+   "extraKnownMarketplaces": {
+     "claude-sdd-framework": {
+       "source": { "source": "git", "url": "https://github.com/powerlok/claude-sdd-framework.git", "ref": "v0.9.4" }
+     }
+   }
+   ```
+
+   Salve mantendo as outras chaves do arquivo como estão.
+2. Registre de novo, com a **mesma** fonte da entrada:
+
+   ```bash
+   claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.4"
+   ```
+
+3. Se o plugin já estava instalado em algum projeto, atualize-o lá (na raiz do projeto):
+
+   ```bash
+   claude plugin update sdd@claude-sdd-framework --scope project
+   ```
+
+**Confira:** `claude plugin marketplace list` mostra `@v0.9.4`; num projeto já instalado, `claude plugin list` mostra a versão nova.
+
+> **Evite** `claude plugin marketplace remove claude-sdd-framework` para resolver isso: ele **desinstala** o plugin de todos os
+> projetos e apaga a declaração do marketplace do `.claude/settings.json` deles (depois você teria de reinstalar em cada
+> projeto e recopiar o template). Evite também `marketplace update` logo depois de editar o `ref` à mão: o marketplace
+> passa a aparecer como "not found" até você rodar o `add` do item 2.
+
+Se o clone falhar, veja [Problemas comuns](#problemas-comuns).
+
+> Só faça isso de novo em outra máquina. Para trocar de versão depois, veja [Atualizar a versão](#atualizar-a-versão).
 
 ## 2. Preparar o projeto
 
@@ -101,6 +162,13 @@ Escolha o seu caso:
 para `<projeto>/.claude/settings.json` (crie a pasta `.claude` se não existir). Copie o arquivo todo, não só um
 trecho: além de declarar o marketplace e o plugin, ele traz as [proteções do template](../README.md#-proteções-do-template)
 (`permissions.deny`).
+
+**O projeto já tem `.claude/settings.json`?** Não sobrescreva. Mescle (o TechLead faz essa mescla no onboarding, com a sua
+confirmação; ou faça à mão): acrescente as chaves `extraKnownMarketplaces`, `enabledPlugins` e `agent` do template, e una as
+listas `permissions.deny` e `permissions.ask` com as do template (união: nenhuma entrada sua é removida). As suas outras
+chaves (ex.: `permissions.allow`, `env`) ficam como estão. O `plugin install` do passo A2 também preserva as chaves existentes
+(só acrescenta `enabledPlugins`). Se você já tem `permissions.allow` com `Bash(gh *)` ou `Bash(*)`, remova: um `allow` amplo
+anula as confirmações de publicação.
 
 **Você vai ver:** nada ainda. Esse arquivo **sozinho não carrega o plugin**: ele declara o marketplace, habilita o
 `sdd` e define o TechLead como agente da sessão, mas a instalação é o próximo passo.
@@ -300,18 +368,27 @@ Detalhes e limites: [README](../README.md#-salinha-dos-agentes-opcional).
 
 ## Atualizar a versão
 
-1. No `.claude/settings.json` do projeto, troque o `"ref"` pela nova tag (ex.: de `"v0.9.4"` para a tag nova).
-2. Rode:
+A versão instalada nesta máquina vem da entrada `claude-sdd-framework` do `~/.claude/settings.json`. Para subir:
+
+1. No `~/.claude/settings.json`, troque o `ref` da entrada `claude-sdd-framework` pela nova tag (ex.: de `"v0.9.1"` para
+   `"v0.9.4"`). No `.claude/settings.json` do projeto, troque também o `"ref"`, para quem ainda não tem o marketplace.
+2. Registre com a nova tag (mesma fonte da entrada):
 
    ```bash
-   claude plugin marketplace update claude-sdd-framework
+   claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.4"
+   ```
+
+3. Em cada projeto onde o plugin está instalado (na raiz do projeto):
+
+   ```bash
    claude plugin update sdd@claude-sdd-framework --scope project
    ```
 
-3. Abra uma nova sessão (ou `/reload-plugins`).
+4. Abra uma nova sessão (ou `/reload-plugins`).
 
-**Confira:** `claude plugin list` mostra a versão nova do `sdd`. As mudanças de cada versão estão no
-[CHANGELOG](../CHANGELOG.md).
+**Confira:** `claude plugin list` mostra a versão nova do `sdd` (a saída do `update` diz "updated from X to Y"). As mudanças de cada versão
+estão no [CHANGELOG](../CHANGELOG.md). Ao subir de versão, reaplique também o `deny`/`ask` do
+[template](../templates/project-settings.git.json) no `.claude/settings.json` do projeto, se o CHANGELOG avisar que mudou.
 
 > **Ao subir para a 0.8.0:** o agente `sdd:tecleader` foi renomeado para `sdd:techlead`. Troque
 > `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` (ou no
@@ -322,8 +399,8 @@ Detalhes e limites: [README](../README.md#-salinha-dos-agentes-opcional).
 | Sintoma | Causa provável | Solução |
 |---|---|---|
 | `claude` não encontrado (Windows) | `%USERPROFILE%\.local\bin` fora do PATH | PowerShell: `$env:Path += ";$HOME\.local\bin"`; Git Bash: `export PATH="$PATH:$HOME/.local/bin"` |
-| `Plugin "sdd" not found in marketplace` ao instalar | Marketplace não registrado nesta máquina, ou desatualizado | Rode o [passo 1](#1-instalar-na-máquina-uma-vez) (`marketplace add`); se já registrado, `claude plugin marketplace update claude-sdd-framework` |
-| `Failed to add marketplace ... its source doesn't match its extraKnownMarketplaces entry in user or managed settings` | O seu `~/.claude/settings.json` já declara `claude-sdd-framework` sem `ref` (ou com outro), e o `marketplace add "...git#vX.Y.Z"` tem uma fonte diferente | Rode `claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git"` (exatamente a fonte da entrada) ou edite a entrada em `~/.claude/settings.json` acrescentando `"ref": "vX.Y.Z"` em `source` e rode o `add` com o mesmo `#vX.Y.Z`; depois `claude plugin marketplace update claude-sdd-framework` |
+| `Plugin "sdd" not found in marketplace` ao instalar | Marketplace não registrado nesta máquina, ou desatualizado | Rode o [passo 1](#1-instalar-na-máquina-uma-vez) (`marketplace add`); se já registrado, `claude plugin marketplace update claude-sdd-framework` (sem `ref`) ou o [passo C](#passo-c-já-registrado-sem-versão-ou-com-outra-versão) (com tag) |
+| `Failed to add marketplace ... its source doesn't match its extraKnownMarketplaces entry in user or managed settings` | O seu `~/.claude/settings.json` já declara `claude-sdd-framework` sem `ref` (ou com outra versão) e o `add` usa outra fonte | Faça o [passo C do passo 1](#passo-c-já-registrado-sem-versão-ou-com-outra-versão): `add` sem `#` (C1) ou edite o `ref` da entrada e rode o `add` com o mesmo `#vX.Y.Z` (C2). Não use `marketplace remove` |
 | Falha de clone ou de autenticação no `marketplace add` | Rede bloqueando o github.com (proxy/firewall/DNS) | Teste `git ls-remote https://github.com/powerlok/claude-sdd-framework.git`; ajuste a rede; nunca token na URL |
 | Resposta genérica, sem "Sou o TechLead" | Plugin não instalado no projeto; pasta não confiada; ou sessão aberta antes do install | Rode o `plugin install` na raiz; aceite o diálogo de confiança; `/reload-plugins` ou nova sessão |
 | `/plugin` › Errors: "enabled in project settings but isn't installed here" | O settings foi copiado (ou veio pelo git), mas o plugin não foi instalado nesta máquina | `claude plugin install sdd@claude-sdd-framework --scope project` na raiz do projeto |
