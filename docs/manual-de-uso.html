@@ -883,6 +883,8 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
   <article class="trouble"><h3>"not found in marketplace" ao instalar</h3>
     <p>O marketplace não está registrado na máquina (verificado numa máquina nova: <code>Plugin "sdd" not found in marketplace "claude-sdd-framework"</code>). Rode uma vez <code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.4"</code> e repita o <code>install</code>. Se já estiver registrado, rode <code>claude plugin marketplace update claude-sdd-framework</code>.</p></article>
 
+  <article class="trouble"><h3>"Failed to add marketplace ... its source doesn't match its extraKnownMarketplaces entry"</h3>
+    <p>O seu <code>~/.claude/settings.json</code> (ou o settings gerenciado) já declara <code>claude-sdd-framework</code> com uma fonte diferente da do comando (por exemplo, sem <code>ref</code>, e o comando usa <code>#vX.Y.Z</code>). Rode <code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git"</code>, exatamente a fonte da entrada, ou edite a entrada acrescentando <code>"ref": "vX.Y.Z"</code> em <code>source</code> e rode o <code>add</code> com o mesmo <code>#vX.Y.Z</code>. Depois, <code>claude plugin marketplace update claude-sdd-framework</code>.</p></article>
   <article class="trouble"><h3>A salinha dos agentes não abre</h3>
     <p>Confira a preferência com <code>/sdd:office status</code> (se estiver <code>off</code>, rode <code>/sdd:office on</code>), se há um navegador padrão definido e se o Git Bash está instalado (no Windows o hook usa <code>bash</code>; o bash do WSL no PATH pode atrapalhar). Política corporativa que bloqueie <code>file://</code> impede a atualização da página.</p></article>
 
