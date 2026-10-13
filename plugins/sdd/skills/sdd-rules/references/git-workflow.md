@@ -57,7 +57,7 @@ REQ: REQ-001, REQ-002
 
 ## Descrição do PR (modelo)
 
-Entregue ao usuário para abrir manualmente; seções no idioma de `Idioma:`.
+Entregue ao usuário (ou usada pelo TechLead no modo publicação, depois de confirmada); seções no idioma de `Idioma:`.
 
 ```
 ## Contexto
@@ -74,15 +74,27 @@ Entregue ao usuário para abrir manualmente; seções no idioma de `Idioma:`.
 
 ## Evidências
 - <testes executados, resultado, links/prints>
+- Validação: <resultado da suíte/validação e defeitos abertos, se houver>
+- Segurança: <parecer ou "não aplicável">
 
 ## Riscos
 - <riscos e mitigação; "nenhum conhecido" se for o caso>
 
 ## Issue
 <ISSUE> (ou "sem issue")
+
+## Revisão
+Aguardando revisão e merge do usuário.
 ```
 
 ## Limites
 
-O agente cria apenas branch e commit **locais**, com confirmação. `push`, abertura do PR, merge, rebase, tag e
-qualquer escrita no provedor são do usuário.
+Por padrão o agente cria apenas branch e commit **locais**, com confirmação. `push`, abertura do PR, merge, rebase, tag e
+qualquer escrita no provedor são do usuário. **O merge é sempre do usuário**, em qualquer modo.
+
+**Modo publicação (opcional, por usuário):** se o usuário ligar (grupo de publicação em `permissions.ask` do
+`.claude/settings.local.json`, pelo onboarding ou por `/sdd:publish confirmar`), o TechLead também faz `push -u origin
+<branch>` da branch de trabalho, `gh pr create` e `gh release create`, cada um com confirmação do
+usuário (regras e limites: agente `sdd:techlead`, seção "Publicação"). Caminho feliz: spec concluída → commits na branch
+da spec → um lote (push + PR) confirmado → URL do PR para você revisar, aprovar e mesclar. Rebase, tag, `--force`, `--no-verify`, aprovar/revisar
+PR e qualquer outra escrita no provedor continuam fora, em qualquer modo.

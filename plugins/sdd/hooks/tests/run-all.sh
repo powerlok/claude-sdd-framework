@@ -6,6 +6,7 @@ rc=0
 for t in "$D"/req00[1-5]-*.test.sh; do
   echo "== ${t##*/}"; bash "$t" || rc=1
 done
+echo "== req007-publicacao.test.js"; node "$D/req007-publicacao.test.js" || rc=1
 if [ "${1:-}" != "--no-page" ]; then
   echo "== req005-page.test.js"; node "$D/req005-page.test.js" || rc=1
   echo "== req006-working.test.js"; node "$D/req006-working.test.js" || rc=1

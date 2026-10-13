@@ -3,7 +3,7 @@
 Guia para quem **nunca usou** o Claude SDD Framework nem plugins do Claude Code. Siga na ordem: cada passo diz o que
 **fazer**, o que **você vai ver** e como **conferir** que deu certo antes de seguir.
 
-Testado com o Claude Code 2.1.296 e a versão `v0.9.1` do framework (a salinha dos agentes, opcional, chega nessa versão).
+Passo a passo testado em máquina nova com o Claude Code 2.1.296 e o framework `v0.7.0`. A `v0.9.1` (atual) foi verificada em clone limpo (`validate --strict`, suíte e carregamento dos agentes), sem refazer este passo a passo em máquina nova.
 
 ## Índice
 
@@ -124,9 +124,9 @@ claude plugin install sdd@claude-sdd-framework --scope project
 claude plugin list
 ```
 
-`sdd` aparece com versão `0.6.4`, escopo `project` e `enabled`.
+`sdd` aparece com versão `0.9.1`, escopo `project` e `enabled`.
 
-Se aparecerem várias linhas `sdd` (uma por projeto em que você instalou), basta uma com `0.6.4`, `project`, `enabled`.
+Se aparecerem várias linhas `sdd` (uma por projeto em que você instalou), basta uma com `0.9.1`, `project`, `enabled`.
 O `plugin list` não mostra o caminho do projeto; na dúvida, abra o `claude` e veja se a resposta começa com
 "Sou o TechLead".
 
@@ -160,7 +160,7 @@ claude plugin install sdd@claude-sdd-framework --scope project
 
 **Você vai ver:** `Successfully installed` com `(scope: project)`.
 
-**Confira:** `claude plugin list` mostra `sdd` `0.6.4`, escopo `project`, `enabled`.
+**Confira:** `claude plugin list` mostra `sdd` `0.9.1`, escopo `project`, `enabled`.
 
 ## 3. Primeira conversa
 
@@ -182,7 +182,7 @@ Se você instalou o plugin com uma sessão já aberta, rode `/reload-plugins` ou
 
 - diz que a pasta é um repositório git com manifestos (ex.: `package.json`), sem `CLAUDE.md` e sem `.specs/`;
 - explica o que vai ler e o que vai criar;
-- pergunta: **"Faço o onboarding agora?"**
+- pergunta: **"Faço o onboarding agora?"**, e, para a seção `## Git`, o idioma das mensagens de commit e do PR (`pt` ou `en`) e se ele pode publicar (push da branch, PR, release; o merge é sempre seu) com confirmação a cada comando (padrão: não; fica só no seu `.claude/settings.local.json`).
 
 A resposta inicial pode citar mesclar o `.claude/settings.json` com o modelo; se ele já estiver igual ao modelo, nada
 muda.
@@ -192,10 +192,10 @@ o seu `.claude/settings.json` com o modelo, e para rodar comandos de leitura (ex
 `npm test`): aprove (são leitura/testes). Se negar, ele avisa o que ficou sem conferir. No fim, cria:
 
 - `CLAUDE.md` com `## Stack`, os comandos reais do projeto (os que não existem ficam "não configurado"),
-  `## Arquitetura`, `## Convenções` e `## SDD`;
+  `## Arquitetura`, `## Convenções`, `## Git` e `## SDD`;
 - `.specs/INDEX.md` (índice das specs).
 
-Ele **não faz commit**. Revise o `CLAUDE.md` gerado e corrija o que estiver errado antes do primeiro pedido. Se o
+Ele **não faz commit** neste passo (com a seção `## Git`, ele só cria branch e commit locais depois da sua confirmação, e só faz `push`, PR ou release se você ligar o modo publicação, com confirmação a cada comando). Revise o `CLAUDE.md` gerado e corrija o que estiver errado antes do primeiro pedido. Se o
 `CLAUDE.md` sair com a nota "comandos ainda não executados", aprove a execução (ou peça para rodar depois) e confira
 os comandos registrados.
 
@@ -203,7 +203,8 @@ os comandos registrados.
 
 - a stack (linguagem, framework, versão);
 - a nuvem/infra (ou "nenhuma");
-- as convenções.
+- as convenções;
+- o idioma das mensagens de commit e do PR (`pt` ou `en`), para a seção `## Git`.
 
 Ele assume que os artefatos do processo são versionados (`Versionar artefatos SDD: sim`); você pode pedir `não`
 (veja [O que versionar](#o-que-versionar)).
@@ -282,13 +283,14 @@ no README.
 ## Salinha dos agentes (opcional)
 
 Uma página local, aberta no navegador, mostra uma sala em pixel art com uma mesa por agente e o que cada um está fazendo
-(ex.: "backend: editando arquivos"). Vem **desligada**; sem dependências de terceiros, sem servidor, sem rede.
+(ex.: "backend: editando arquivos"). O agente fica "trabalhando" do início até o fim da tarefa, mesmo em silêncio (ex.: "tests: trabalhando há 10 min"); sem nenhum evento por 30 min aparece "sem atividade". Vem **desligada**; sem dependências de terceiros, sem servidor, sem rede.
 
 - **Aceitar na primeira conversa:** o TechLead oferece uma vez, no fim da primeira resposta (e no fim do onboarding).
   Responda que quer; se recusar, ela fica desligada.
 - **Ligar ou desligar depois:** `/sdd:office on`, `/sdd:office off` ou `/sdd:office status` (na primeira vez o Claude
   pede para você aprovar o comando), ou peça ao TechLead. O `on` já abre a tela e, nas sessões seguintes, ela abre
-  sozinha no navegador padrão.
+  sozinha no navegador padrão, **a não ser que a salinha já esteja em uso** (atividade nos últimos 30 min: não abre outra aba;
+  se você fechou a aba, reabra com `/sdd:office on`).
 - **Onde fica a preferência:** `~/.claude/sdd/office.conf`, por usuário, nunca no repositório. A página guarda só agente,
   tipo de ferramenta e horário (nunca conteúdo de arquivos, comandos ou prompts), na pasta temporária do sistema.
 - **Requisitos:** bash (Git Bash no Windows) e navegador moderno. Validada no Windows (Chrome, Edge); não testada em macOS,

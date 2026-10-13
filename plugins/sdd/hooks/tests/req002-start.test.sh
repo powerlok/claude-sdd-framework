@@ -17,6 +17,8 @@ done
 export PATH="$STUBS:$PATH"
 cfg="$CLAUDE_CONFIG_DIR/sdd/office.conf"
 calls() { [ -f "$LOG" ] && wc -l < "$LOG" | tr -d ' ' || echo 0; }
+# Vence a atividade da sala (opened antigo e último evento antigo): a próxima chamada abre de novo.
+expire() { echo 1 > "$room/opened"; echo 'E({"i":"0-0-0","t":1,"e":"tool","a":"","d":"","k":"read","m":"","g":""});' > "$room/events.js"; }
 waitlog() { local i; for i in $(seq 1 40); do [ -f "$LOG" ] && [ "$(wc -l < "$LOG" | tr -d " ")" -ge 1 ] && { sleep 0.2; return; }; sleep 0.25; done; }
 
 # 1) unset e off: nada abre, nada é criado, stdout vazio, exit 0.
@@ -46,40 +48,61 @@ check "req002 evento de início é e=start" grep -q '"e":"start"' "$room/events.
 case "$(basename "$room")" in *fake*|*projeto*) bad "req002 id da sala vaza o caminho" ;; *) ok "req002 id da sala sem caminho" ;; esac
 check "req002 id da sala é <digitos>-<digitos>" bash -c '[[ "$1" =~ ^[0-9]+-[0-9]+$ ]]' _ "$(basename "$room")"
 
-# 3) trava: segunda chamada em < 15 s não abre outra aba nem apaga os eventos.
+# 3) sala ativa (opened recente): segunda chamada não abre outra aba nem apaga os eventos.
 echo 'E({"i":"1-1-1","t":1,"e":"tool","a":"","d":"","k":"read","m":"","g":""});' >> "$room/events.js"
 bash "$S" >/dev/null; sleep 0.5
 eq "req002 trava: continua 1 chamada" "1" "$(calls)"
 eq "req002 trava: events.js preservado" "2" "$(wc -l < "$room/events.js" | tr -d ' ')"
-# 3b) com a trava vencida (epoch antigo), abre de novo e recria events.js limpo.
-echo 1 > "$room/opened"
+# 3b) sem atividade recente (opened e último evento antigos), abre de novo e recria events.js limpo.
+expire
 bash "$S" >/dev/null; sleep 0.7
-eq "req002 sessão nova (trava vencida): 2 chamadas" "2" "$(calls)"
+eq "req002 sessão nova (sala parada): 2 chamadas" "2" "$(calls)"
 eq "req002 sessão nova: events.js recriado (1 linha)" "1" "$(wc -l < "$room/events.js" | tr -d ' ')"
-# 3c) --now ignora a trava.
+check "req002 sessão nova: evento antigo descartado" bash -c '! grep -q "\"t\":1," "$1"' _ "$room/events.js"
+# 3c) --now ignora a atividade da sala.
 out="$(bash "$S" --now)"; sleep 0.7
-eq "req002 --now ignora a trava: 3 chamadas" "3" "$(calls)"
+eq "req002 --now ignora a atividade: 3 chamadas" "3" "$(calls)"
+# 3d) sala ativa só pelo último evento (opened antigo, evento de agora): não abre e preserva events.js.
+echo 1 > "$room/opened"
+now_s="$(date +%s)"
+echo "E({\"i\":\"9-9-9\",\"t\":$now_s,\"e\":\"tool\",\"a\":\"backend\",\"d\":\"\",\"k\":\"edit\",\"m\":\"\",\"g\":\"\"});" >> "$room/events.js"
+lines_before="$(wc -l < "$room/events.js" | tr -d ' ')"
+bash "$S" >/dev/null; sleep 0.7
+eq "req002 sala ativa por evento recente: não abre (continua 3)" "3" "$(calls)"
+eq "req002 sala ativa por evento recente: events.js preservado" "$lines_before" "$(wc -l < "$room/events.js" | tr -d ' ')"
+# 3e) atividade há mais de 30 min (opened e evento): abre.
+old=$(( now_s - 1900 ))
+echo "$old" > "$room/opened"
+echo "E({\"i\":\"9-9-8\",\"t\":$old,\"e\":\"tool\",\"a\":\"\",\"d\":\"\",\"k\":\"read\",\"m\":\"\",\"g\":\"\"});" > "$room/events.js"
+bash "$S" >/dev/null; sleep 0.7
+eq "req002 atividade de 31 min: abre (4 chamadas)" "4" "$(calls)"
+# 3f) opened ou events.js symlink não contam como atividade (nem derrubam o script).
+expire
+rm -f "$room/opened"; ln -s /nonexistent "$room/opened" 2>/dev/null
+bash "$S" >/dev/null 2>&1; rc=$?
+eq "req002 opened symlink: exit 0" "0" "$rc"
+rm -f "$room/opened"
 
 # 4) navegador que falha não derruba: exit 0.
-echo 1 > "$room/opened"
+expire
 STUB_RC=1 bash "$S" >/dev/null 2>&1; rc=$?
 eq "req002 navegador falha: exit 0" "0" "$rc"
 
 # 5) macOS e Linux.
-rm -f "$LOG"; echo 1 > "$room/opened"
+rm -f "$LOG"; expire
 SDD_OFFICE_OS=darwin bash "$S" >/dev/null; waitlog
 check "req002 darwin: open chamado" grep -q '^open|' "$LOG"
-rm -f "$LOG"; echo 1 > "$room/opened"
+rm -f "$LOG"; expire
 SDD_OFFICE_OS=linux DISPLAY=:0 bash "$S" >/dev/null; waitlog
 check "req002 linux com DISPLAY: xdg-open chamado" grep -q '^xdg-open|' "$LOG"
-rm -f "$LOG"; echo 1 > "$room/opened"
+rm -f "$LOG"; expire
 out="$(unset DISPLAY WAYLAND_DISPLAY; SDD_OFFICE_OS=linux bash "$S")"; rc=$?; sleep 0.5
 eq "req002 linux sem display: exit 0" "0" "$rc"
 eq "req002 linux sem display: stdout constante" "[sdd:office] open=skipped" "$out"
 check "req002 linux sem display: nada aberto" test ! -f "$LOG"
 
 # 6) R8: caminho que o cmd.exe interpretaria (&) não é aberto; a sessão segue.
-rm -f "$LOG"; echo 1 > "$room/opened"
+rm -f "$LOG"; expire
 mkdir -p "$SB/t&x"
 out="$(SDD_OFFICE_OS=windows TMPDIR="$SB/t&x" bash "$S")"; rc=$?; sleep 0.5
 eq "req002 caminho com '&': exit 0" "0" "$rc"
