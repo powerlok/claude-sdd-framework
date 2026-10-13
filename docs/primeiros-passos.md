@@ -3,7 +3,7 @@
 Guia para quem **nunca usou** o Claude SDD Framework nem plugins do Claude Code. Siga na ordem: cada passo diz o que
 **fazer**, o que **você vai ver** e como **conferir** que deu certo antes de seguir.
 
-Passo a passo testado em máquina nova com o Claude Code 2.1.296 e o framework `v0.7.0`. A `v0.9.1` (atual) foi verificada em clone limpo (`validate --strict`, suíte e carregamento dos agentes), sem refazer este passo a passo em máquina nova.
+Passo a passo testado em máquina nova com o Claude Code 2.1.296 e o framework `v0.7.0`. A `v0.9.4` (atual) foi verificada em clone limpo (`validate --strict`, suíte e carregamento dos agentes) e em sandbox com o CLI (`claude -p`), sem refazer este passo a passo em máquina nova.
 
 ## Índice
 
@@ -59,15 +59,15 @@ export PATH="$PATH:$HOME/.local/bin"
 **Faça** (em qualquer pasta):
 
 ```bash
-claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.1"
+claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.4"
 ```
 
-O `#v0.9.1` escolhe a versão (tag). O comando clona o repositório nessa tag e registra o marketplace no seu usuário.
+O `#v0.9.4` escolhe a versão (tag). O comando clona o repositório nessa tag e registra o marketplace no seu usuário.
 
 **Você vai ver** algo como:
 
 ```text
-Cloning ... (ref: v0.9.1)
+Cloning ... (ref: v0.9.4)
 Successfully added marketplace: claude-sdd-framework (declared in user settings)
 ```
 
@@ -105,7 +105,7 @@ trecho: além de declarar o marketplace e o plugin, ele traz as [proteções do 
 **Você vai ver:** nada ainda. Esse arquivo **sozinho não carrega o plugin**: ele declara o marketplace, habilita o
 `sdd` e define o TechLead como agente da sessão, mas a instalação é o próximo passo.
 
-**Confira:** o arquivo existe em `<projeto>/.claude/settings.json` e contém `"ref": "v0.9.1"` e `"agent": "sdd:techlead"`.
+**Confira:** o arquivo existe em `<projeto>/.claude/settings.json` e contém `"ref": "v0.9.4"` e `"agent": "sdd:techlead"`.
 
 **A2. Instale o plugin no projeto**
 
@@ -124,9 +124,9 @@ claude plugin install sdd@claude-sdd-framework --scope project
 claude plugin list
 ```
 
-`sdd` aparece com versão `0.9.1`, escopo `project` e `enabled`.
+`sdd` aparece com versão `0.9.4`, escopo `project` e `enabled`.
 
-Se aparecerem várias linhas `sdd` (uma por projeto em que você instalou), basta uma com `0.9.1`, `project`, `enabled`.
+Se aparecerem várias linhas `sdd` (uma por projeto em que você instalou), basta uma com `0.9.4`, `project`, `enabled`.
 O `plugin list` não mostra o caminho do projeto; na dúvida, abra o `claude` e veja se a resposta começa com
 "Sou o TechLead".
 
@@ -160,7 +160,7 @@ claude plugin install sdd@claude-sdd-framework --scope project
 
 **Você vai ver:** `Successfully installed` com `(scope: project)`.
 
-**Confira:** `claude plugin list` mostra `sdd` `0.9.1`, escopo `project`, `enabled`.
+**Confira:** `claude plugin list` mostra `sdd` `0.9.4`, escopo `project`, `enabled`.
 
 ## 3. Primeira conversa
 
@@ -265,7 +265,7 @@ O TechLead **nunca faz commit**: você revisa e commita.
 
 O `.claude/settings.json` versionado **não instala nada sozinho**. Cada dev da equipe, depois de clonar o projeto:
 
-1. Uma vez na máquina: `claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.1"`
+1. Uma vez na máquina: `claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.4"`
    ([passo 1](#1-instalar-na-máquina-uma-vez)).
 2. Uma vez por projeto, na raiz: `claude plugin install sdd@claude-sdd-framework --scope project`.
 3. Abrir `claude` na raiz, confiar na pasta e conferir que responde o TechLead.
@@ -300,7 +300,7 @@ Detalhes e limites: [README](../README.md#-salinha-dos-agentes-opcional).
 
 ## Atualizar a versão
 
-1. No `.claude/settings.json` do projeto, troque o `"ref"` pela nova tag (ex.: de `"v0.9.1"` para a tag nova).
+1. No `.claude/settings.json` do projeto, troque o `"ref"` pela nova tag (ex.: de `"v0.9.4"` para a tag nova).
 2. Rode:
 
    ```bash

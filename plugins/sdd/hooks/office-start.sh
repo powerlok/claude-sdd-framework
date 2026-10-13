@@ -96,7 +96,7 @@ else
 fi
 [[ $t =~ ^[0-9]{1,12}$ ]] || skip
 
-# Sala já aberta (.specs/office-single-open): a página é file:// e só lê events.js, então o hook não vê a aba; usa-se a
+# Sala já aberta (.specs/done/office-single-open): a página é file:// e só lê events.js, então o hook não vê a aba; usa-se a
 # atividade recente da sala (maior entre a última abertura em "opened" e o "t" do último evento de events.js, < 30 min).
 # Ativa: sai sem abrir, sem apagar events.js e sem recopiar office.html. --now (/sdd:office on) abre sempre.
 lock="$room/opened"
