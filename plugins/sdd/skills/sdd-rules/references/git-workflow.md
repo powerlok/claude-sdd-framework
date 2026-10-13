@@ -84,5 +84,11 @@ Entregue ao usuário para abrir manualmente; seções no idioma de `Idioma:`.
 
 ## Limites
 
-O agente cria apenas branch e commit **locais**, com confirmação. `push`, abertura do PR, merge, rebase, tag e
+Por padrão o agente cria apenas branch e commit **locais**, com confirmação. `push`, abertura do PR, merge, rebase, tag e
 qualquer escrita no provedor são do usuário.
+
+**Modo publicação (opcional, por usuário):** se o usuário ligar (grupo de publicação em `permissions.ask` do
+`.claude/settings.local.json`, pelo onboarding ou por `/sdd:publish confirmar`), o TechLead também faz `push -u origin
+<branch>` da branch de trabalho, `gh pr create`, `gh pr merge` e `gh release create`, cada um com confirmação do
+usuário (regras e limites: agente `sdd:techlead`, seção "Publicação"). Rebase, tag, `--force`, `--no-verify`, aprovar/revisar
+PR e qualquer outra escrita no provedor continuam fora, em qualquer modo.

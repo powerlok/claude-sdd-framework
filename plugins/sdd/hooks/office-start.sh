@@ -96,12 +96,23 @@ else
 fi
 [[ $t =~ ^[0-9]{1,12}$ ]] || skip
 
-# Trava: sessões simultâneas no mesmo projeto não abrem abas duplicadas (< 15 s desde a última abertura).
+# Sala já aberta (.specs/office-single-open): a página é file:// e só lê events.js, então o hook não vê a aba; usa-se a
+# atividade recente da sala (maior entre a última abertura em "opened" e o "t" do último evento de events.js, < 30 min).
+# Ativa: sai sem abrir, sem apagar events.js e sem recopiar office.html. --now (/sdd:office on) abre sempre.
 lock="$room/opened"
-if [ "$now_mode" = no ] && [ -f "$lock" ] && [ ! -L "$lock" ]; then
-  last=""
-  { read -r last < "$lock"; } 2>/dev/null
-  if [[ $last =~ ^[0-9]{1,12}$ ]] && [ $((t - last)) -ge 0 ] && [ $((t - last)) -lt 15 ]; then
+ACTIVE_S=1800
+if [ "$now_mode" = no ]; then
+  last=0; v=""
+  if [ -f "$lock" ] && [ ! -L "$lock" ]; then
+    { read -r v < "$lock"; } 2>/dev/null
+    [[ $v =~ ^[0-9]{1,12}$ ]] && last=$((10#$v))
+  fi
+  if [ -f "$room/events.js" ] && [ ! -L "$room/events.js" ]; then
+    v="$(tail -n 1 "$room/events.js" 2>/dev/null)"
+    re='"t":([0-9]{1,12})'
+    if [[ $v =~ $re ]] && [ $((10#${BASH_REMATCH[1]})) -gt "$last" ]; then last=$((10#${BASH_REMATCH[1]})); fi
+  fi
+  if [ "$last" -gt 0 ] && [ $((t - last)) -ge 0 ] && [ $((t - last)) -lt "$ACTIVE_S" ]; then
     exit 0
   fi
 fi

@@ -2,6 +2,48 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.9.3 — 2026-10-13
+
+Salinha: não abrir de novo quando já estiver aberta (`.specs/done/office-single-open/spec.md`). Não é release (sem tag).
+
+- REQ-001/REQ-002: `office-start.sh` não abre o navegador se a sala teve atividade nos últimos 30 min (maior entre `opened` e o `t`
+  do último evento de `events.js`); sai sem apagar `events.js` nem recopiar `office.html`. Antes a trava era de 15 s.
+- REQ-003/REQ-004: `/sdd:office on` (`--now`) abre sempre; `opened`/`events.js` que sejam symlink não contam.
+- Limite: a página é `file://` e não avisa o hook; é heurística. Aba fechada com sessão nova em até 30 min não reabre sozinha
+  (use `/sdd:office on`); aba aberta com a sala parada por mais de 30 min recebe outra aba numa sessão nova.
+- REQ-005: `req002-start.test.sh` (36 ok): atividade por `opened`, por evento recente, atividade de 31 min, symlink, `--now`.
+
+## sdd 0.9.2 — 2026-10-13
+
+Publicação como escolha do usuário (`.specs/publish-opt-in/spec.md`, parecer em `security-review.md`). Não é release (sem tag).
+
+- REQ-001: os modelos `project-settings.git.json` e `.local.json` tiram o grupo de publicação do `deny` e o põem em `ask`
+  (`gh pr create|merge|comment`, `gh release create`, variantes `gh.exe`, `glab mr create|merge|note`, `az repos pr create`);
+  lista única em `templates/project-settings.publicacao.json`. Ficam em `deny`: aprovar/revisar PR (`gh pr review`,
+  `glab mr approve`, `az repos pr set-vote|reviewer|update`), `gh release edit|upload|delete`, `gh pr checkout`, `gh api` e os
+  MCP de criar/mesclar PR. Novos `deny`: `gh pr merge --admin|--auto|--delete-branch|-d`, `glab mr merge --remove-source-branch`.
+- REQ-002/REQ-003: o onboarding faz uma pergunta ("publicar com confirmação a cada comando? padrão: não"); a escolha fica por
+  usuário no `.claude/settings.local.json` (`ask` = `confirmar`; `deny` = `bloqueada`); sem decisão, o TechLead não publica.
+- REQ-004: seção "Publicação" no `techlead.md`: só com o grupo em `ask` e a sessão aberta dentro do projeto; push só
+  `git push -u origin <branch>` (nunca tronco/refspec/`--force`/`--all`/`--tags`), PR com texto só da spec, merge com
+  número explícito e confirmação específica, release sem anexos; registro em `tasks.md`. Ressalvas nas regras
+  "nunca publica" (`techlead.md`, `git-workflow.md`, `sdd-governance`).
+- REQ-005: skill `publish` (`/sdd:publish bloqueada|confirmar`, `disable-model-invocation`): move o grupo entre `deny` e `ask`,
+  recusa arquivo rastreado ou `allow` com `gh`/`glab`/`az`; o modelo põe `Edit(.claude/settings.local.json)` em `ask` (o Claude Code só casa `Edit(...)` em regras de arquivo; `Write(...)` é ignorado).
+- Correção de segurança nos `deny` de push (achado H1): `git push *-*f*` negava `git push -u origin feat/x`; foi trocado por
+  `-uf`/`-fu`, e passaram a ser negados `*:main*`, `*:master*`, `*:refs/*`, `* main`, `* master` (e grafias `refs/heads/main`, `"main"`, `main --no-verify`), `:ref`, `--all`, `--tags`, `--prune`, `--follow-tags`, clusters `-uf|-vf|-qf|-nf`.
+- REQ-006/REQ-007: docs; `hooks/tests/req007-publicacao.test.js` (conjuntos, simulação de glob, reversibilidade, consistência textual).
+- Piloto real (Claude Code 2.1.296) achou dois defeitos já na v0.9.1: `Bash(git push * :*)` e `Bash(git * push * :*)` misturam `*` com o
+  sufixo `:*` (viram prefixo literal e não negavam nada) e `Write(**/.git/**)`/`Write(~/.gitconfig)` são ignorados (só `Edit(...)` vale). Os quatro
+  foram removidos (a deleção por `:ref` fica coberta por `:**`; `Edit(...)` já cobre a escrita).
+- Limites: `ask` não vale com `bypassPermissions` nem em `claude -p`; padrões `Bash(...)` não cobrem `sh -c`, caminho absoluto nem alias.
+
+### Migração
+
+1. Atualize o plugin e **reaplique ou mescle** o `deny`/`ask` dos modelos (o `deny` mudou).
+2. Para publicar pelo TechLead: o `deny` do seu `settings.json` (versionado) não pode conter o grupo (um `deny` vence `ask`);
+   depois rode `/sdd:publish confirmar`. Quem não quiser publicar não faz nada.
+
 ## Release v0.9.1 — 2026-10-12
 
 Inclui: `sdd` 0.9.1 (acumula 0.8.0, 0.8.1, 0.9.0 e 0.9.1), `authoring` 0.2.1.

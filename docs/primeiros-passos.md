@@ -182,7 +182,7 @@ Se você instalou o plugin com uma sessão já aberta, rode `/reload-plugins` ou
 
 - diz que a pasta é um repositório git com manifestos (ex.: `package.json`), sem `CLAUDE.md` e sem `.specs/`;
 - explica o que vai ler e o que vai criar;
-- pergunta: **"Faço o onboarding agora?"**, e, para a seção `## Git`, o idioma das mensagens de commit e do PR (`pt` ou `en`).
+- pergunta: **"Faço o onboarding agora?"**, e, para a seção `## Git`, o idioma das mensagens de commit e do PR (`pt` ou `en`) e se ele pode publicar (push da branch, PR, merge, release) com confirmação a cada comando (padrão: não; fica só no seu `.claude/settings.local.json`).
 
 A resposta inicial pode citar mesclar o `.claude/settings.json` com o modelo; se ele já estiver igual ao modelo, nada
 muda.
@@ -195,7 +195,7 @@ o seu `.claude/settings.json` com o modelo, e para rodar comandos de leitura (ex
   `## Arquitetura`, `## Convenções`, `## Git` e `## SDD`;
 - `.specs/INDEX.md` (índice das specs).
 
-Ele **não faz commit** neste passo (com a seção `## Git`, ele só cria branch e commit locais depois da sua confirmação, e nunca faz `push`). Revise o `CLAUDE.md` gerado e corrija o que estiver errado antes do primeiro pedido. Se o
+Ele **não faz commit** neste passo (com a seção `## Git`, ele só cria branch e commit locais depois da sua confirmação, e só faz `push`, PR, merge ou release se você ligar o modo publicação, com confirmação a cada comando). Revise o `CLAUDE.md` gerado e corrija o que estiver errado antes do primeiro pedido. Se o
 `CLAUDE.md` sair com a nota "comandos ainda não executados", aprove a execução (ou peça para rodar depois) e confira
 os comandos registrados.
 
@@ -289,7 +289,8 @@ Uma página local, aberta no navegador, mostra uma sala em pixel art com uma mes
   Responda que quer; se recusar, ela fica desligada.
 - **Ligar ou desligar depois:** `/sdd:office on`, `/sdd:office off` ou `/sdd:office status` (na primeira vez o Claude
   pede para você aprovar o comando), ou peça ao TechLead. O `on` já abre a tela e, nas sessões seguintes, ela abre
-  sozinha no navegador padrão.
+  sozinha no navegador padrão, **a não ser que a salinha já esteja em uso** (atividade nos últimos 30 min: não abre outra aba;
+  se você fechou a aba, reabra com `/sdd:office on`).
 - **Onde fica a preferência:** `~/.claude/sdd/office.conf`, por usuário, nunca no repositório. A página guarda só agente,
   tipo de ferramenta e horário (nunca conteúdo de arquivos, comandos ou prompts), na pasta temporária do sistema.
 - **Requisitos:** bash (Git Bash no Windows) e navegador moderno. Validada no Windows (Chrome, Edge); não testada em macOS,
