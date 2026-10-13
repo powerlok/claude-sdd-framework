@@ -75,3 +75,10 @@ permitido ao TechLead com confirmação** (divergência consciente da recomenda�
   `check-ignore` restritos, recusa arquivo rastreado, mostra diff.
 - Aceito e documentado: `ask` não protege em `bypassPermissions`/`claude -p`; padrões Bash não cobrem `sh -c`, caminho
   absoluto, alias.
+
+## Encerramento (2026-10-13)
+
+Arquivada com **validação parcial aceita pelo usuário** (release v0.9.4). Feito: implementação, 2 pareceres de segurança, `req007-publicacao`
+(68 ok), `validate --strict`, piloto em sandbox (`claude -p`: sem decisão, `confirmar`, `bloqueada`, `allow` perigoso). **Não executado**: prompt
+interativo de confirmação, gravação do `settings.local.json` (em `-p` o `ask` nega), `/sdd:publish` e publicação real. O merge saiu do escopo em
+`done/spec-pr-flow` (o merge é sempre do usuário).

@@ -2,9 +2,23 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## Release v0.9.4 — 2026-10-13
+
+Inclui: `sdd` 0.9.4 (acumula 0.9.2, 0.9.3 e 0.9.4), `authoring` 0.2.1.
+
+- `marketplace.json`: `metadata.version` = `0.9.4`; tag `v0.9.4` aponta para o commit que traz essa versão.
+- `templates/project-settings.git.json` e a documentação de instalação fixam `v0.9.4` (`#v0.9.4` / `"ref": "v0.9.4"`).
+- Conteúdo: modo publicação opcional por usuário (push da branch, PR e release com confirmação; o merge é sempre do usuário),
+  fim da spec abre o PR, salinha que não reabre quando em uso; deny de push corrigidos.
+- Atenção ao atualizar da v0.9.1: reaplique ou mescle o `deny`/`ask` dos modelos (ver as migrações de 0.9.2 e 0.9.4).
+- Limites conhecidos, aceitos pelo usuário em 2026-10-13: o prompt interativo de confirmação (`ask`), a gravação do
+  `settings.local.json` e uma publicação real não foram exercitados com o Claude Code real (só sandbox com `claude -p`); a
+  validação ponta a ponta da 0.9.0 (delegação a `sdd:mobile`, `/sdd:git-lang`, permissões no motor real) não foi executada;
+  `ask` não vale com `bypassPermissions` nem em `claude -p`; salinha validada só no Windows (Chrome).
+
 ## sdd 0.9.4 — 2026-10-13
 
-Fim da spec abre o PR; o merge é do usuário (`.specs/spec-pr-flow/spec.md`). Não é release (sem tag).
+Fim da spec abre o PR; o merge é do usuário (`.specs/done/spec-pr-flow/spec.md`). Não é release (sem tag).
 
 - REQ-001/REQ-002: `gh pr merge`, `gh.exe pr merge` e `glab mr merge` saem do grupo de publicação e ficam em `deny` fixo; o
   TechLead nunca faz merge, em nenhum modo (mudança em relação à 0.9.2, que o permitia com confirmação).
@@ -29,7 +43,7 @@ Salinha: não abrir de novo quando já estiver aberta (`.specs/done/office-singl
 
 ## sdd 0.9.2 — 2026-10-13
 
-Publicação como escolha do usuário (`.specs/publish-opt-in/spec.md`, parecer em `security-review.md`). Não é release (sem tag).
+Publicação como escolha do usuário (`.specs/done/publish-opt-in/spec.md`, parecer em `security-review.md`). Não é release (sem tag).
 
 - REQ-001: os modelos `project-settings.git.json` e `.local.json` tiram o grupo de publicação do `deny` e o põem em `ask`
   (`gh pr create|merge|comment`, `gh release create`, variantes `gh.exe`, `glab mr create|merge|note`, `az repos pr create`);
@@ -78,7 +92,7 @@ Repositório público nos docs e agente `mobile` na salinha (`.specs/done/repo-p
 
 ## sdd 0.9.0 — 2026-10-11
 
-Agente mobile (React Native/Expo) e fluxo Git (`.specs/mobile-git-workflow/spec.md`). Não é release (sem tag, sem mudança de `ref` nem de `metadata.version`).
+Agente mobile (React Native/Expo) e fluxo Git (`.specs/done/mobile-git-workflow/spec.md`). Não é release (sem tag, sem mudança de `ref` nem de `metadata.version`).
 
 - REQ-001/REQ-002/REQ-004: `agents/mobile.md` (`sdd:mobile`, sonnet) e skill `mobile-engineering` com `references/react-native-expo.md`; Flutter, Swift e Kotlin seguem a regra de `referência: nenhuma` + lacuna registrada.
 - REQ-003: `agents/techlead.md` delega a `sdd:mobile` (lista de subagentes e campo `Stack`); `agents/security.md` ganha checklist mobile.

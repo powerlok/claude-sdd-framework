@@ -107,7 +107,7 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
 1. **Uma vez por máquina**, registre o marketplace na versão desejada (tag):
 
    ```bash
-   claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.1"
+   claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.4"
    ```
 
 2. **Na raiz do projeto** (raiz do repositório git; em monorepo, a pasta do projeto; nunca uma pasta-mãe fora do git),
@@ -115,7 +115,7 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
    [`templates/project-settings.git.json`](templates/project-settings.git.json) para `.claude/settings.json`
    (veja as [proteções do template](#-proteções-do-template)).
 
-3. Instale o plugin no projeto e confira com `claude plugin list` (`sdd` 0.9.1, `project`, `enabled`):
+3. Instale o plugin no projeto e confira com `claude plugin list` (`sdd` 0.9.4, `project`, `enabled`):
 
    ```bash
    claude plugin install sdd@claude-sdd-framework --scope project
@@ -189,7 +189,7 @@ chaves e certificados; credenciais de npm, PyPI, git e `netrc`; estado e variáv
 forçado/destrutivo (`--force*`, `-f`, `+refspec`, `--mirror`, `--delete`/`-d`). Push comum pede confirmação
 (`permissions.ask`).
 
-**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.9.1"`). Para subir de versão: troque o
+**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.9.4"`). Para subir de versão: troque o
 `ref` pela nova tag e rode `claude plugin marketplace update claude-sdd-framework` e
 `claude plugin update sdd@claude-sdd-framework --scope project`. Sem `ref`, vale a branch padrão do repositório
 (sempre a última versão).

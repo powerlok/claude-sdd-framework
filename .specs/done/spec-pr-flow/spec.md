@@ -35,3 +35,9 @@ dispensada; a regra "nunca merge" é verificada pelos testes. Registrar na spec 
 
 Testes verdes; `validate --strict`; docs sem "o TechLead faz merge"; sandbox: pedido de publicação mostra o lote e o merge
 é recusado com "é do usuário".
+
+## Encerramento (2026-10-13)
+
+Arquivada com **validação parcial aceita pelo usuário** (release v0.9.4). Feito: implementação, testes (`req007-publicacao`, 68 ok), `validate
+--strict`, sandbox (merge recusado, nada publicado sem confirmação). **Não executado**: o lote completo (push + PR) apresentado e confirmado até a
+URL do PR, que exige sessão interativa e repositório GitHub.

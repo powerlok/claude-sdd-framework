@@ -52,3 +52,11 @@ Design curto (T-001) aprovado pelo usuário → implementação → `sdd:securit
 
 1. "Trunk-based ou GitFlow? sim": assumido **trunk-based**.
 2. Versão 0.9.0 ficará depois da `office-working-state` (0.8.1), que está em andamento no working tree.
+
+## Encerramento (2026-10-13)
+
+Arquivada com **validação parcial aceita pelo usuário** (release v0.9.4). Feito: implementação, parecer de segurança (aprovado, volta 2),
+`validate --strict`, suíte, app Expo temporário e repositório git temporário. **Não executado** com o Claude Code real: delegação do TechLead
+a `sdd:mobile`, `/sdd:git-lang` e onboarding reais, permissões no motor real. A regra "nunca `push`/`merge`" do REQ-007 foi relaxada
+depois (`done/publish-opt-in`, `done/spec-pr-flow`): `push` da branch de trabalho, PR e release só no modo publicação, com confirmação; o
+merge continua sendo sempre do usuário.
