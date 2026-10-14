@@ -71,7 +71,7 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.9.6 | padrão | 7 agentes (mais o obsoleto `tecleader`), 13 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
+| `sdd` | 0.10.1 | padrão | 7 agentes (mais o obsoleto `tecleader`), 13 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
 | `authoring` | 0.2.1 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
@@ -199,7 +199,7 @@ Na delegação e no settings, os agentes são chamados com o prefixo do plugin (
 
 | Agente | Papel | Model | Tools | Skills pré-carregadas (`skills:`) |
 |---|---|---|---|---|
-| `sdd:techlead` | Orquestrador: tech lead, scrum master, coordenador SDD; único que encerra tasks | opus | Read, Edit, Write, Grep, Glob, Bash, Agent, Skill + 4 ferramentas de leitura do Jira em dois prefixos + ferramentas de leitura do provedor de código (seção 9) | nenhuma (carrega via ferramenta `Skill`, seção 6) |
+| `sdd:techlead` | Orquestrador: tech lead, scrum master, coordenador SDD; único que encerra tasks | opus | Read, Edit, Write, Grep, Glob, Bash, Agent, Skill + 4 de leitura e 4 de escrita do Jira em dois prefixos + ferramentas de leitura do provedor de código (seção 9) | nenhuma (carrega via ferramenta `Skill`, seção 6) |
 | `sdd:backend` | Implementador backend agnóstico de linguagem (DDD, SOLID, Clean/Hexagonal, TDD) | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, backend-engineering, bug-diagnosis, domain-modeling |
 | `sdd:frontend` | Implementador frontend agnóstico de framework (UX/UI, acessibilidade, performance, E2E) | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, frontend-engineering, bug-diagnosis |
 | `sdd:mobile` | Implementador mobile (React Native/Expo na referência atual; acessibilidade, permissões, armazenamento seguro, testes) | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, mobile-engineering, bug-diagnosis |
@@ -329,6 +329,23 @@ flowchart LR
 Agentes não conseguem executar `/compact` nem medir o próprio contexto; o TechLead pede ao usuário `/context`
 e, se o uso estiver alto, `/compact`.
 
+### MCP draw.io (diagramas do arquiteto)
+
+`plugins/sdd/.mcp.json` declara o servidor `drawio`, iniciado por `plugins/sdd/mcp/drawio.js` (lançador Node multiplataforma que executa
+`npx -y @drawio/mcp@1.7.0`; no Windows o Claude Code não inicia `npx` direto). O servidor aparece como `plugin:sdd:drawio` e as ferramentas como
+`mcp__plugin_sdd_drawio__*`. Só o `sdd:infra-architect` as recebe (`tools` explícito em todos os agentes), e apenas `open_drawio_xml|csv|mermaid`,
+`get_drawio_reference` e `search_shapes`; `list_pages|get_page|set_page` (arquivo local por caminho) ficam em `deny` nos modelos de settings e os
+`open_*` em `ask`. Riscos e decisões: `.specs/done/drawio-mcp/security-review.md` (cadeia de suprimentos, sobe em toda sessão, diagrama no `#fragment`
+de `app.diagrams.net`).
+
+### MCP Playwright (navegador do frontend)
+
+`plugins/sdd/.mcp.json` também declara o servidor `playwright`, iniciado por `plugins/sdd/mcp/playwright.js` (lançador Node que executa
+`npx -y @playwright/mcp@0.0.83 --isolated --no-webmcp --block-service-workers --blocked-origins <metadata de nuvem>` com ambiente filtrado). As ferramentas são
+`mcp__plugin_sdd_playwright__browser_*`; só o `sdd:frontend` recebe 19 delas. `browser_evaluate`, `browser_run_code_unsafe`, `browser_file_upload` e
+`browser_drop` ficam em `deny` nos modelos de settings; `browser_navigate` e `browser_tabs` em `ask`. Decisões e riscos (o pacote não é fronteira de segurança,
+prompt injection por conteúdo de página, `filename`, rede/tokens): `.specs/done/playwright-mcp/security-review.md`.
+
 ### Salinha dos agentes (opcional)
 
 Os hooks `office-*.sh` (registrados em `hooks.json` com `"async": true`) gravam eventos mínimos num arquivo na pasta
@@ -359,14 +376,14 @@ Requisito sem teste é reportado pelo `sdd:tests` como lacuna de cobertura e imp
 
 | Controle | Onde | Como |
 |---|---|---|
-| Jira somente leitura (1ª camada) | `tools:` do `sdd:techlead` | só `atlassianUserInfo`, `getAccessibleAtlassianResources`, `getJiraIssue`, `searchJiraIssuesUsingJql`, nos prefixos `mcp__claude_ai_Atlassian__` (conector claude.ai, padrão) e `mcp__atlassian__` (`.mcp.json` opcional) |
-| Jira somente leitura (2ª camada) | `permissions.deny` nos templates de settings | 16 regras bloqueiam as ferramentas de escrita do Atlassian (comentar, criar, editar, transicionar issue; Confluence; `executeWrite`/`executeDestructive`) nos dois prefixos |
+| Jira: leitura e escrita com confirmação (1ª camada) | `tools:` do `sdd:techlead` | leitura (`atlassianUserInfo`, `getAccessibleAtlassianResources`, `getJiraIssue`, `searchJiraIssuesUsingJql`) e escrita (`addOrEditJiraIssueComment`, `createJiraIssue`, `editJiraIssue`, `transitionJiraIssue`; sem `executeWrite`/`executeDestructive`/Confluence), nos prefixos `mcp__claude_ai_Atlassian__` (conector claude.ai, padrão) e `mcp__atlassian__` (`.mcp.json` opcional) |
+| Jira: escrita com confirmação (2ª camada) | `permissions.ask` nos templates de settings (desde a 0.10.0; antes `deny`) | 16 regras pedem confirmação para as ferramentas de escrita do Atlassian (comentar, criar, editar, transicionar issue; Confluence; `executeWrite`/`executeDestructive`) nos dois prefixos; o TechLead não as tem em `tools` |
 | Somente o TechLead acessa o Jira | frontmatter dos agentes | os demais agentes não têm ferramentas Atlassian |
 | Regras não relaxáveis | `sdd-rules` e `templates/CLAUDE.md` | regras do projeto não podem relaxar segredos/credenciais, verificação SSL, confirmação de ações irreversíveis, Jira somente leitura e menor privilégio |
 | `security` não altera o projeto | `tools:` sem Edit/Write | tem Bash para verificações; a proibição de alterar vale pelo prompt |
 | `infra-architect` não executa | `tools:` sem Bash | limitado de fato |
 | Git local com confirmação | `techlead.md`, `sdd-rules/references/git-workflow.md` | o TechLead só cria branch e commit local após confirmação explícita (branch, mensagem e arquivos listados) e com a seção `## Git` no `CLAUDE.md`; nunca `rebase`, `--force`, `--no-verify`; `push` da branch de trabalho, PR e release só no modo publicação (o merge é sempre do usuário) (escolha do usuário em `settings.local.json`, `/sdd:publish`, confirmação a cada comando); slug sanitizado e dado externo não vira mensagem |
-| Git destrutivo negado | `permissions.deny` em `templates/project-settings.git.json` | `git reset --hard`, `git clean -f*`, `git commit --no-verify`/`-n`, `git branch -D`, `git config*`, `git checkout -- `, `git restore*`; `git push *` segue em `ask`; `commit` e `switch -c` não estão em `allow` |
+| Git e escrita externa com confirmação | `permissions.ask` em `templates/project-settings.git.json` (desde a 0.10.0; antes `deny`) | `git reset --hard`, `git clean -f*`, `git commit --no-verify`/`-n`, `git branch -D`, `git config*`, force push etc. e `gh|glab|az` de escrita, comandos de nuvem (`az`, `azd`, `aws`, `gcloud`) pedem confirmação a cada comando; ficam em `deny` o merge de PR, token/credencial e execução de terceiros pelo `gh`, segredos, `Edit(.git/**)`, `Edit(~/.gitconfig)`; nada em `allow` |
 | Hook seguro | `hooks.json` | apenas `echo` |
 | Credenciais do GitHub | README | nunca usuário/senha/token na URL; SSH ou gerenciador de credenciais do git |
 | Conteúdo de terceiros | rodapés das skills | origem `repo@commit` e licença SPDX; `authoring` reescrito com texto próprio |

@@ -89,8 +89,9 @@ Aguardando revisão e merge do usuário.
 
 ## Limites
 
-Por padrão o agente cria apenas branch e commit **locais**, com confirmação. `push`, abertura do PR, merge, rebase, tag e
-qualquer escrita no provedor são do usuário. **O merge é sempre do usuário**, em qualquer modo.
+O agente cria branch e commit **locais** com confirmação. Desde a 0.10.0 `push`, PR, release, `rebase`, `tag`, `reset --hard`, `--force` e qualquer escrita no
+provedor **não são mais bloqueados**: ficam em `ask` (confirmação do usuário a cada comando) e só a pedido do usuário (o fluxo padrão cobre push da branch de
+trabalho, PR e release). **O merge é sempre do usuário**, em qualquer modo (`deny`).
 
 **Modo publicação (opcional, por usuário):** se o usuário ligar (grupo de publicação em `permissions.ask` do
 `.claude/settings.local.json`, pelo onboarding ou por `/sdd:publish confirmar`), o TechLead também faz `push -u origin

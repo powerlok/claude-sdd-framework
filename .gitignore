@@ -24,3 +24,6 @@ playwright-report/
 *.pem
 *.key
 .claude/settings.local.json
+
+# Saídas do MCP Playwright (screenshots/snapshots podem ter dados do app)
+.playwright-mcp/

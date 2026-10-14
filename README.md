@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.9.6-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.10.1-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -86,13 +86,13 @@ Estados de cada task: `TODO → IN_PROGRESS → IMPLEMENTED → SECURITY_REVIEW 
 
 Com a seção `## Git` no `CLAUDE.md` do projeto (modelo trunk-based, Conventional Commits, branch `<tipo>/<ISSUE>-<slug>`,
 `Idioma: pt | en`, perguntado no onboarding), o `sdd:techlead` pode criar a **branch** e **commits locais**, sempre
-**depois da sua confirmação** (mostra antes branch, mensagem e lista explícita de arquivos). Por padrão ele nunca faz `push`,
-`merge`, `rebase`, `--force` nem `--no-verify` (rebase, `--force` e `--no-verify` nunca); o texto do PR é entregue a você para abrir manualmente (a não ser que
-você ligue o modo publicação, abaixo). Sem a seção `## Git`, nada é criado. Convenções: `skills/sdd-rules/references/git-workflow.md`. Troque o idioma com
-`/sdd:git-lang pt` ou `/sdd:git-lang en`. O `templates/project-settings.git.json` nega por padrão operações destrutivas
-(`git reset --hard`, `git clean -f*`, `git commit --no-verify`, `git branch -D`, `git config*` etc.).
+**depois da sua confirmação** (mostra antes branch, mensagem e lista explícita de arquivos). Ele faz `push` da
+branch de trabalho, abre o PR e cria release **só depois da sua confirmação** (padrão; dá para travar, abaixo); `rebase`, `--force`, `--no-verify`, `reset --hard` e
+afins só a pedido seu, com aviso de risco; **o merge é sempre seu**. Sem a seção `## Git`, nada é criado. Convenções: `skills/sdd-rules/references/git-workflow.md`. Troque o idioma com
+`/sdd:git-lang pt` ou `/sdd:git-lang en`. No `templates/project-settings.git.json`, as operações destrutivas do git
+(`git reset --hard`, `git clean -f*`, `git commit --no-verify`, `git branch -D`, `git config*` etc.) pedem confirmação (`ask`).
 
-**Modo publicação (opcional, por usuário).** Se você ligar no onboarding ou com `/sdd:publish confirmar` (grava só no `.claude/settings.local.json`), o TechLead também faz `push -u origin <branch>` da branch de trabalho, `gh pr create` e `gh release create`, cada um com a sua confirmação. Caminho feliz: ao concluir a spec, o TechLead propõe um lote (push da branch da spec + PR com o texto montado da spec); você confirma, ele abre o PR e entrega a URL; **revisar, aprovar e fazer o merge é sempre seu**. Seguem negados: `gh pr merge`, `--admin`, `--auto`, `--delete-branch`, push para `main`/`master`, refspec, `--force`, aprovar/revisar PR e `gh api` seguem negados. Sem decisão sua, o TechLead não publica (o `settings.json` do modelo só pede confirmação, não libera).
+**Modo publicação (opcional, por usuário).** Por padrão (ou com `/sdd:publish confirmar`; a escolha de travar grava só no `.claude/settings.local.json`), o TechLead faz `push -u origin <branch>` da branch de trabalho, `gh pr create` e `gh release create`, cada um com a sua confirmação. Caminho feliz: ao concluir a spec, o TechLead propõe um lote (push da branch da spec + PR com o texto montado da spec); você confirma, ele abre o PR e entrega a URL; **revisar, aprovar e fazer o merge é sempre seu**. Seguem negados: `gh pr merge`, `--admin`, `--auto`, `--delete-branch`, push para `main`/`master`, refspec, `--force`, aprovar/revisar PR e `gh api` seguem negados. Sem decisão sua, ele publica pedindo a sua confirmação a cada comando; para **travar** (nada de push, PR ou release pelo TechLead), `/sdd:publish bloqueada`.
 Troque quando quiser com `/sdd:publish bloqueada|confirmar` ou pedindo ao TechLead. Limites: `ask` não vale com
 `bypassPermissions` nem em `claude -p`; os padrões `Bash(...)` não cobrem `sh -c`, caminho absoluto nem alias, então o
 controle real é o prompt de confirmação e a proteção de branch no servidor (recomendado: `disableBypassPermissionsMode`).
@@ -188,12 +188,13 @@ preencha a seção **`## Stack`** e os comandos. O TechLead confere o que faltar
 
 [`templates/project-settings.git.json`](templates/project-settings.git.json) declara o marketplace
 (`extraKnownMarketplaces`), habilita o plugin (`enabledPlugins`) e define `"agent": "sdd:techlead"`. Por isso copie o
-arquivo inteiro: o template também bloqueia (`permissions.deny`) as ferramentas de escrita do Jira e dos provedores de
-repositório; a leitura de segredos (`.env`/`.env.*`, também na edição, exceto `.env.example`/`.sample`/`.template`;
-chaves e certificados; credenciais de npm, PyPI, git e `netrc`; estado e variáveis do Terraform; e, na home,
-`~/.ssh`, `~/.aws`, `~/.azure`, `~/.config/gh`, `~/.kube`, `~/.docker/config.json`); e as formas usuais de push
-forçado/destrutivo (`--force*`, `-f`, `+refspec`, `--mirror`, `--delete`/`-d`). Push comum pede confirmação
-(`permissions.ask`).
+arquivo inteiro: o template **bloqueia** (`permissions.deny`) só o que não deve acontecer por conta do agente: o **merge de PR** (e `az repos pr update`), o token e a execução
+de terceiros pelo `gh` (`auth token`, `extension install`, `alias set`), a leitura de segredos (`.env`/`.env.*`, também na edição, exceto
+`.env.example`/`.sample`/`.template`; chaves e certificados; credenciais de npm, PyPI, git e `netrc`; estado e variáveis do Terraform; e, na home,
+`~/.ssh`, `~/.aws`, `~/.azure`, `~/.config/gh`, `~/.kube`, `~/.docker/config.json`), a edição de `.git/**` e `~/.gitconfig` e as ferramentas locais perigosas do
+draw.io e do Playwright. **Todo o git** (force push, `reset --hard`, `clean`, `rebase`, `config`, `-c`...), a **escrita em sistemas externos** (issues,
+comentários, `gh api`, workflows, Jira, GitLab, Azure DevOps) e os **comandos de nuvem** (`az`, `azd`, `aws`, `gcloud`) ficam em `permissions.ask`: o Claude Code
+**pergunta a cada comando** (desde a 0.10.0; antes estavam bloqueados). Leituras como `git status|diff|log` seguem livres.
 
 **Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.9.4"`). Quem decide a versão na máquina é a entrada
 `claude-sdd-framework` do `~/.claude/settings.json`; para subir de versão, troque o `ref` dela, rode
@@ -297,12 +298,50 @@ Reinicie a sessão para aplicar. Versões seguem semver; veja o [CHANGELOG](CHAN
 > `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` (ou `settings.local.json`) e
 > reinicie. Até lá, a sessão abre com um agente obsoleto que só mostra essa instrução (removido na versão seguinte).
 
-## 🧩 Jira (opcional, somente leitura)
+## 📐 Diagramas do arquiteto: MCP draw.io (opcional)
+
+O plugin `sdd` traz o servidor MCP oficial do draw.io (`@drawio/mcp`, versão fixada **1.7.0**, Apache-2.0) para o `sdd:infra-architect`: quando
+você pede um diagrama de arquitetura, ele o abre no editor do draw.io (aba do navegador, `app.diagrams.net`). Você não instala nada além do plugin.
+
+- **Requisito:** Node.js/npm (`npx`). A primeira vez baixa o pacote do npm. Sem Node/npm, o servidor não sobe e o arquiteto descreve o diagrama
+  em Mermaid no texto.
+- **O que o arquiteto pode usar:** `open_drawio_xml|csv|mermaid`, `get_drawio_reference` e `search_shapes`. As ferramentas que leem e gravam arquivos
+  `.drawio` por caminho (`list_pages`, `get_page`, `set_page`) ficam **negadas** nos modelos de settings. Cada `open_*` pede a sua confirmação.
+- **Privacidade:** o diagrama vai no `#fragment` da URL (o navegador não o envia ao servidor), mas é processado pelo JavaScript do
+  `app.diagrams.net` no seu navegador. O arquiteto não coloca segredo, chave, IP nem ID de conta reais (usa nomes lógicos) e só desenha o que a
+  spec ou você pedirem. Layouts opcionais (`libavoid`, `elk`) baixam **código** de `viewer.diagrams.net`. Para usar uma instância própria,
+  defina `DRAWIO_BASE_URL` (HTTPS) **você mesmo** no seu ambiente; nunca aceite essa variável vinda de `env` de um repositório de terceiros.
+- **Cadeia de suprimentos:** é um pacote de terceiros executado na sua máquina a cada sessão com o plugin habilitado. A versão do pacote é fixa
+  (`1.7.0`, integridade `sha512-OWZbYRAH...JNw==` registrada na spec), mas as dependências transitivas (`pako`, `@modelcontextprotocol/sdk`) são
+  faixas do npm e o pacote tem `postinstall`. Em ambiente corporativo, aponte o npm para o registry interno.
+- **Desligar:** `/mcp` e desabilite o servidor `drawio` do plugin `sdd` (fica em `disabledMcpServers`, por usuário). A versão só muda com nova spec e revisão.
+
+## 🌐 Navegador do frontend: MCP Playwright (opcional)
+
+O plugin `sdd` traz o MCP do Playwright (`@playwright/mcp`, Microsoft, Apache-2.0, versão fixada **0.0.83**) para o `sdd:frontend` verificar a interface que
+implementou (fluxo, validação, console, rede, acessibilidade), **complementando** os testes do projeto. Você não instala nada além do plugin.
+
+- **Requisitos:** Node.js/npm (`npx`) e Google Chrome instalado. O navegador abre em uma janela visível (para CI/WSL: `SDD_PLAYWRIGHT_HEADLESS=1`).
+- **Isolado:** perfil só em memória (`--isolated`): nenhum login ou cookie persiste, e o seu perfil real do Chrome não é usado. O ambiente é filtrado
+  (`PLAYWRIGHT_MCP_*`, `PLAYWRIGHT_DOWNLOAD*`, `npm_config_*` não chegam ao servidor; o registry corporativo continua valendo pelo `.npmrc`); WebMCP, service
+  workers e endereços de metadata de nuvem ficam bloqueados.
+- **Só 19 ferramentas:** o frontend não recebe `browser_evaluate`, `browser_run_code_unsafe`, `browser_file_upload`, `browser_drop`, `browser_tabs` nem
+  `browser_drag` (os quatro primeiros ficam em `deny` e `browser_tabs` em `ask` nos modelos de settings). Cada `browser_navigate` pede a sua confirmação.
+- **Escopo:** só o app local (`localhost`/`127.0.0.1`) ou URL da spec. O conteúdo da página é **dado não confiável**: o agente não segue instruções vindas dela
+  (prompt injection indireta), não entra em conta, não digita credencial, não usa o parâmetro `filename`, não copia cabeçalhos/tokens de rede e fecha o navegador ao terminar.
+- **Limite importante:** o próprio pacote diz que **não é uma fronteira de segurança** (a lista de origens não vale para redirecionamentos), e a confirmação de
+  `browser_navigate` não cobre navegação por clique em link. O que protege é a combinação: perfil isolado, poucas ferramentas, regras do agente e a sua revisão.
+- **Saídas:** screenshots e snapshots vão para `.playwright-mcp/` no projeto e podem conter dados do app: adicione `.playwright-mcp/` ao `.gitignore` do projeto.
+- **Cadeia de suprimentos:** pacote 0.x de terceiros (com dependência `playwright` alpha) executado na sua máquina a cada sessão com o plugin habilitado; versão
+  e integridade fixadas (ver `.specs/done/playwright-mcp/spec.md`). **Desligar:** `/mcp` e desabilite o servidor `playwright` do plugin `sdd`.
+
+## 🧩 Jira (opcional)
 
 - **Padrão:** conector Atlassian do claude.ai (Settings → Connectors → Atlassian). Só o TechLead acessa.
 - **Sem login claude.ai:** copie [`templates/mcp-atlassian.json`](templates/mcp-atlassian.json) para
   `.mcp.json` (MCP remoto oficial da Atlassian, OAuth, sem token em arquivo).
-- Ferramentas de escrita (criar, editar, comentar, transicionar) ficam bloqueadas nos templates.
+- **Leitura** livre. **Escrita** (criar, editar, comentar, transicionar): o TechLead só escreve com pedido seu e confirmação do conteúdo exato; o Claude Code também pergunta (`ask` nos
+  templates, desde a 0.10.0). Texto vem da spec/evidências, nunca de conteúdo de issue; sem `executeWrite`/`executeDestructive` nem Confluence.
 
 ## 🔗 Repositório: GitHub, Bitbucket, GitLab, Azure DevOps (opcional, somente leitura)
 

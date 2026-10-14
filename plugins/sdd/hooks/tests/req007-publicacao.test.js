@@ -28,13 +28,20 @@ const bashCli = /^Bash\((gh|gh\.exe|glab|az) /;
 check("merge nunca no grupo e sempre em deny (o merge é do usuário)",
   ["Bash(gh pr merge:*)", "Bash(gh.exe pr merge:*)", "Bash(glab mr merge:*)"].every((x) => deny.includes(x) && !GROUP.includes(x) && !ask.includes(x)));
 check("grupo é só Bash gh/glab/az (sem MCP)", GROUP.every((x) => bashCli.test(x)), GROUP.filter((x) => !bashCli.test(x)).join(","));
-check("aprovar/revisar/editar release ficam fora do grupo (deny fixo)",
+check("aprovar/revisar/editar release ficam fora do grupo e sempre com confirmação (ask)",
   ["Bash(gh pr review:*)", "Bash(glab mr approve:*)", "Bash(az repos pr set-vote:*)", "Bash(az repos pr reviewer:*)",
-   "Bash(az repos pr update:*)", "Bash(gh release edit:*)", "Bash(gh release upload:*)", "Bash(gh release delete:*)",
-   "Bash(gh pr checkout:*)"].every((x) => deny.includes(x) && !GROUP.includes(x)));
-check("MCP de criar/mesclar PR continua em deny",
-  ["mcp__github__create_pull_request", "mcp__github__merge_pull_request", "mcp__gitlab__accept_merge_request",
-   "mcp__azure-devops__repo_pull_request_write"].every((x) => deny.includes(x)));
+   "Bash(gh release edit:*)", "Bash(gh release upload:*)", "Bash(gh release delete:*)", "Bash(gh pr checkout:*)"].every((x) => ask.includes(x) && !deny.includes(x) && !GROUP.includes(x)));
+check("az repos pr update (completa PR) segue em deny", deny.includes("Bash(az repos pr update:*)"));
+check("MCP de mesclar PR continua em deny; MCP de criar PR/issue vai para ask (liberado com confirmação)",
+  ["mcp__github__merge_pull_request", "mcp__gitlab__accept_merge_request"].every((x) => deny.includes(x)) &&
+  ["mcp__github__create_pull_request", "mcp__github__issue_write", "mcp__azure-devops__repo_pull_request_write", "mcp__atlassian__createJiraIssue"].every((x) => ask.includes(x) && !deny.includes(x)));
+// relax-deny: git e escrita externa liberados com confirmação; credencial/execução/segredos/.git seguem em deny.
+check("nenhuma regra Bash(git ...) no deny (liberado com confirmação)", !deny.some((x) => x.startsWith("Bash(git ")));
+check("regras git que eram deny estão em ask (force push, reset --hard, clean, rebase, config, -c)",
+  ["Bash(git push *--force*)", "Bash(git reset --hard*)", "Bash(git clean*)", "Bash(git rebase*)", "Bash(git config*)", "Bash(git -c*)", "Bash(git tag*)"].every((x) => ask.includes(x)));
+check("credencial e execução continuam em deny", ["Bash(gh auth token:*)", "Bash(gh auth status --show-token:*)", "Bash(glab auth:*)", "Bash(gh extension install:*)", "Bash(gh alias set:*)"].every((x) => deny.includes(x)));
+check("segredos e .git seguem em deny (Read .env/chaves, Edit .git e ~/.gitconfig)",
+  ["Read(**/.env)", "Read(**/*.pem)", "Read(~/.ssh/**)", "Edit(**/.git/**)", "Edit(~/.gitconfig)"].every((x) => deny.includes(x)));
 check("ask protege a edição do settings.local.json (só Edit(...) é casado; Write(...) é ignorado pelo Claude Code)",
   ask.includes("Edit(.claude/settings.local.json)") && !ask.some((x) => x.startsWith("Write(")));
 check("nenhuma regra Write(...) nem padrão `* :*` ineficaz (avisos do Claude Code real)",
@@ -45,8 +52,8 @@ const frozen = path.join(__dirname, "deny-v0.9.1.txt");
 if (fs.existsSync(frozen)) {
   const old = fs.readFileSync(frozen, "utf8").split("\n").filter(Boolean);
   const swapped = ["Bash(git push *-*f*)", "Bash(git * push *-*f*)", "Bash(git push * :*)", "Bash(git * push * :*)", "Write(**/.git/**)", "Write(~/.gitconfig)"];
-  const missing = old.filter((x) => !deny.includes(x) && !GROUP.includes(x) && !swapped.includes(x));
-  check("todo item do deny da v0.9.1 está em deny ∪ grupo (exceto os 2 padrões de push trocados)", missing.length === 0, missing.join(" | "));
+  const missing = old.filter((x) => !deny.includes(x) && !ask.includes(x) && !GROUP.includes(x) && !swapped.includes(x));
+  check("todo item do deny da v0.9.1 continua coberto por deny ∪ ask ∪ grupo (nada some; exceto os padrões trocados)", missing.length === 0, missing.join(" | "));
 }
 
 // Simulador de glob de permissões.
@@ -62,28 +69,28 @@ const expectV = (cmd, v) => check(`${v.padEnd(5)} <- ${cmd}`, verdict(cmd) === v
 expectV("git push -u origin feat/fix-login", "ask");
 expectV("git push -u origin fix/PROJ-1-ajuste", "ask");
 expectV("git push origin feat/x", "ask");
-expectV("git push origin HEAD:main", "deny");
+expectV("git push origin HEAD:main", "ask");
 expectV("git push origin HEAD:feat/x", "ask");
-expectV("git push origin HEAD:refs/heads/main", "deny");
-expectV("git push -u origin main", "deny");
-expectV("git push origin master", "deny");
-expectV("git -C . push origin HEAD:main", "deny");
-expectV("git push --all", "deny");
-expectV("git push origin --tags", "deny");
-expectV("git push --prune origin feat/x", "deny");
-expectV("git push -uf origin feat/x", "deny");
-expectV("git push -fu origin feat/x", "deny");
-expectV("git push --force origin feat/x", "deny");
-expectV("git push origin +feat/x", "deny");
-expectV("git push --delete origin feat/x", "deny");
-expectV("git push origin refs/heads/main", "deny");
-expectV("git push origin main --no-verify", "deny");
-expectV('git push origin "main"', "deny");
-expectV("git push -vf origin feat/x", "deny");
-expectV("git push -qf origin feat/x", "deny");
-expectV("git push -nf origin feat/x", "deny");
-expectV("git push origin :feat/x", "deny");
-expectV("git -C . push origin :feat/x", "deny");
+expectV("git push origin HEAD:refs/heads/main", "ask");
+expectV("git push -u origin main", "ask");
+expectV("git push origin master", "ask");
+expectV("git -C . push origin HEAD:main", "ask");
+expectV("git push --all", "ask");
+expectV("git push origin --tags", "ask");
+expectV("git push --prune origin feat/x", "ask");
+expectV("git push -uf origin feat/x", "ask");
+expectV("git push -fu origin feat/x", "ask");
+expectV("git push --force origin feat/x", "ask");
+expectV("git push origin +feat/x", "ask");
+expectV("git push --delete origin feat/x", "ask");
+expectV("git push origin refs/heads/main", "ask");
+expectV("git push origin main --no-verify", "ask");
+expectV('git push origin "main"', "ask");
+expectV("git push -vf origin feat/x", "ask");
+expectV("git push -qf origin feat/x", "ask");
+expectV("git push -nf origin feat/x", "ask");
+expectV("git push origin :feat/x", "ask");
+expectV("git -C . push origin :feat/x", "ask");
 expectV("git push -u origin feat/maintenance-fix", "ask");
 expectV("gh.exe pr merge 12 --admin", "deny");
 expectV("gh.exe pr merge 12 --delete-branch", "deny");
@@ -103,9 +110,30 @@ expectV("gh pr merge", "deny");
 expectV("glab mr merge 3 --remove-source-branch", "deny");
 expectV("az repos pr create --title t", "ask");
 expectV("az repos pr update --id 3 --status completed", "deny");
-expectV("gh pr review 12 --approve", "deny");
-expectV("gh release upload v1 a.zip", "deny");
-expectV("gh api repos/o/r/pulls", "deny");
+expectV("gh pr review 12 --approve", "ask");
+expectV("gh release upload v1 a.zip", "ask");
+expectV("gh api repos/o/r/pulls", "ask");
+// relax-deny (cloud): todo comando de az/azd/aws/gcloud pergunta (ask); az repos pr update (completa PR) segue em deny; nada fica livre.
+expectV("aws s3 ls", "ask");
+expectV("aws ec2 terminate-instances --instance-ids i-123", "ask");
+expectV("aws.exe sts get-caller-identity", "ask");
+expectV("gcloud compute instances list", "ask");
+expectV("gcloud projects delete meu-projeto", "ask");
+expectV("gcloud.cmd config list", "ask");
+expectV("az group delete --name rg-x --yes", "ask");
+expectV("az account show", "ask");
+expectV("azd up", "ask");
+expectV("az repos pr update --id 3 --status completed", "deny");
+expectV("gh issue create --title t", "ask");
+expectV("gh repo delete o/r --yes", "ask");
+expectV("gh auth token", "deny");
+expectV("gh pr merge 12", "deny");
+expectV("git status", "livre");
+expectV("git diff --stat", "livre");
+expectV("git log --oneline", "livre");
+expectV("git reset --hard HEAD~1", "ask");
+expectV("git clean -fdx", "ask");
+expectV("git config user.name x", "ask");
 
 // Transformação bloqueada <-> confirmar (REQ-005): move o grupo inteiro entre chaves; reversível; nunca cria allow.
 const move = (s, from, to) => {
@@ -139,5 +167,12 @@ check("techlead.md: 'Fim' do fluxo Git traz a ressalva do modo publicação", MO
 check("skill publish existe e não é invocável pelo modelo",
   fs.existsSync(path.join(ROOT, "plugins/sdd/skills/publish/SKILL.md")) && /disable-model-invocation: true/.test(text("plugins/sdd/skills/publish/SKILL.md")));
 
+// jira-write: o TechLead tem exatamente as 4 ferramentas de escrita do Jira (2 prefixos); nunca os executores genéricos nem Confluence; ask na plataforma.
+const tools = (tl.match(/^tools:.*$/m) || [""])[0];
+const jw = ["addOrEditJiraIssueComment", "createJiraIssue", "editJiraIssue", "transitionJiraIssue"];
+check("techlead: 4 ferramentas de escrita do Jira nos 2 prefixos", ["mcp__claude_ai_Atlassian__", "mcp__atlassian__"].every((px) => jw.every((n) => tools.includes(px + n + ","))|| jw.every((n) => tools.endsWith(px + n))));
+check("techlead: sem executeWrite/executeDestructive nem Confluence", !/executeWrite|executeDestructive|ConfluenceContent/.test(tools));
+check("escrita do Jira também em ask nos modelos (plataforma pergunta)", jw.every((n) => ask.includes("mcp__claude_ai_Atlassian__" + n) && ask.includes("mcp__atlassian__" + n)));
+check("techlead.md: escrita no Jira só com pedido explícito e confirmação", /Escrever no Jira[\s\S]{0,200}pedido explícito do usuário/.test(tl));
 console.log(`req007-publicacao.test.js: ${pass} ok, ${fail} falha(s)`);
 process.exit(fail ? 1 : 0);
