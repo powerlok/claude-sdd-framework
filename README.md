@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.9.4-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.9.6-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -75,6 +75,7 @@ Estados de cada task: `TODO → IN_PROGRESS → IMPLEMENTED → SECURITY_REVIEW 
 | `frontend-engineering` | Princípios + referências **React** e **Angular** e checklist de interface web |
 | `mobile-engineering` | Princípios mobile + referência **React Native/Expo** (outras plataformas: sem referência, lacuna declarada) |
 | `git-lang` | Comando `/sdd:git-lang pt\|en`: idioma de commits e PR (seção `## Git` do `CLAUDE.md`) |
+| `start` | Comando `/sdd:start`: o usuário inicia o fluxo com o TechLead (situação do projeto e perguntas iniciais do onboarding) |
 | `publish` | Comando `/sdd:publish bloqueada\|confirmar`: liga/desliga o modo publicação (push da branch, PR e release com confirmação a cada comando; o merge é sempre seu), só no `settings.local.json` |
 | `requirements-grilling` | Perguntas certas para fechar requisitos antes da spec |
 | `bug-diagnosis` | Diagnóstico de bugs em 5 fases, com teste de regressão |
@@ -125,9 +126,10 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
    claude plugin install sdd@claude-sdd-framework --scope project
    ```
 
-4. Abra `claude` na raiz do projeto e aceite o diálogo de confiança da pasta. A primeira resposta é do **TechLead**,
-   que verifica o onboarding e, se faltar `CLAUDE.md`, oferece criá-lo (lendo o código ou perguntando a stack) — nada é
-   alterado sem confirmação. Depois, faça o primeiro pedido:
+4. Abra `claude` na raiz do projeto e aceite o diálogo de confiança da pasta. O Claude Code **só responde depois da sua
+   primeira mensagem**: ao abrir, o sdd mostra um aviso, então **digite `/sdd:start`** (ou qualquer mensagem). A primeira resposta é do
+   **TechLead**, que verifica o onboarding e, se faltar `CLAUDE.md`, oferece criá-lo (lendo o código ou perguntando a stack):
+   nada é alterado sem confirmação. Depois, faça o primeiro pedido:
 
    ```text
    Crie um endpoint POST /todos que cadastra tarefas com título obrigatório

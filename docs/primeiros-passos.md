@@ -241,8 +241,10 @@ claude
 **Você vai ver:**
 
 1. Na primeira vez, o **diálogo de confiança da pasta**. Aceite: sem confiar na pasta, o plugin do projeto não carrega.
-2. A primeira resposta vem do **TechLead** ("Sou o TechLead") com a situação do projeto (onboarding). Nada é
-   alterado sem a sua confirmação.
+2. O sdd mostra um **aviso de início** ("sdd: ... Digite /sdd:start"). O Claude Code **só responde depois da sua
+   primeira mensagem**, então o terminal fica esperando você: **digite `/sdd:start`** (qualquer mensagem também funciona).
+3. A resposta vem do **TechLead** ("Sou o TechLead") com a situação do projeto (onboarding) e conduz as perguntas iniciais, uma
+   etapa de cada vez. Nada é alterado sem a sua confirmação.
 
 Se você instalou o plugin com uma sessão já aberta, rode `/reload-plugins` ou abra uma nova sessão.
 
@@ -402,6 +404,7 @@ estão no [CHANGELOG](../CHANGELOG.md). Ao subir de versão, reaplique também o
 | `Plugin "sdd" not found in marketplace` ao instalar | Marketplace não registrado nesta máquina, ou desatualizado | Rode o [passo 1](#1-instalar-na-máquina-uma-vez) (`marketplace add`); se já registrado, `claude plugin marketplace update claude-sdd-framework` (sem `ref`) ou o [passo C](#passo-c-já-registrado-sem-versão-ou-com-outra-versão) (com tag) |
 | `Failed to add marketplace ... its source doesn't match its extraKnownMarketplaces entry in user or managed settings` | O seu `~/.claude/settings.json` já declara `claude-sdd-framework` sem `ref` (ou com outra versão) e o `add` usa outra fonte | Faça o [passo C do passo 1](#passo-c-já-registrado-sem-versão-ou-com-outra-versão): `add` sem `#` (C1) ou edite o `ref` da entrada e rode o `add` com o mesmo `#vX.Y.Z` (C2). Não use `marketplace remove` |
 | Falha de clone ou de autenticação no `marketplace add` | Rede bloqueando o github.com (proxy/firewall/DNS) | Teste `git ls-remote https://github.com/powerlok/claude-sdd-framework.git`; ajuste a rede; nunca token na URL |
+| Abri o `claude` e nada acontece | O Claude Code só responde depois da primeira mensagem (não existe primeiro turno automático para agente de plugin) | Digite `/sdd:start` (ou qualquer mensagem); o TechLead responde com a situação do projeto e pergunta se pode fazer o onboarding. O aviso de início do sdd lembra disso ao abrir |
 | Resposta genérica, sem "Sou o TechLead" | Plugin não instalado no projeto; pasta não confiada; ou sessão aberta antes do install | Rode o `plugin install` na raiz; aceite o diálogo de confiança; `/reload-plugins` ou nova sessão |
 | `/plugin` › Errors: "enabled in project settings but isn't installed here" | O settings foi copiado (ou veio pelo git), mas o plugin não foi instalado nesta máquina | `claude plugin install sdd@claude-sdd-framework --scope project` na raiz do projeto |
 | A sessão abre com o agente "OBSOLETO" (`sdd:tecleader`) em vez do TechLead | O `settings` ainda aponta para o nome antigo, renomeado na 0.8.0 | Troque `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` (ou `settings.local.json`) e reinicie (ou `/reload-plugins`) |

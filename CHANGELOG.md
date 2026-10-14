@@ -2,6 +2,31 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.9.6 — 2026-10-14
+
+Comando para iniciar o fluxo (`.specs/done/start-command/spec.md`). Não é release (sem tag).
+
+- REQ-001/REQ-002: skill `start` (`/sdd:start`, `disable-model-invocation`, `allowed-tools: Read, Glob, Grep`): o usuário dispara a primeira
+  resposta do TechLead (situação do projeto, "Faço o onboarding agora?" e as perguntas iniciais já definidas no agente), sem escrita
+  própria. Se a sessão não for do `sdd:techlead`, orienta como ativá-lo.
+- REQ-003: o aviso de início passa a dizer "Digite /sdd:start" (qualquer mensagem continua funcionando).
+- REQ-004/REQ-005: docs (passo 3, README, manual, troubleshooting, tabela de skills); `req008-banner.test.sh` cobre o banner e a skill.
+- Verificado no CLI real (`claude -p "/sdd:start"` num projeto com `package.json` e sem `CLAUDE.md`): "Sou o TechLead", situação e a pergunta de onboarding.
+
+## sdd 0.9.5 — 2026-10-14
+
+Aviso de início de sessão (`.specs/done/start-banner/spec.md`). Não é release (sem tag).
+
+- Problema: depois de instalar o plugin e abrir `claude`, nada aparecia: o Claude Code só responde depois da primeira mensagem, e o
+  diagnóstico de onboarding ia só para o contexto do modelo. Os docs também não diziam para digitar.
+- REQ-001..003: hook `hooks/start-banner.sh` (`SessionStart`, `startup`) imprime um objeto JSON com `systemMessage` constante (mostrado ao
+  usuário): sem `CLAUDE.md`/`## Stack` → "ainda não passou pelo onboarding, escreva qualquer mensagem"; com onboarding → "TechLead pronto".
+  Só constantes e testes de existência; nada do projeto entra na mensagem.
+- REQ-004: passo 3 dos primeiros passos, README e manual dizem para escrever a primeira mensagem; troubleshooting "abri o `claude` e nada acontece".
+- REQ-005: `req008-banner.test.sh` (13 ok).
+- Verificado: `initialPrompt` no frontmatter do agente é ignorado para agente de plugin (teste com cópia do plugin), então o TechLead não
+  consegue falar sozinho; o aviso orienta, não substitui a primeira mensagem.
+
 ## Release v0.9.4 — 2026-10-13
 
 Inclui: `sdd` 0.9.4 (acumula 0.9.2, 0.9.3 e 0.9.4), `authoring` 0.2.1.
