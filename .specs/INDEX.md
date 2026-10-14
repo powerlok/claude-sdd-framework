@@ -45,3 +45,4 @@ com `Relacionada a: done/<feature>`).
 | [context-hygiene](done/context-hygiene/spec.md) | 2026-10-14 | pedido do usuário | Higiene de contexto: o TechLead sugere `/clear` ao arquivar spec e ao mudar de tarefa; hook `clear` reinjeta o diagnóstico (`sdd` 0.10.2) |
 | [plugin-review](done/plugin-review/spec.md) | 2026-10-14 | pedido do usuário | Revisão do plugin: TechLead enxuto (−54%, playbooks em skills sob demanda), agente `tecleader` removido, CI (`sdd` 0.11.0) |
 | [context-management](done/context-management/spec.md) | 2026-10-14 | pedido do usuário | Gestão de contexto pela doc oficial: `autoCompactWindow` (settings e subagentes), `Compact instructions`, o que sobrevive à compactação (`sdd` 0.11.1) |
+| [merge-guard](done/merge-guard/spec.md) | 2026-10-14 | pedido do usuário | Hook `merge-guard` bloqueia merge de PR e push forçado em qualquer modo, inclusive `sh -c` (`sdd` 0.12.0) |

@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.11.1-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.12.0-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -196,6 +196,11 @@ de terceiros pelo `gh` (`auth token`, `extension install`, `alias set`), a leitu
 draw.io e do Playwright. **Todo o git** (force push, `reset --hard`, `clean`, `rebase`, `config`, `-c`...), a **escrita em sistemas externos** (issues,
 comentários, `gh api`, workflows, Jira, GitLab, Azure DevOps) e os **comandos de nuvem** (`az`, `azd`, `aws`, `gcloud`) ficam em `permissions.ask`: o Claude Code
 **pergunta a cada comando** (desde a 0.10.0; antes estavam bloqueados). Leituras como `git status|diff|log` seguem livres.
+
+**Hook `merge-guard` (desde a 0.12.0).** Regras `Bash(...)` em `deny` não pegam `sh -c '...'`, caminho absoluto nem `git -C . push` (a própria documentação diz que não são fronteira de segurança). O plugin traz
+um hook `PreToolUse` que bloqueia, em **qualquer modo de permissão** e sem depender do `settings.json` do projeto, o **merge de PR** (`gh pr merge`, `glab mr merge`, `az repos pr update`, `gh|glab api` com `merge`)
+e o **push forçado/destrutivo** (`--force`, `-f`, `--delete`, `+ref`, `:ref`), inclusive dentro de `sh -c`, `$(...)` e depois de `&&`. Limites: variável, `eval` ou script externo escapam (não é sandbox, que não
+existe no Windows nativo), e um comando que só cita o texto (mensagem de commit com `gh pr merge`) pode ser barrado: reescreva sem o comando literal. O `deny` do template segue como segunda camada.
 
 **Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.11.1"`). Quem decide a versão na máquina é a entrada
 `claude-sdd-framework` do `~/.claude/settings.json`; para subir de versão, troque o `ref` dela, rode

@@ -149,7 +149,7 @@ dele). Em sessão de workspace ou com `--add-dir` o `settings.local.json` do pro
 4. PR: `gh pr create --base <tronco> --head <branch> --title "<título da spec>" --body-file <arquivo>`; título e texto
    só da spec/tasks validadas e do modelo de `git-workflow.md` (nunca texto bruto de PR/issue/log; sem `--fill`);
    `gh pr comment` só com conteúdo da spec. Mostrar comando literal e texto integral antes de confirmar.
-5. **Merge: nunca** (`gh pr merge`, `glab mr merge` e equivalentes estão em `deny`). Pedido de merge: responder que
+5. **Merge: nunca** (`gh pr merge`, `glab mr merge` e equivalentes estão em `deny`, e o hook `merge-guard` do plugin bloqueia o comando mesmo em `sh -c`). Pedido de merge: responder que
    é do usuário, entregar a URL do PR e parar.
 6. Release: `gh release create <tag> --notes-file <arquivo> --target <commit>`; a confirmação lista tag, alvo e notas;
    sem anexos (`gh release upload` só por pedido explícito, com confirmação).

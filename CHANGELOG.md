@@ -2,6 +2,19 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.12.0 — 2026-10-14
+
+Guarda de merge e push forçado como hook do plugin (`.specs/done/merge-guard/spec.md`). Não é release (sem tag).
+
+- REQ-001..003: `hooks/merge-guard.sh` (`PreToolUse`, matcher `Bash`, síncrono, timeout 5) bloqueia com exit 2 o comando que faria **merge de PR** (`gh pr merge`, `glab mr merge|accept`, `az repos pr update`,
+  `gh|glab api` com `merge`) ou **push forçado/destrutivo** (`--force*`, `-f`, `--mirror`, `--delete`, `-d`, `+ref`, `:ref`). Reconhece o comando em `sh -c`, `bash -c`, `$(...)`, depois de `;` `&&` `||` `|`,
+  com caminho absoluto e `.exe`, e `git -C . push`; o que `Bash(...)` em `deny` não pega. Vale em qualquer modo de permissão (a doc: hook com exit 2 bloqueia antes das regras) e não depende do projeto copiar o
+  `settings.json`. Só builtins do bash (sem rede, `eval` ou escrita); funciona no bash 3.2 do macOS e no Git Bash; a mensagem é constante e não repete o comando.
+- REQ-004: limites: variável, `eval`, base64 ou script externo escapam (não é sandbox, que não existe no Windows nativo); comando que apenas cita o texto (ex.: mensagem de commit com `gh pr merge`) pode ser
+  bloqueado e deve ser reescrito. O `deny` dos modelos de settings continua como segunda camada.
+- REQ-005: `req013-mergeguard.test.sh` (53 ok); docs e skill `vcs-delivery`.
+- Migração: nenhuma (o hook vem com o plugin). O `deny` do workspace antigo (174 entradas) pode ser trocado pelo modelo atual (83 `deny` + `ask`); o `agent` deve ser `sdd:techlead`.
+
 ## Release v0.11.1 — 2026-10-14
 
 Inclui: `sdd` 0.11.1 (acumula 0.9.5 a 0.11.1), `authoring` 0.2.1.
