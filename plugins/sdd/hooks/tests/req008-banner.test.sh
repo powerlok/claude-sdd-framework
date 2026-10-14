@@ -11,7 +11,7 @@ out="$(CLAUDE_PROJECT_DIR="$P" bash "$S")"; rc=$?
 eq "req008 sem onboarding: exit 0" "0" "$rc"
 msg="$(printf '%s' "$out" | jq_msg)"; mrc=$?
 eq "req008 sem onboarding: saída é um único JSON só com systemMessage" "0" "$mrc"
-check "req008 sem onboarding: pede para escrever uma mensagem e cita onboarding" bash -c 'echo "$1" | grep -q "Escreva qualquer mensagem" && echo "$1" | grep -q "onboarding"' _ "$msg"
+check "req008 sem onboarding: aponta /sdd:start e cita onboarding" bash -c 'echo "$1" | grep -q "/sdd:start" && echo "$1" | grep -q "onboarding"' _ "$msg"
 eq "req008 stdout é uma linha só" "1" "$(printf '%s\n' "$out" | wc -l | tr -d ' ')"
 
 # 2) CLAUDE.md sem ## Stack ainda é "sem onboarding".
@@ -24,7 +24,7 @@ printf '# Projeto\n\n## Stack\n- node\n' > "$P/CLAUDE.md"
 out="$(CLAUDE_PROJECT_DIR="$P" bash "$S")"
 msg="$(printf '%s' "$out" | jq_msg)"; mrc=$?
 eq "req008 com onboarding: JSON válido" "0" "$mrc"
-check "req008 com onboarding: TechLead pronto" bash -c 'echo "$1" | grep -q "TechLead pronto"' _ "$msg"
+check "req008 com onboarding: TechLead pronto e /sdd:start" bash -c 'echo "$1" | grep -q "TechLead pronto" && echo "$1" | grep -q "/sdd:start"' _ "$msg"
 
 # 4) nenhum texto do projeto vaza (nome de arquivo hostil, conteúdo do CLAUDE.md).
 printf '# X\n\n## Stack\nSEGREDO-NO-CLAUDE-MD\n' > "$P/CLAUDE.md"
@@ -47,6 +47,15 @@ for(const [ev,blocks] of Object.entries(h)) for(const b of blocks) for(const x o
 }
 console.log(JSON.stringify(hits));' "$HOOKS_DIR/hooks.json")"
 eq "req008 hooks.json: só SessionStart/startup, síncrono, timeout 5" '[["SessionStart","startup",false,5]]' "$res"
+
+# 7) skill start (/sdd:start): só leitura, só o usuário invoca, aponta as seções do agente.
+SK="$HOOKS_DIR/../skills/start/SKILL.md"
+check "req008 skill start existe" test -f "$SK"
+check "req008 skill start: name start" grep -q '^name: start$' "$SK"
+check "req008 skill start: disable-model-invocation" grep -q '^disable-model-invocation: true$' "$SK"
+eq "req008 skill start: allowed-tools só leitura" "allowed-tools: Read, Glob, Grep" "$(grep '^allowed-tools:' "$SK" | tr -d '\r')"
+check "req008 skill start: nenhuma ferramenta de escrita/Bash" bash -c '! grep "^allowed-tools:" "$1" | grep -Eq "Bash|Edit|Write"' _ "$SK"
+check "req008 skill start: usa a seção Início de sessão e Onboarding de Projeto" bash -c 'grep -q "Início de sessão" "$1" && grep -q "Onboarding de Projeto" "$1"' _ "$SK"
 
 drop_sandbox
 finish

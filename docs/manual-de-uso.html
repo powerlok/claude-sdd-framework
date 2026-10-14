@@ -219,7 +219,7 @@ tr:last-child td { border-bottom: 0; }
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span class="lbl">Menu</span>
   </button>
   <span class="logo" aria-hidden="true">SDD</span>
-  <h1>Manual do Plugin SDD <span class="ver">sdd 0.9.5 · authoring 0.2.1</span></h1>
+  <h1>Manual do Plugin SDD <span class="ver">sdd 0.9.6 · authoring 0.2.1</span></h1>
   <div class="header-tools" role="search">
     <div class="search">
       <label for="q" class="sr-only">Buscar no manual</label>
@@ -321,7 +321,7 @@ tr:last-child td { border-bottom: 0; }
   <div class="code" data-label="bash"><pre><code>claude plugin install sdd@claude-sdd-framework --scope project
 claude plugin list        # sdd 0.9.4, Scope: project, enabled</code></pre></div>
   <ol start="4">
-    <li>Abra <code>claude</code> na raiz do projeto e aceite o diálogo de confiança da pasta (sem confiar, o plugin do projeto não carrega). O Claude Code só responde depois da sua primeira mensagem: o sdd mostra um aviso ao abrir, então escreva qualquer coisa (ex.: <code>oi</code>). A primeira resposta é do TechLead ("Sou o TechLead"), com a situação do projeto. Se instalou com a sessão aberta, use <code>/reload-plugins</code> ou abra nova sessão.</li>
+    <li>Abra <code>claude</code> na raiz do projeto e aceite o diálogo de confiança da pasta (sem confiar, o plugin do projeto não carrega). O Claude Code só responde depois da sua primeira mensagem: o sdd mostra um aviso ao abrir, então <strong>digite <code>/sdd:start</code></strong> (ou qualquer mensagem). A primeira resposta é do TechLead ("Sou o TechLead"), com a situação do projeto. Se instalou com a sessão aberta, use <code>/reload-plugins</code> ou abra nova sessão.</li>
     <li>Sem <code>CLAUDE.md</code>, o TechLead faz o onboarding: com <strong>código existente</strong>, pergunta "Faço o onboarding agora?" e, com o seu sim, lê o código e cria <code>CLAUDE.md</code> e <code>.specs/INDEX.md</code>; no <strong>projeto do zero</strong>, pergunta a stack (linguagem, framework, versão), a nuvem/infra (ou "nenhuma") e as convenções, assume que os artefatos são versionados (<code>Versionar artefatos SDD: sim</code>; você pode pedir <code>não</code>) e só cria os arquivos depois do seu ok. Ele nunca faz commit.</li>
   </ol>
   <div class="callout danger" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18h.01"/></svg><div><span class="t">Perigo</span><p><strong>Nunca</strong> coloque usuário, senha ou token na URL do repositório. Use SSH ou HTTPS com o gerenciador de credenciais do git.</p></div></div>
@@ -856,7 +856,7 @@ claude plugin update sdd@claude-sdd-framework --scope project
   <p>Não use <code>claude plugin marketplace remove</code>: ele desinstala o plugin dos projetos. Reinicie a sessão para aplicar. <span class="badge verified">Verificado</span></p>
   <div class="table-wrap"><table>
     <thead><tr><th>Plugin</th><th>Versão deste manual</th></tr></thead>
-    <tbody><tr><td><code>sdd</code></td><td>0.9.5</td></tr><tr><td><code>authoring</code></td><td>0.2.1</td></tr></tbody>
+    <tbody><tr><td><code>sdd</code></td><td>0.9.6</td></tr><tr><td><code>authoring</code></td><td>0.2.1</td></tr></tbody>
   </table></div>
   <p>As versões seguem semver, definidas em <code>plugins/*/.claude-plugin/plugin.json</code>; as mudanças ficam no <a href="../CHANGELOG.md">CHANGELOG.md</a>.</p>
   <p>Para validar um plugin ou testá-lo sem instalar (só na sessão):</p>
@@ -890,7 +890,7 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
   <article class="trouble"><h3>"Failed to add marketplace ... its source doesn't match its extraKnownMarketplaces entry"</h3>
     <p>O seu <code>~/.claude/settings.json</code> (ou o settings gerenciado) já declara <code>claude-sdd-framework</code> com uma fonte diferente da do comando (por exemplo, sem <code>ref</code>, e o comando usa <code>#vX.Y.Z</code>). Rode <code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git"</code>, exatamente a fonte da entrada, ou edite a entrada acrescentando <code>"ref": "vX.Y.Z"</code> em <code>source</code> e rode o <code>add</code> com o mesmo <code>#vX.Y.Z</code>; em projetos já instalados, <code>claude plugin update sdd@claude-sdd-framework --scope project</code>. Não use <code>marketplace remove</code> (desinstala o plugin dos projetos) nem <code>marketplace update</code> logo depois de editar o <code>ref</code> à mão (o marketplace some até o <code>add</code>).</p></article>
   <article class="trouble"><h3>Abri o <code>claude</code> e nada acontece</h3>
-    <p>O Claude Code só responde depois da sua primeira mensagem (não existe primeiro turno automático para agente de plugin). Escreva qualquer mensagem (ex.: <code>oi</code>): o TechLead mostra a situação do projeto e pergunta se pode fazer o onboarding. O aviso de início do sdd lembra disso ao abrir.</p></article>
+    <p>O Claude Code só responde depois da sua primeira mensagem (não existe primeiro turno automático para agente de plugin). Digite <code>/sdd:start</code> (ou qualquer mensagem): o TechLead mostra a situação do projeto e pergunta se pode fazer o onboarding. O aviso de início do sdd lembra disso ao abrir.</p></article>
   <article class="trouble"><h3>A salinha dos agentes não abre</h3>
     <p>Confira a preferência com <code>/sdd:office status</code> (se estiver <code>off</code>, rode <code>/sdd:office on</code>), se há um navegador padrão definido e se o Git Bash está instalado (no Windows o hook usa <code>bash</code>; o bash do WSL no PATH pode atrapalhar). Política corporativa que bloqueie <code>file://</code> impede a atualização da página.</p></article>
 
@@ -937,7 +937,7 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
 </main>
 </div>
 
-<footer class="site-footer">Manual do Plugin SDD · sdd 0.9.5 · authoring 0.2.1 · arquivo único, funciona offline.</footer>
+<footer class="site-footer">Manual do Plugin SDD · sdd 0.9.6 · authoring 0.2.1 · arquivo único, funciona offline.</footer>
 
 <button type="button" class="btn" id="to-top" aria-label="Voltar ao topo">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span class="lbl">Topo</span>

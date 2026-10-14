@@ -21,9 +21,9 @@ if [ -f "$base/CLAUDE.md" ] && [ ! -L "$base/CLAUDE.md" ] \
 fi
 
 if [ "$ready" = yes ]; then
-  msg="sdd: TechLead pronto. Escreva o que você precisa (ou apenas “oi” para ver a situação do projeto). A resposta deve começar com “Sou o TechLead”."
+  msg="sdd: TechLead pronto. Digite /sdd:start para ver a situação do projeto e seguir os passos iniciais, ou escreva direto o que você precisa. A resposta deve começar com “Sou o TechLead”."
 else
-  msg="sdd: este projeto ainda não passou pelo onboarding. Escreva qualquer mensagem (ex.: “oi”): o TechLead mostra a situação do projeto e pergunta se pode fazer o onboarding. A resposta deve começar com “Sou o TechLead”."
+  msg="sdd: este projeto ainda não passou pelo onboarding. Digite /sdd:start: o TechLead mostra a situação do projeto e pergunta se pode fazer o onboarding (qualquer mensagem também funciona). A resposta deve começar com “Sou o TechLead”."
 fi
 
 printf '{"systemMessage":"%s"}\n' "$msg"
