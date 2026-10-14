@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.10.1-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.10.2-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -283,6 +283,13 @@ por usuário, nunca no repositório. Para apagar, remova o arquivo.
   reinjeção de script a cada 1 s: política corporativa que bloqueie `file://` impede a atualização (a página avisa).
   Tem botão "Pausar animação" e respeita `prefers-reduced-motion`.
 - **Segurança:** revisada em 3 voltas (aprovada); 363 testes (shell + página).
+
+## 🧠 Contexto e tokens
+
+Cada mensagem reenvia a conversa inteira, então o custo cresce com o contexto. O framework **não** abre contexto novo por spec: só as delegações a subagentes têm janela isolada, e o
+estado de cada task fica em `tasks.md`. `/clear` e `/compact` **só você** executa (o Claude Code não deixa o agente digitá-los); o TechLead **sugere** `/clear` em uma linha ao arquivar uma
+spec e ao receber uma tarefa diferente, e **não** sugere na mesma tarefa. Depois de `/clear`, o diagnóstico de onboarding é reinjetado. A compactação automática do Claude Code pode ser
+antecipada com `autoCompactWindow`, `claude --autocompact` ou `CLAUDE_CODE_AUTO_COMPACT_WINDOW` (100 mil a 1 milhão de tokens; em modelos de 1 milhão o padrão só compacta perto de 967 mil).
 
 ## 🔁 Atualização
 

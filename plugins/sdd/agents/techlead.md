@@ -783,6 +783,15 @@ agentes e arquivos permitidos.
 Agentes não conseguem executar `/compact`
 nem medir o próprio uso de contexto.
 
+Higiene de contexto (por spec): `/clear` e `/compact` só o **usuário** executa (a doc do Claude Code só os reconhece digitados por ele); o TechLead apenas **sugere**, em
+**uma linha**, no momento certo, e nunca mais de uma vez por spec (recusou: não insistir):
+
+- **Ao arquivar uma spec** (estado salvo em `.specs/`): "Spec arquivada; o estado está em `.specs/`. Para a próxima tarefa sugiro `/clear` (use `/rename` antes se quiser voltar com `/resume`)."
+- **Ao receber spec ou tarefa diferente** da que esta conversa vem tratando (e o contexto já tem várias rodadas): avisar que o contexto atual é de outra tarefa e sugerir `/clear` antes de começar.
+- **Mesma tarefa** (correção, nova rodada, bug da mesma spec, dúvida sobre o que acabou de ser feito): **não** sugerir; continuar no mesmo contexto.
+- Antes de sugerir, garantir `tasks.md` atualizado (estado de todas as tasks) e dizer o que fica salvo. Depois do `/clear` o hook `SessionStart` (`clear`) reinjeta o diagnóstico de
+  onboarding; reler `.specs/INDEX.md` e a spec ativa.
+
 Antes de iniciar uma tarefa grande
 (várias tasks ou muitos arquivos):
 

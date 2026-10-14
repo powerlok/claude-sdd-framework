@@ -2,6 +2,17 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.10.2 — 2026-10-14
+
+Higiene de contexto (`.specs/done/context-hygiene/spec.md`). Não é release (sem tag).
+
+- Validação: o framework **não** abre contexto novo por spec; o agente não pode executar `/clear` nem `/compact` (a doc só os reconhece digitados pelo usuário).
+- REQ-001: regra "Higiene de contexto" no `techlead.md` e na `sdd-governance`: sugerir `/clear` em uma linha ao arquivar uma spec e ao receber tarefa diferente; na mesma tarefa continuar;
+  no máximo uma vez por spec; `tasks.md` atualizado antes.
+- REQ-002: hook `SessionStart` com matcher `clear` roda `onboarding-check.sh` e `start-banner.sh` (antes o diagnóstico só era injetado no `startup`).
+- REQ-003: README ("Contexto e tokens"); `req008` (banner e onboarding em `clear`; regra no agente).
+- Proposta pendente (decisão do usuário): `autoCompactWindow` no modelo de settings para compactar antes em modelos de 1M.
+
 ## sdd 0.10.1 — 2026-10-14
 
 TechLead pode escrever no Jira, sempre com confirmação (`.specs/done/jira-write/spec.md`). Não é release (sem tag). Revisão independente dispensada pelo usuário.

@@ -46,7 +46,15 @@ for(const [ev,blocks] of Object.entries(h)) for(const b of blocks) for(const x o
   if(/start-banner\.sh/.test(x.command||"")) hits.push([ev,b.matcher,x.async===true,x.timeout]);
 }
 console.log(JSON.stringify(hits));' "$HOOKS_DIR/hooks.json")"
-eq "req008 hooks.json: só SessionStart/startup, síncrono, timeout 5" '[["SessionStart","startup",false,5]]' "$res"
+eq "req008 hooks.json: banner só em SessionStart startup e clear, síncrono, timeout 5" '[["SessionStart","startup",false,5],["SessionStart","clear",false,5]]' "$res"
+res="$(node -e '
+const h=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).hooks;
+const hits=[];
+for(const b of h.SessionStart) for(const x of b.hooks) if(/onboarding-check\.sh/.test(x.command||"")) hits.push(b.matcher);
+console.log(JSON.stringify(hits));' "$HOOKS_DIR/hooks.json")"
+eq "req008 hooks.json: onboarding-check roda em startup e clear (diagnóstico reinjetado depois do /clear)" '["startup","clear"]' "$res"
+tl="$HOOKS_DIR/../agents/techlead.md"
+check "req008 techlead: higiene de contexto (sugerir /clear, só o usuário executa, mesma tarefa não)" bash -c 'grep -q "Higiene de contexto" "$1" && grep -q "só o \*\*usuário\*\* executa" "$1" && grep -q "Mesma tarefa" "$1"' _ "$tl"
 
 # 7) skill start (/sdd:start): só leitura, só o usuário invoca, aponta as seções do agente.
 SK="$HOOKS_DIR/../skills/start/SKILL.md"

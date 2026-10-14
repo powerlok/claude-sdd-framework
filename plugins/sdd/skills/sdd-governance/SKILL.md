@@ -207,6 +207,10 @@ e pendências.
 Após um compact: reler `spec.md` e `tasks.md` e recarregar as skills
 `sdd:sdd-rules` e `sdd:sdd-governance` (o hook do plugin lembra disso).
 
+Higiene de contexto: `/clear` e `/compact` só o usuário executa. O TechLead **sugere** `/clear` (uma linha, no máximo uma vez por spec) ao arquivar uma spec e ao receber uma
+tarefa diferente da que a conversa vinha tratando; na mesma tarefa continua no mesmo contexto. O estado fica em `.specs/` (`tasks.md` atualizado antes de sugerir); depois do
+`/clear` o hook `SessionStart` (`clear`) reinjeta o diagnóstico de onboarding.
+
 ---
 
 ## Integrações externas (Jira e repositório)
