@@ -1,6 +1,6 @@
 ---
 name: start
-description: Inicia o fluxo do projeto com o TechLead: mostra a situação (onboarding) e conduz as perguntas iniciais. Uso /sdd:start.
+description: "Inicia o fluxo do projeto com o TechLead: mostra a situação (onboarding) e conduz as perguntas iniciais. Uso /sdd:start."
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep
 ---

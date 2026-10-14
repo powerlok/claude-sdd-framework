@@ -16,8 +16,11 @@ for state in unset off; do
   check "req003 $state: nada criado no tmp" test -z "$(ls "$TMPDIR")"
 done
 start=$(date +%s)
-timeout 5 bash "$EV" < <(sleep 4)
-rc=$?; el=$(( $(date +%s) - start ))
+# sem "timeout" (não existe no macOS): espera até 5 s e encerra o hook se ainda estiver preso no stdin.
+bash "$EV" < <(sleep 4) & pid=$!
+i=0; while kill -0 "$pid" 2>/dev/null && [ "$i" -lt 50 ]; do sleep 0.1; i=$((i + 1)); done
+if kill -0 "$pid" 2>/dev/null; then kill "$pid" 2>/dev/null; wait "$pid" 2>/dev/null; rc=124; else wait "$pid"; rc=$?; fi
+el=$(( $(date +%s) - start ))
 eq "req003 desligado não bloqueia no stdin (exit 0)" "0" "$rc"
 check "req003 desligado não espera o stdin (< 3 s)" test "$el" -lt 3
 
