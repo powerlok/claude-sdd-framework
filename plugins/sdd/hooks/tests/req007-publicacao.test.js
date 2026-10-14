@@ -155,7 +155,8 @@ check("estado parcial/duplo é detectável (inconsistente)", (() => {
 })());
 
 // Consistência textual: as regras "nunca publica/push" trazem a ressalva do modo publicação.
-const tl = text("plugins/sdd/agents/techlead.md");
+// techlead.md + os playbooks movidos para skills (0.11.0): as regras de publicação/Git/Jira podem estar em qualquer dos três.
+const tl = [text("plugins/sdd/agents/techlead.md"), text("plugins/sdd/skills/vcs-delivery/SKILL.md"), text("plugins/sdd/skills/project-setup/SKILL.md")].join("\n");
 const gw = text("plugins/sdd/skills/sdd-rules/references/git-workflow.md");
 const MODO = /modo\s+publicação/i;
 check("techlead.md: merge nunca, é do usuário; fim da spec abre o PR e para",

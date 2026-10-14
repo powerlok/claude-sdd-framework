@@ -42,3 +42,6 @@ com `Relacionada a: done/<feature>`).
 | [playwright-mcp](done/playwright-mcp/spec.md) | 2026-10-14 | pedido do usuário | MCP Playwright empacotado no plugin `sdd` (versão fixada, perfil isolado, 19 ferramentas) para o `sdd:frontend` acessar o navegador (`sdd` 0.9.8) |
 | [relax-deny](done/relax-deny/spec.md) | 2026-10-14 | pedido do usuário | Git, escrita em sistemas externos e comandos de nuvem liberados com confirmação (`deny` → `ask`); merge, credenciais e segredos seguem em `deny` (`sdd` 0.10.0) |
 | [jira-write](done/jira-write/spec.md) | 2026-10-14 | pedido do usuário | TechLead pode escrever no Jira (4 ferramentas, 2 prefixos), só com pedido e confirmação (`sdd` 0.10.1) |
+| [context-hygiene](done/context-hygiene/spec.md) | 2026-10-14 | pedido do usuário | Higiene de contexto: o TechLead sugere `/clear` ao arquivar spec e ao mudar de tarefa; hook `clear` reinjeta o diagnóstico (`sdd` 0.10.2) |
+| [plugin-review](done/plugin-review/spec.md) | 2026-10-14 | pedido do usuário | Revisão do plugin: TechLead enxuto (−54%, playbooks em skills sob demanda), agente `tecleader` removido, CI (`sdd` 0.11.0) |
+| [context-management](done/context-management/spec.md) | 2026-10-14 | pedido do usuário | Gestão de contexto pela doc oficial: `autoCompactWindow` (settings e subagentes), `Compact instructions`, o que sobrevive à compactação (`sdd` 0.11.1) |

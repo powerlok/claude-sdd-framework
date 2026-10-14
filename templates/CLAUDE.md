@@ -97,6 +97,15 @@ Jira somente leitura e menor privilégio.
 
 - <REGRA>
 
+## Compact instructions
+
+Orienta o resumo quando a conversa é compactada (`/compact` ou automática). Ajuste ao projeto.
+
+```text
+Ao compactar, preserve: a spec ativa (`.specs/<feature>/`) e os REQs em andamento, o estado de cada task (TODO a DONE), as decisões tomadas e o porquê,
+os arquivos alterados, os testes executados e o resultado, os comandos reais de build/teste e as pendências. Descarte saídas longas de ferramentas e logs.
+```
+
 ## SDD
 
 Opções do processo SDD neste projeto (ausente = padrão).

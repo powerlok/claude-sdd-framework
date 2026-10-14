@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.10.1-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.11.1-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -75,6 +75,7 @@ Estados de cada task: `TODO → IN_PROGRESS → IMPLEMENTED → SECURITY_REVIEW 
 | `frontend-engineering` | Princípios + referências **React** e **Angular** e checklist de interface web |
 | `mobile-engineering` | Princípios mobile + referência **React Native/Expo** (outras plataformas: sem referência, lacuna declarada) |
 | `git-lang` | Comando `/sdd:git-lang pt\|en`: idioma de commits e PR (seção `## Git` do `CLAUDE.md`) |
+| `project-setup`, `vcs-delivery` | Playbooks internos do TechLead (onboarding/migração/workspace; repositório/Git/publicação), carregados sob demanda para o agente principal pesar menos (0.11.0) |
 | `start` | Comando `/sdd:start`: o usuário inicia o fluxo com o TechLead (situação do projeto e perguntas iniciais do onboarding) |
 | `publish` | Comando `/sdd:publish bloqueada\|confirmar`: liga/desliga o modo publicação (push da branch, PR e release com confirmação a cada comando; o merge é sempre seu), só no `settings.local.json` |
 | `requirements-grilling` | Perguntas certas para fechar requisitos antes da spec |
@@ -112,7 +113,7 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
    entrada no `~/.claude/settings.json` e repita o `add`; não use `marketplace remove`):
 
    ```bash
-   claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.4"
+   claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.11.1"
    ```
 
 2. **Na raiz do projeto** (raiz do repositório git; em monorepo, a pasta do projeto; nunca uma pasta-mãe fora do git),
@@ -196,7 +197,7 @@ draw.io e do Playwright. **Todo o git** (force push, `reset --hard`, `clean`, `r
 comentários, `gh api`, workflows, Jira, GitLab, Azure DevOps) e os **comandos de nuvem** (`az`, `azd`, `aws`, `gcloud`) ficam em `permissions.ask`: o Claude Code
 **pergunta a cada comando** (desde a 0.10.0; antes estavam bloqueados). Leituras como `git status|diff|log` seguem livres.
 
-**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.9.4"`). Quem decide a versão na máquina é a entrada
+**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.11.1"`). Quem decide a versão na máquina é a entrada
 `claude-sdd-framework` do `~/.claude/settings.json`; para subir de versão, troque o `ref` dela, rode
 `claude plugin marketplace add "...git#vNOVA"` e `claude plugin update sdd@claude-sdd-framework --scope project`
 ([passo a passo](docs/primeiros-passos.md#atualizar-a-versão)). Sem `ref`, vale a branch padrão do repositório
@@ -284,6 +285,23 @@ por usuário, nunca no repositório. Para apagar, remova o arquivo.
   Tem botão "Pausar animação" e respeita `prefers-reduced-motion`.
 - **Segurança:** revisada em 3 voltas (aprovada); 363 testes (shell + página).
 
+## 🧠 Contexto e tokens
+
+Cada mensagem reenvia a conversa inteira, então o custo cresce com o contexto. Configuração conforme a [documentação oficial](https://code.claude.com/docs/en/costs) (verificada em 2026-10-14):
+
+- **Compactação automática:** o modelo de settings traz `"autoCompactWindow": 200000`. Sem isso, modelos de 1 milhão de tokens só compactam perto de ~967 mil. Aceita 100.000 a 1.000.000;
+  mude com `/autocompact 500k` (por modelo, vale mais que o arquivo), `claude --autocompact`, `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, ou remova a chave para o padrão. Compactar em 200 mil perde detalhe da conversa no
+  resumo (o estado fica em `.specs/` e `tasks.md`) e a compactação em si é uma requisição grande: se preferir a janela cheia, remova a chave.
+- **Subagentes:** `backend`, `frontend`, `mobile` e `tests` compactam em 140.000 (70% de 200 mil; campo `autoCompactWindow` do agente, exige Claude Code 2.1.296+; em versões anteriores é ignorado).
+  Cada delegação tem janela isolada: só o resumo volta para a conversa principal.
+- **O que sobrevive à compactação:** o prompt do agente continua valendo; o `CLAUDE.md` da raiz é relido do disco; corpos de skills invocadas são reinjetados (até 5.000 tokens por skill e 25.000 no total;
+  o truncamento mantém o início, então cada `SKILL.md` do framework tem ≤ 15 KB e o essencial no topo); a lista de skills não volta. O hook `SessionStart` (`compact`) manda reler a spec e as tasks.
+- **`## Compact instructions`:** o modelo de `CLAUDE.md` (e o onboarding) inclui a seção que orienta o resumo: spec ativa, REQs, estado das tasks, decisões, arquivos alterados, testes e pendências.
+  Em projetos já existentes, copie a seção de [`templates/CLAUDE.md`](templates/CLAUDE.md).
+- **`/clear` e `/compact` só você executa** (o Claude Code não deixa o agente digitá-los). O TechLead **sugere** `/clear` em uma linha ao arquivar uma spec e ao receber uma tarefa diferente, e **não** sugere na mesma
+  tarefa; sugere `/compact Preserve: ...` para guiar o resumo. `/context` mostra o que ocupa a janela; `/rewind` (Summarize from here) compacta só uma parte. Depois de `/clear`, o diagnóstico de onboarding é reinjetado.
+- **O framework não abre contexto novo por spec:** só as delegações a subagentes têm janela isolada.
+
 ## 🔁 Atualização
 
 **Versão fixada por tag (recomendado):** troque o `ref` da entrada `claude-sdd-framework` no `~/.claude/settings.json`, rode
@@ -294,9 +312,8 @@ Não use `claude plugin marketplace remove` (desinstala o plugin dos projetos).
 
 Reinicie a sessão para aplicar. Versões seguem semver; veja o [CHANGELOG](CHANGELOG.md).
 
-> **0.8.0 (mudança incompatível):** `sdd:tecleader` foi renomeado para `sdd:techlead`. Troque
-> `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` (ou `settings.local.json`) e
-> reinicie. Até lá, a sessão abre com um agente obsoleto que só mostra essa instrução (removido na versão seguinte).
+> **0.8.0 e 0.11.0 (mudança incompatível):** `sdd:tecleader` foi renomeado para `sdd:techlead` na 0.8.0 e o agente antigo foi **removido** na 0.11.0. Se o seu
+> `.claude/settings.json` (ou `settings.local.json`) ainda tem `"agent": "sdd:tecleader"`, troque por `"agent": "sdd:techlead"` e reinicie: sem isso a sessão abre sem o TechLead.
 
 ## 📐 Diagramas do arquiteto: MCP draw.io (opcional)
 

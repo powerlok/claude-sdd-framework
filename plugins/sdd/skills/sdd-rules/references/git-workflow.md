@@ -1,7 +1,7 @@
 # Fluxo Git (trunk-based, Conventional Commits)
 
 Vale para projetos com a seção `## Git` no `CLAUDE.md`. Sem a seção, o TechLead não cria branch nem commit.
-Regras de execução do TechLead (confirmação, lista de arquivos, o que nunca fazer): agente `sdd:techlead`, seção "Git".
+Regras de execução do TechLead (confirmação, lista de arquivos, o que nunca fazer): skill `sdd:vcs-delivery`, seção "Git".
 
 ## Seção `## Git` do projeto
 
@@ -96,6 +96,6 @@ trabalho, PR e release). **O merge é sempre do usuário**, em qualquer modo (`d
 **Modo publicação (opcional, por usuário):** se o usuário ligar (grupo de publicação em `permissions.ask` do
 `.claude/settings.local.json`, pelo onboarding ou por `/sdd:publish confirmar`), o TechLead também faz `push -u origin
 <branch>` da branch de trabalho, `gh pr create` e `gh release create`, cada um com confirmação do
-usuário (regras e limites: agente `sdd:techlead`, seção "Publicação"). Caminho feliz: spec concluída → commits na branch
+usuário (regras e limites: skill `sdd:vcs-delivery`, seção "Publicação"). Caminho feliz: spec concluída → commits na branch
 da spec → um lote (push + PR) confirmado → URL do PR para você revisar, aprovar e mesclar. Rebase, tag, `--force`, `--no-verify`, aprovar/revisar
 PR e qualquer outra escrita no provedor continuam fora, em qualquer modo.

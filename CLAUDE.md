@@ -26,7 +26,7 @@ Ativas em `.specs/<feature>/` (`spec.md`, `tasks.md`); concluídas em `.specs/do
   dos plugins incluídos. A tag versiona o marketplace (os dois plugins juntos), não um plugin.
 - Não é release: só docs/specs, trabalho em andamento, mudança não validada.
 - O TechLead pergunta "é release?" ao encerrar uma feature; a tag só é criada com confirmação do usuário.
-- Releases: `v0.6.4` (sdd 0.6.4, authoring 0.2.1); `v0.7.0` (sdd 0.7.0, authoring 0.2.1); `v0.9.1` (sdd 0.9.1, authoring 0.2.1; inclui 0.8.x e 0.9.0/0.9.1, sem tag v0.8.1); `v0.9.4` (sdd 0.9.4, authoring 0.2.1; inclui 0.9.2 a 0.9.4).
+- Releases: `v0.6.4` (sdd 0.6.4, authoring 0.2.1); `v0.7.0` (sdd 0.7.0, authoring 0.2.1); `v0.9.1` (sdd 0.9.1, authoring 0.2.1; inclui 0.8.x e 0.9.0/0.9.1, sem tag v0.8.1); `v0.9.4` (sdd 0.9.4, authoring 0.2.1; inclui 0.9.2 a 0.9.4); `v0.11.1` (sdd 0.11.1, authoring 0.2.1; inclui 0.9.5 a 0.11.1, remove `sdd:tecleader`).
 
 ## Comandos (verificados em 2026-10-09, Claude Code 2.1.288)
 
@@ -36,6 +36,7 @@ Ativas em `.specs/<feature>/` (`spec.md`, `tasks.md`); concluídas em `.specs/do
 - Antes de cada bump de versão (obrigatório): `claude plugin validate ./plugins/sdd --strict`,
   `claude plugin validate ./plugins/authoring --strict` e `claude plugin validate .` (marketplace); depois bump de
   `version`, CHANGELOG e versões no README e em `docs/` (ver "Versão × release")
+- CI: `.github/workflows/ci.yml` roda `validate --strict` e `run-all.sh --no-page` em cada PR (Linux); conferir a aba Actions.
 - Testar a salinha dos agentes (hooks + página): `bash plugins/sdd/hooks/tests/run-all.sh` (~4 min no Windows;
   `--no-page` pula a página)
 - Testar um agente sem instalar: `claude -p "<prompt>" --plugin-dir ./plugins/sdd --agent sdd:<agente> --allowedTools "..."`

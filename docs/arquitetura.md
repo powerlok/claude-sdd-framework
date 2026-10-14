@@ -71,7 +71,7 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.10.1 | padrão | 7 agentes (mais o obsoleto `tecleader`), 13 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
+| `sdd` | 0.11.1 | padrão | 7 agentes, 15 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
 | `authoring` | 0.2.1 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
@@ -256,6 +256,7 @@ com arquivos, testes, comandos, evidências, riscos e a stack/referência lida; 
 | `backend-engineering` | princípios backend agnósticos + `references/dotnet.md`, `references/python.md` | backend |
 | `frontend-engineering` | princípios frontend agnósticos + `references/react.md`, `references/web-interface.md` | frontend |
 | `mobile-engineering` | princípios mobile agnósticos + `references/react-native-expo.md` | mobile |
+| `project-setup`, `vcs-delivery` | playbooks do TechLead carregados sob demanda (`user-invocable: false`): onboarding, migração e trabalho entre projetos; repositório, Git e publicação. Mantêm o agente principal em ~20 KB (antes ~44 KB) | techlead |
 | `git-lang` | comando `/sdd:git-lang pt\|en` (só edita a linha `Idioma:` da seção `## Git`; `disable-model-invocation`) | usuário |
 | `bug-diagnosis` | diagnóstico em 5 fases (o `tests` usa a fase de reprodução) | backend, frontend, mobile, tests |
 | `domain-modeling` | glossário, modelo de domínio, critério e modelo de ADR | backend, infra-architect |
@@ -382,7 +383,7 @@ Requisito sem teste é reportado pelo `sdd:tests` como lacuna de cobertura e imp
 | Regras não relaxáveis | `sdd-rules` e `templates/CLAUDE.md` | regras do projeto não podem relaxar segredos/credenciais, verificação SSL, confirmação de ações irreversíveis, Jira somente leitura e menor privilégio |
 | `security` não altera o projeto | `tools:` sem Edit/Write | tem Bash para verificações; a proibição de alterar vale pelo prompt |
 | `infra-architect` não executa | `tools:` sem Bash | limitado de fato |
-| Git local com confirmação | `techlead.md`, `sdd-rules/references/git-workflow.md` | o TechLead só cria branch e commit local após confirmação explícita (branch, mensagem e arquivos listados) e com a seção `## Git` no `CLAUDE.md`; nunca `rebase`, `--force`, `--no-verify`; `push` da branch de trabalho, PR e release só no modo publicação (o merge é sempre do usuário) (escolha do usuário em `settings.local.json`, `/sdd:publish`, confirmação a cada comando); slug sanitizado e dado externo não vira mensagem |
+| Git local com confirmação | `skills/vcs-delivery`, `sdd-rules/references/git-workflow.md` | o TechLead só cria branch e commit local após confirmação explícita (branch, mensagem e arquivos listados) e com a seção `## Git` no `CLAUDE.md`; nunca `rebase`, `--force`, `--no-verify`; `push` da branch de trabalho, PR e release só no modo publicação (o merge é sempre do usuário) (escolha do usuário em `settings.local.json`, `/sdd:publish`, confirmação a cada comando); slug sanitizado e dado externo não vira mensagem |
 | Git e escrita externa com confirmação | `permissions.ask` em `templates/project-settings.git.json` (desde a 0.10.0; antes `deny`) | `git reset --hard`, `git clean -f*`, `git commit --no-verify`/`-n`, `git branch -D`, `git config*`, force push etc. e `gh|glab|az` de escrita, comandos de nuvem (`az`, `azd`, `aws`, `gcloud`) pedem confirmação a cada comando; ficam em `deny` o merge de PR, token/credencial e execução de terceiros pelo `gh`, segredos, `Edit(.git/**)`, `Edit(~/.gitconfig)`; nada em `allow` |
 | Hook seguro | `hooks.json` | apenas `echo` |
 | Credenciais do GitHub | README | nunca usuário/senha/token na URL; SSH ou gerenciador de credenciais do git |

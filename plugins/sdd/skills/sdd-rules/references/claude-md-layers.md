@@ -1,6 +1,6 @@
 # Camadas do CLAUDE.md e versionamento dos artefatos SDD
 
-Parte da skill [sdd-rules](../SKILL.md). Aplicação (migração e configuração): agente `sdd:techlead`,
+Parte da skill [sdd-rules](../SKILL.md). Aplicação (migração e configuração): skill `sdd:project-setup`,
 seção "Migração para a raiz do projeto".
 
 ## Camadas
@@ -80,7 +80,7 @@ Opção no `CLAUDE.md` do projeto, seção `## SDD`: `Versionar artefatos SDD: s
 
 ## Trabalho entre projetos
 
-Aplicação: agente `sdd:techlead`, seção "Trabalho entre projetos". Comportamento do Claude Code (documentação oficial):
+Aplicação: skill `sdd:project-setup`, seção "Trabalho entre projetos". Comportamento do Claude Code (documentação oficial):
 
 | Modo | Acesso ao outro projeto | `CLAUDE.md` carregado | Deny que vale |
 |---|---|---|---|

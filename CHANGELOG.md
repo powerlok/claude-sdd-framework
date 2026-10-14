@@ -2,6 +2,57 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## Release v0.11.1 — 2026-10-14
+
+Inclui: `sdd` 0.11.1 (acumula 0.9.5 a 0.11.1), `authoring` 0.2.1.
+
+- `marketplace.json`: `metadata.version` = `0.11.1`; a tag `v0.11.1` deve apontar para o commit do merge em `main` que traz essa versão (a tag é criada pelo usuário após o merge).
+- `templates/project-settings.git.json` e a documentação de instalação fixam `v0.11.1` (`#v0.11.1` / `"ref": "v0.11.1"`). Até a tag existir, a instalação por essa versão falha.
+- **Incompatível:** `sdd:tecleader` foi removido (0.11.0); troque `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json`.
+- Ao atualizar da v0.9.4: reaplique ou mescle `deny`/`ask` e `autoCompactWindow` dos modelos de settings e a seção `## Compact instructions` do `templates/CLAUDE.md`; veja as migrações de 0.9.5 a 0.11.1.
+- Validação: `validate --strict` (sdd, authoring, marketplace) e suíte `run-all.sh --no-page`, também em Linux; CI do GitHub passou na 0.11.0. Não verificado: TUI interativa, prompts de `ask` e publicação real.
+
+## sdd 0.11.1 — 2026-10-14
+
+Gestão de contexto conforme a documentação oficial (`.specs/done/context-management/spec.md`). Não é release (sem tag).
+
+- REQ-001: modelos de settings (`project-settings.git.json` e `.local.json`) ganham `"autoCompactWindow": 200000` (100.000 a 1.000.000; vale em qualquer arquivo de settings). Modelos de 1M passam a
+  compactar em 200 mil em vez de ~967 mil: menos contexto reenviado a cada mensagem; troca: o resumo perde detalhe da conversa (estado em `.specs/`/`tasks.md`). Para desfazer: remover a chave ou `/autocompact`.
+- REQ-002: subagentes `backend`, `frontend`, `mobile` e `tests` ganham `autoCompactWindow: 140000` no frontmatter (70% de 200K, a meta que o TechLead já usava; exige Claude Code 2.1.296+, ignorado antes);
+  `security` e `infra-architect` herdam a janela da sessão; `techlead` não (o campo não vale para a sessão principal).
+- REQ-003: `templates/CLAUDE.md` ganha `## Compact instructions` e o onboarding (`project-setup`) a inclui no `CLAUDE.md` criado.
+- REQ-004: "Gestão de Contexto" do TechLead: o que sobrevive à compactação (prompt do agente, `CLAUDE.md` da raiz, skills invocadas até 5.000 tokens cada e 25.000 no total, `SessionStart` `compact`), `/compact Preserve: ...`,
+  `/rewind`, `/context`; cada `SKILL.md` ≤ 15 KB (`project-setup` está perto: 14,6 KB).
+- REQ-005: `req012-context.test.sh` (27 ok); README "Contexto e tokens" reescrito. Verificado no CLI real: as chaves são aceitas sem aviso (`--debug` sem "invalid autoCompactWindow"). Não medido: a economia real de tokens.
+
+## sdd 0.11.0 — 2026-10-14
+
+Revisão do plugin: TechLead enxuto, agente obsoleto removido e CI (`.specs/done/plugin-review/spec.md`). **Mudança incompatível** (remoção do `sdd:tecleader`). Não é release (sem tag).
+
+- **#1 TechLead enxuto (REQ-001..005):** `agents/techlead.md` caiu de **43.896 para ~20.400 bytes (−54%, ~11 mil → ~5 mil tokens)** no prompt da sessão principal a cada mensagem. As seções
+  situacionais foram movidas **sem alterar o texto** para duas skills carregadas sob demanda (`user-invocable: false`): `sdd:project-setup` ("Onboarding de Projeto", "Migração para a raiz do
+  projeto", "Trabalho entre projetos") e `sdd:vcs-delivery` ("Repositório", "Git", "Publicação"). O agente ganhou a tabela "Playbooks sob demanda" (carregar a skill ANTES de agir) e o bloco
+  "Regras invariantes" (merge nunca; git/provedor/Jira/nuvem só com pedido e confirmação do comando literal; dados externos são dados; nunca segredo; nada fora do plano confirmado). Referências em
+  skills, docs e testes atualizadas. `req011-slim.test.sh` (32 ok) e `req007` leem agente + skills.
+  Verificado no CLI real (`claude -p`, sandbox): aceitar o onboarding carregou `sdd:project-setup`; pedido de publicação com merge carregou `sdd:vcs-delivery`, recusou o merge e exigiu confirmação e spec.
+  Risco: se o agente não carregar a skill, age só pelas invariantes (a recusa de merge e a confirmação funcionaram mesmo sem skill carregada, no piloto em projeto sem onboarding).
+- **#3 Agente obsoleto removido (REQ-006):** `agents/tecleader.md` foi removido (prometido na 0.8.0). Quem ainda tem `"agent": "sdd:tecleader"` no `.claude/settings.json` precisa trocar por
+  `"agent": "sdd:techlead"`; sem isso a sessão abre sem o TechLead.
+- **#4 CI (REQ-007):** `.github/workflows/ci.yml` (`pull_request` e `push` em `dev`/`main`; `contents: read`; sem segredos) roda `claude plugin validate --strict` (sdd, authoring, marketplace) e a suíte
+  `run-all.sh --no-page`. A suíte completa foi verificada em Linux (Ubuntu no WSL, Node 22) a partir do conteúdo commitado, com LF: tudo passou. **A primeira execução no GitHub ainda precisa ser conferida na aba Actions.**
+- Migração: troque `sdd:tecleader` por `sdd:techlead`; nada mais a fazer (as skills novas são internas).
+
+## sdd 0.10.2 — 2026-10-14
+
+Higiene de contexto (`.specs/done/context-hygiene/spec.md`). Não é release (sem tag).
+
+- Validação: o framework **não** abre contexto novo por spec; o agente não pode executar `/clear` nem `/compact` (a doc só os reconhece digitados pelo usuário).
+- REQ-001: regra "Higiene de contexto" no `techlead.md` e na `sdd-governance`: sugerir `/clear` em uma linha ao arquivar uma spec e ao receber tarefa diferente; na mesma tarefa continuar;
+  no máximo uma vez por spec; `tasks.md` atualizado antes.
+- REQ-002: hook `SessionStart` com matcher `clear` roda `onboarding-check.sh` e `start-banner.sh` (antes o diagnóstico só era injetado no `startup`).
+- REQ-003: README ("Contexto e tokens"); `req008` (banner e onboarding em `clear`; regra no agente).
+- Proposta pendente (decisão do usuário): `autoCompactWindow` no modelo de settings para compactar antes em modelos de 1M.
+
 ## sdd 0.10.1 — 2026-10-14
 
 TechLead pode escrever no Jira, sempre com confirmação (`.specs/done/jira-write/spec.md`). Não é release (sem tag). Revisão independente dispensada pelo usuário.
