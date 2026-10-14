@@ -37,12 +37,12 @@ check "req003 Stop: e=end" grep -q '"e":"end"' "$f"
 eq "req003 4 eventos = 4 linhas" "4" "$(nlines "$f")"
 
 # 3) categorias de ferramenta (nunca o nome bruto).
-declare -A CAT=( [Read]=read [Grep]=read [Glob]=read [Edit]=edit [Write]=edit [MultiEdit]=edit [Bash]=run [WebFetch]=web
-  [WebSearch]=web [Agent]=delegate [Task]=delegate [TodoWrite]=plan [AskUserQuestion]=ask [mcp__github__get_me]=mcp [Skill]=other [Xyz]=other )
-for tool in "${!CAT[@]}"; do
+CAT_PAIRS="Read=read Grep=read Glob=read Edit=edit Write=edit MultiEdit=edit Bash=run WebFetch=web WebSearch=web Agent=delegate Task=delegate TodoWrite=plan AskUserQuestion=ask mcp__github__get_me=mcp Skill=other Xyz=other"  # sem array associativo (bash 3.2 do macOS)
+for pair in $CAT_PAIRS; do
+  tool="${pair%%=*}"; cat_k="${pair#*=}"
   : > "$f"
   fire '{"hook_event_name":"PreToolUse","agent_type":"sdd:tests","tool_name":"'"$tool"'","tool_input":{}}'
-  check "req003 ferramenta $tool => k=${CAT[$tool]}" grep -q "\"e\":\"tool\",\"a\":\"tests\",\"d\":\"\",\"k\":\"${CAT[$tool]}\"" "$f"
+  check "req003 ferramenta $tool => k=$cat_k" grep -q "\"e\":\"tool\",\"a\":\"tests\",\"d\":\"\",\"k\":\"$cat_k\"" "$f"
     check "req003 ferramenta $tool: nome bruto não gravado" bash -c '! grep -q "\"$1\"" "$2"' _ "$tool" "$f"
 done
 

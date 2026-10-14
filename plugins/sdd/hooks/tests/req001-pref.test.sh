@@ -42,7 +42,7 @@ case "$out" in *fake*|*projeto*) bad "req001 status vaza caminho" ;; *) ok "req0
 
 # Pasta de configuração de uso: o repositório não é tocado.
 check "req001 nada criado no PWD" test -z "$(ls "$SB" | grep -v -e '^cfg$' -e '^tmp$')"
-check "req001 pasta sdd modo restrito" test "$(stat -c %a "$CLAUDE_CONFIG_DIR/sdd" 2>/dev/null || echo 700)" != "777"
+check "req001 pasta sdd modo restrito" test "$(stat -c %a "$CLAUDE_CONFIG_DIR/sdd" 2>/dev/null || stat -f %Lp "$CLAUDE_CONFIG_DIR/sdd" 2>/dev/null || echo 700)" != "777"
 
 # Skill: frontmatter mínimo.
 S="$HOOKS_DIR/../skills/office/SKILL.md"

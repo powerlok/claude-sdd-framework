@@ -16,8 +16,16 @@ concurrency:
 
 jobs:
   validate-and-test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Os hooks são bash: a matriz prova que rodam em Linux, macOS (bash 3.2, BSD) e Windows (Git Bash).
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
