@@ -36,3 +36,4 @@ com `Relacionada a: done/<feature>`).
 | [mobile-git-workflow](done/mobile-git-workflow/spec.md) | 2026-10-11 | pedido do usuário | Agente `sdd:mobile` (React Native/Expo) e fluxo Git trunk-based com Conventional Commits (`sdd` 0.9.0; validação parcial aceita) |
 | [publish-opt-in](done/publish-opt-in/spec.md) | 2026-10-13 | pedido do usuário | Publicação (push da branch, PR, release) como escolha do usuário no `settings.local.json` (`sdd` 0.9.2; validação parcial aceita) |
 | [spec-pr-flow](done/spec-pr-flow/spec.md) | 2026-10-13 | pedido do usuário | Fim da spec abre o PR; o merge é sempre do usuário (`sdd` 0.9.4; validação parcial aceita) |
+| [start-banner](done/start-banner/spec.md) | 2026-10-14 | pedido do usuário | Aviso de início de sessão (`systemMessage` no `SessionStart`): o TechLead só responde depois da primeira mensagem (`sdd` 0.9.5) |

@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.9.4-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.9.5-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -125,9 +125,10 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
    claude plugin install sdd@claude-sdd-framework --scope project
    ```
 
-4. Abra `claude` na raiz do projeto e aceite o diálogo de confiança da pasta. A primeira resposta é do **TechLead**,
-   que verifica o onboarding e, se faltar `CLAUDE.md`, oferece criá-lo (lendo o código ou perguntando a stack) — nada é
-   alterado sem confirmação. Depois, faça o primeiro pedido:
+4. Abra `claude` na raiz do projeto e aceite o diálogo de confiança da pasta. O Claude Code **só responde depois da sua
+   primeira mensagem**: ao abrir, o sdd mostra um aviso, então escreva qualquer coisa (ex.: `oi`). A primeira resposta é do
+   **TechLead**, que verifica o onboarding e, se faltar `CLAUDE.md`, oferece criá-lo (lendo o código ou perguntando a stack):
+   nada é alterado sem confirmação. Depois, faça o primeiro pedido:
 
    ```text
    Crie um endpoint POST /todos que cadastra tarefas com título obrigatório
