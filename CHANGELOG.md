@@ -2,6 +2,17 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## Release v0.12.0 — 2026-10-14
+
+Inclui: `sdd` 0.12.0 (acumula 0.11.1 e 0.12.0; a `v0.11.1` não chegou a ser fixada nos docs de quem já instalou), `authoring` 0.2.1.
+
+- `marketplace.json`: `metadata.version` = `0.12.0`; a tag `v0.12.0` deve apontar para o commit do merge em `main` que traz essa versão (a tag é criada pelo usuário após o merge).
+- `templates/project-settings.git.json` e a documentação de instalação fixam `v0.12.0` (`#v0.12.0` / `"ref": "v0.12.0"`). Até a tag existir, a instalação por essa versão falha.
+- Novo: hook `merge-guard` (bloqueia merge de PR e push forçado em qualquer modo, inclusive `sh -c`); CI em Linux, macOS e Windows; correções de portabilidade (bash 3.2, YAML da skill `start`).
+- **Incompatível (desde a 0.11.0):** `sdd:tecleader` foi removido; troque `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json`.
+- Ao atualizar da v0.11.1 ou anterior: troque o `ref` da entrada `claude-sdd-framework` do `~/.claude/settings.json` para `v0.12.0`, rode `claude plugin marketplace add "...git#v0.12.0"` e `claude plugin update sdd@claude-sdd-framework --scope project`.
+- Validação: `validate --strict` (sdd, authoring, marketplace) e suíte `run-all.sh --no-page` nos 3 sistemas (CI). Não verificado: TUI interativa, prompts de `ask`, publicação real.
+
 ## sdd 0.12.0 — 2026-10-14
 
 Guarda de merge e push forçado como hook do plugin (`.specs/done/merge-guard/spec.md`). Não é release (sem tag).

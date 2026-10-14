@@ -113,7 +113,7 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
    entrada no `~/.claude/settings.json` e repita o `add`; não use `marketplace remove`):
 
    ```bash
-   claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.11.1"
+   claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.12.0"
    ```
 
 2. **Na raiz do projeto** (raiz do repositório git; em monorepo, a pasta do projeto; nunca uma pasta-mãe fora do git),
@@ -202,7 +202,7 @@ um hook `PreToolUse` que bloqueia, em **qualquer modo de permissão** e sem depe
 e o **push forçado/destrutivo** (`--force`, `-f`, `--delete`, `+ref`, `:ref`), inclusive dentro de `sh -c`, `$(...)` e depois de `&&`. Limites: variável, `eval` ou script externo escapam (não é sandbox, que não
 existe no Windows nativo), e um comando que só cita o texto (mensagem de commit com `gh pr merge`) pode ser barrado: reescreva sem o comando literal. O `deny` do template segue como segunda camada.
 
-**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.11.1"`). Quem decide a versão na máquina é a entrada
+**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.12.0"`). Quem decide a versão na máquina é a entrada
 `claude-sdd-framework` do `~/.claude/settings.json`; para subir de versão, troque o `ref` dela, rode
 `claude plugin marketplace add "...git#vNOVA"` e `claude plugin update sdd@claude-sdd-framework --scope project`
 ([passo a passo](docs/primeiros-passos.md#atualizar-a-versão)). Sem `ref`, vale a branch padrão do repositório
