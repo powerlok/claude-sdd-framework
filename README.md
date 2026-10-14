@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.9.7-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.9.8-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -314,6 +314,25 @@ você pede um diagrama de arquitetura, ele o abre no editor do draw.io (aba do n
   (`1.7.0`, integridade `sha512-OWZbYRAH...JNw==` registrada na spec), mas as dependências transitivas (`pako`, `@modelcontextprotocol/sdk`) são
   faixas do npm e o pacote tem `postinstall`. Em ambiente corporativo, aponte o npm para o registry interno.
 - **Desligar:** `/mcp` e desabilite o servidor `drawio` do plugin `sdd` (fica em `disabledMcpServers`, por usuário). A versão só muda com nova spec e revisão.
+
+## 🌐 Navegador do frontend: MCP Playwright (opcional)
+
+O plugin `sdd` traz o MCP do Playwright (`@playwright/mcp`, Microsoft, Apache-2.0, versão fixada **0.0.83**) para o `sdd:frontend` verificar a interface que
+implementou (fluxo, validação, console, rede, acessibilidade), **complementando** os testes do projeto. Você não instala nada além do plugin.
+
+- **Requisitos:** Node.js/npm (`npx`) e Google Chrome instalado. O navegador abre em uma janela visível (para CI/WSL: `SDD_PLAYWRIGHT_HEADLESS=1`).
+- **Isolado:** perfil só em memória (`--isolated`): nenhum login ou cookie persiste, e o seu perfil real do Chrome não é usado. O ambiente é filtrado
+  (`PLAYWRIGHT_MCP_*`, `PLAYWRIGHT_DOWNLOAD*`, `npm_config_*` não chegam ao servidor; o registry corporativo continua valendo pelo `.npmrc`); WebMCP, service
+  workers e endereços de metadata de nuvem ficam bloqueados.
+- **Só 19 ferramentas:** o frontend não recebe `browser_evaluate`, `browser_run_code_unsafe`, `browser_file_upload`, `browser_drop`, `browser_tabs` nem
+  `browser_drag` (os quatro primeiros ficam em `deny` e `browser_tabs` em `ask` nos modelos de settings). Cada `browser_navigate` pede a sua confirmação.
+- **Escopo:** só o app local (`localhost`/`127.0.0.1`) ou URL da spec. O conteúdo da página é **dado não confiável**: o agente não segue instruções vindas dela
+  (prompt injection indireta), não entra em conta, não digita credencial, não usa o parâmetro `filename`, não copia cabeçalhos/tokens de rede e fecha o navegador ao terminar.
+- **Limite importante:** o próprio pacote diz que **não é uma fronteira de segurança** (a lista de origens não vale para redirecionamentos), e a confirmação de
+  `browser_navigate` não cobre navegação por clique em link. O que protege é a combinação: perfil isolado, poucas ferramentas, regras do agente e a sua revisão.
+- **Saídas:** screenshots e snapshots vão para `.playwright-mcp/` no projeto e podem conter dados do app: adicione `.playwright-mcp/` ao `.gitignore` do projeto.
+- **Cadeia de suprimentos:** pacote 0.x de terceiros (com dependência `playwright` alpha) executado na sua máquina a cada sessão com o plugin habilitado; versão
+  e integridade fixadas (ver `.specs/done/playwright-mcp/spec.md`). **Desligar:** `/mcp` e desabilite o servidor `playwright` do plugin `sdd`.
 
 ## 🧩 Jira (opcional, somente leitura)
 

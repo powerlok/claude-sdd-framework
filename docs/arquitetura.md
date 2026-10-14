@@ -71,7 +71,7 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.9.7 | padrão | 7 agentes (mais o obsoleto `tecleader`), 13 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
+| `sdd` | 0.9.8 | padrão | 7 agentes (mais o obsoleto `tecleader`), 13 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
 | `authoring` | 0.2.1 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
@@ -337,6 +337,14 @@ e, se o uso estiver alto, `/compact`.
 `get_drawio_reference` e `search_shapes`; `list_pages|get_page|set_page` (arquivo local por caminho) ficam em `deny` nos modelos de settings e os
 `open_*` em `ask`. Riscos e decisões: `.specs/done/drawio-mcp/security-review.md` (cadeia de suprimentos, sobe em toda sessão, diagrama no `#fragment`
 de `app.diagrams.net`).
+
+### MCP Playwright (navegador do frontend)
+
+`plugins/sdd/.mcp.json` também declara o servidor `playwright`, iniciado por `plugins/sdd/mcp/playwright.js` (lançador Node que executa
+`npx -y @playwright/mcp@0.0.83 --isolated --no-webmcp --block-service-workers --blocked-origins <metadata de nuvem>` com ambiente filtrado). As ferramentas são
+`mcp__plugin_sdd_playwright__browser_*`; só o `sdd:frontend` recebe 19 delas. `browser_evaluate`, `browser_run_code_unsafe`, `browser_file_upload` e
+`browser_drop` ficam em `deny` nos modelos de settings; `browser_navigate` e `browser_tabs` em `ask`. Decisões e riscos (o pacote não é fronteira de segurança,
+prompt injection por conteúdo de página, `filename`, rede/tokens): `.specs/done/playwright-mcp/security-review.md`.
 
 ### Salinha dos agentes (opcional)
 

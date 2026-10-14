@@ -368,6 +368,13 @@ Uma página local, aberta no navegador, mostra uma sala em pixel art com uma mes
 
 Detalhes e limites: [README](../README.md#-salinha-dos-agentes-opcional).
 
+## Navegador do frontend (opcional)
+
+O plugin traz o MCP do Playwright para o `sdd:frontend` conferir a interface no navegador. Precisa de **Node.js/npm** e **Google Chrome**. Suba o app local e peça ao
+TechLead para verificar a tela: o frontend abre `http://localhost:...` numa janela do Chrome (perfil isolado, sem logins) e pede a sua confirmação a cada
+`browser_navigate`. Adicione `.playwright-mcp/` ao `.gitignore` do projeto. Riscos, limites e como desligar (`/mcp`):
+[README](../README.md#-navegador-do-frontend-mcp-playwright-opcional).
+
 ## Diagramas do arquiteto (opcional)
 
 O plugin traz o MCP oficial do draw.io para o `sdd:infra-architect`. Para usá-lo, é preciso **Node.js/npm** (`npx --version`). Peça ao

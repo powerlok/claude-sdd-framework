@@ -39,3 +39,4 @@ com `Relacionada a: done/<feature>`).
 | [start-banner](done/start-banner/spec.md) | 2026-10-14 | pedido do usuário | Aviso de início de sessão (`systemMessage` no `SessionStart`): o TechLead só responde depois da primeira mensagem (`sdd` 0.9.5) |
 | [start-command](done/start-command/spec.md) | 2026-10-14 | pedido do usuário | Comando `/sdd:start` para o usuário iniciar o fluxo e as perguntas iniciais com o TechLead (`sdd` 0.9.6) |
 | [drawio-mcp](done/drawio-mcp/spec.md) | 2026-10-14 | pedido do usuário | MCP draw.io empacotado no plugin `sdd` (versão fixada, lançador Node) para o `sdd:infra-architect` (`sdd` 0.9.7) |
+| [playwright-mcp](done/playwright-mcp/spec.md) | 2026-10-14 | pedido do usuário | MCP Playwright empacotado no plugin `sdd` (versão fixada, perfil isolado, 19 ferramentas) para o `sdd:frontend` acessar o navegador (`sdd` 0.9.8) |

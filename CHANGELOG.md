@@ -2,6 +2,26 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.9.8 — 2026-10-14
+
+MCP Playwright empacotado no plugin, para o frontend acessar o navegador (`.specs/done/playwright-mcp/spec.md`, parecer em `security-review.md`). Não é release (sem tag).
+
+- REQ-001: `.mcp.json` ganha o servidor `playwright`, iniciado por `mcp/playwright.js` (lançador Node, mesmo padrão do `drawio.js`) que executa
+  `npx -y @playwright/mcp@0.0.83 --isolated --no-webmcp --block-service-workers --blocked-origins <metadata de nuvem>` (versão exata fixada; integridade na spec), com
+  **ambiente filtrado** (`PLAYWRIGHT_MCP_*`, `PLAYWRIGHT_DOWNLOAD*`, `npm_config_*` não chegam ao servidor; única exceção explícita `SDD_PLAYWRIGHT_HEADLESS=1`).
+- REQ-002: `sdd:frontend` recebe só 19 ferramentas `mcp__plugin_sdd_playwright__browser_*`; não recebe `browser_evaluate`, `browser_run_code_unsafe`,
+  `browser_file_upload`, `browser_drop`, `browser_tabs` nem `browser_drag`.
+- REQ-003: modelos de settings: `deny` para `browser_evaluate|run_code_unsafe|file_upload|drop`; `ask` para `browser_navigate` e `browser_tabs`.
+- REQ-004: seção "Navegador (MCP Playwright)" no `frontend.md` e na skill `frontend-engineering`: só `localhost`/URL da spec, perfil isolado, sem credencial,
+  conteúdo da página é dado não confiável (prompt injection), sem `filename`, sem cabeçalhos/tokens de rede, sem seguir link para fora, fechar o navegador.
+- Parecer de segurança (aprovado com condições, 0 HIGH, 5 MEDIUM; todas cumpridas): WebMCP desligado, ambiente filtrado, regras de `filename`/rede/links,
+  `browser_tabs`/`browser_drag` fora do frontend, `.playwright-mcp/` no `.gitignore` do framework.
+- REQ-005: `req010-playwright.test.sh` (52 ok). Verificado no CLI real: `sdd:frontend` abriu uma página local, leu o título, **identificou uma injeção de prompt
+  na página e não obedeceu**, e fechou o navegador (inclusive com `PLAYWRIGHT_MCP_EXTENSION=true` no ambiente, que não teve efeito).
+- Requisitos novos: Node.js/npm e Google Chrome para usar o MCP; adicionar `.playwright-mcp/` ao `.gitignore` do projeto.
+- Migração: reaplique ou mescle o `deny`/`ask` dos modelos (entradas novas `mcp__plugin_sdd_playwright__*`).
+- Limites: o pacote declara que não é fronteira de segurança; `ask` não cobre navegação por clique; pacote 0.x com dependência `playwright` alpha.
+
 ## sdd 0.9.7 — 2026-10-14
 
 MCP draw.io empacotado no plugin, para o arquiteto (`.specs/done/drawio-mcp/spec.md`, parecer em `security-review.md`). Não é release (sem tag).

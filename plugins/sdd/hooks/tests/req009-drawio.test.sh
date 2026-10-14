@@ -7,10 +7,10 @@ MCP="$PLUGIN/.mcp.json"; LAUNCH="$PLUGIN/mcp/drawio.js"; ARCH="$PLUGIN/agents/in
 # 1) .mcp.json: JSON válido, só o servidor drawio, iniciado pelo lançador em Node.
 res="$(node -e '
 const m=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));
-const k=Object.keys(m.mcpServers||{});
+const k=Object.keys(m.mcpServers||{}).filter(x=>x==="drawio");
 const d=(m.mcpServers||{}).drawio||{};
 console.log(JSON.stringify([Object.keys(m), k, d.command, d.args, d.env||null, d.url||null]));' "$MCP" 2>&1)"
-eq "req009 .mcp.json: só mcpServers.drawio, command node, lançador do plugin, sem env/url" \
+eq "req009 .mcp.json: servidor drawio com command node, lançador do plugin, sem env/url" \
   '[["mcpServers"],["drawio"],"node",["${CLAUDE_PLUGIN_ROOT}/mcp/drawio.js"],null,null]' "$res"
 
 # 2) lançador: sintaxe válida, versão EXATA fixada (sem latest/faixa), npx -y, stdio herdado, sem rede própria.
