@@ -11,7 +11,7 @@ for n in cmd.exe open xdg-open; do
 { printf '%s|' "NAME"; for a in "$@"; do printf '[%s]' "$a"; done; printf '\n'; } >> "LOGFILE"
 exit ${STUB_RC:-0}
 STUB
-  sed -i "s|NAME|$n|; s|LOGFILE|$LOG|" "$STUBS/$n"
+  sed "s|NAME|$n|; s|LOGFILE|$LOG|" "$STUBS/$n" > "$STUBS/$n.tmp" && mv "$STUBS/$n.tmp" "$STUBS/$n"  # sed -i difere no macOS (BSD)
   chmod +x "$STUBS/$n"
 done
 export PATH="$STUBS:$PATH"

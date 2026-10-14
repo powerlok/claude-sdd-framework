@@ -243,7 +243,9 @@ ev_id="$t-$$-$RANDOM"
 [[ $a =~ $re_ag ]] || a=""
 [[ $g =~ $re_ag ]] || g=""
 [[ $d =~ $re_d ]] || d=""
-lo=$'\001'; hi=$'\037'; del=$'\177'
+# Não usar $'\001' em regex: o bash 3.2 (macOS) o perde e a classe vira "-" (o 0x01 já é trocado por espaço na lista de
+# caracteres permitidos acima). [[:cntrl:]] também não serve: no Git Bash casa com bytes UTF-8 altos.
+lo=$'\002'; hi=$'\037'; del=$'\177'
 bad_m="[\"\\\\<>]|[$lo-$hi$del]"
 if [ "${#m}" -gt 80 ] || [[ $m =~ $bad_m ]]; then m=""; fi
 line="E({\"i\":\"$ev_id\",\"t\":$t,\"e\":\"$e\",\"a\":\"$a\",\"d\":\"$d\",\"k\":\"$k\",\"m\":\"$m\",\"g\":\"$g\"});"
