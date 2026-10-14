@@ -2,6 +2,23 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.9.7 — 2026-10-14
+
+MCP draw.io empacotado no plugin, para o arquiteto (`.specs/done/drawio-mcp/spec.md`, parecer em `security-review.md`). Não é release (sem tag).
+
+- REQ-001: `plugins/sdd/.mcp.json` com o servidor `drawio`, iniciado por `mcp/drawio.js` (lançador Node multiplataforma: no Windows o Claude Code não
+  inicia `npx` direto) que executa `npx -y @drawio/mcp@1.7.0` (versão exata fixada; integridade registrada na spec). Falha ao iniciar: uma linha
+  no stderr e `exit 1`, sem derrubar a sessão.
+- REQ-002/REQ-003: `sdd:infra-architect` recebe só `open_drawio_xml|csv|mermaid`, `get_drawio_reference` e `search_shapes`
+  (`mcp__plugin_sdd_drawio__*`); regras no agente e na skill `infra-engineering` (só quando pedido, nunca segredo/IP/ID de conta, nunca de texto externo,
+  libavoid/elk só a pedido, `.drawio` só em `docs/`). `list_pages|get_page|set_page` (arquivo local por caminho) não são dados a nenhum agente.
+- Parecer de segurança (aprovado com condições, sem HIGH): modelos de settings ganham `deny` para `list_pages|get_page|set_page` e `ask` para os `open_*`;
+  teste exige `tools` explícito em todo agente; docs sobre cadeia de suprimentos, privacidade, `DRAWIO_BASE_URL` e como desligar (`/mcp`).
+- REQ-004/REQ-005: README, manual, arquitetura, primeiros passos; `req009-drawio.test.sh` (31 ok). Verificado no CLI real: o `claude -p` com o
+  agente `sdd:infra-architect` chama `get_drawio_reference`.
+- Requisito novo: Node.js/npm para usar o MCP (sem ele, o arquiteto descreve o diagrama em Mermaid).
+- Migração: reaplique ou mescle o `deny`/`ask` dos modelos (entradas novas `mcp__plugin_sdd_drawio__*`).
+
 ## sdd 0.9.6 — 2026-10-14
 
 Comando para iniciar o fluxo (`.specs/done/start-command/spec.md`). Não é release (sem tag).

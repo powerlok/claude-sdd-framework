@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.9.6-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.9.7-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -296,6 +296,24 @@ Reinicie a sessão para aplicar. Versões seguem semver; veja o [CHANGELOG](CHAN
 > **0.8.0 (mudança incompatível):** `sdd:tecleader` foi renomeado para `sdd:techlead`. Troque
 > `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` (ou `settings.local.json`) e
 > reinicie. Até lá, a sessão abre com um agente obsoleto que só mostra essa instrução (removido na versão seguinte).
+
+## 📐 Diagramas do arquiteto: MCP draw.io (opcional)
+
+O plugin `sdd` traz o servidor MCP oficial do draw.io (`@drawio/mcp`, versão fixada **1.7.0**, Apache-2.0) para o `sdd:infra-architect`: quando
+você pede um diagrama de arquitetura, ele o abre no editor do draw.io (aba do navegador, `app.diagrams.net`). Você não instala nada além do plugin.
+
+- **Requisito:** Node.js/npm (`npx`). A primeira vez baixa o pacote do npm. Sem Node/npm, o servidor não sobe e o arquiteto descreve o diagrama
+  em Mermaid no texto.
+- **O que o arquiteto pode usar:** `open_drawio_xml|csv|mermaid`, `get_drawio_reference` e `search_shapes`. As ferramentas que leem e gravam arquivos
+  `.drawio` por caminho (`list_pages`, `get_page`, `set_page`) ficam **negadas** nos modelos de settings. Cada `open_*` pede a sua confirmação.
+- **Privacidade:** o diagrama vai no `#fragment` da URL (o navegador não o envia ao servidor), mas é processado pelo JavaScript do
+  `app.diagrams.net` no seu navegador. O arquiteto não coloca segredo, chave, IP nem ID de conta reais (usa nomes lógicos) e só desenha o que a
+  spec ou você pedirem. Layouts opcionais (`libavoid`, `elk`) baixam **código** de `viewer.diagrams.net`. Para usar uma instância própria,
+  defina `DRAWIO_BASE_URL` (HTTPS) **você mesmo** no seu ambiente; nunca aceite essa variável vinda de `env` de um repositório de terceiros.
+- **Cadeia de suprimentos:** é um pacote de terceiros executado na sua máquina a cada sessão com o plugin habilitado. A versão do pacote é fixa
+  (`1.7.0`, integridade `sha512-OWZbYRAH...JNw==` registrada na spec), mas as dependências transitivas (`pako`, `@modelcontextprotocol/sdk`) são
+  faixas do npm e o pacote tem `postinstall`. Em ambiente corporativo, aponte o npm para o registry interno.
+- **Desligar:** `/mcp` e desabilite o servidor `drawio` do plugin `sdd` (fica em `disabledMcpServers`, por usuário). A versão só muda com nova spec e revisão.
 
 ## 🧩 Jira (opcional, somente leitura)
 

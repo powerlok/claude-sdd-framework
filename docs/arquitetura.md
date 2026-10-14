@@ -71,7 +71,7 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.9.6 | padrão | 7 agentes (mais o obsoleto `tecleader`), 13 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
+| `sdd` | 0.9.7 | padrão | 7 agentes (mais o obsoleto `tecleader`), 13 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
 | `authoring` | 0.2.1 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
@@ -328,6 +328,15 @@ flowchart LR
 
 Agentes não conseguem executar `/compact` nem medir o próprio contexto; o TechLead pede ao usuário `/context`
 e, se o uso estiver alto, `/compact`.
+
+### MCP draw.io (diagramas do arquiteto)
+
+`plugins/sdd/.mcp.json` declara o servidor `drawio`, iniciado por `plugins/sdd/mcp/drawio.js` (lançador Node multiplataforma que executa
+`npx -y @drawio/mcp@1.7.0`; no Windows o Claude Code não inicia `npx` direto). O servidor aparece como `plugin:sdd:drawio` e as ferramentas como
+`mcp__plugin_sdd_drawio__*`. Só o `sdd:infra-architect` as recebe (`tools` explícito em todos os agentes), e apenas `open_drawio_xml|csv|mermaid`,
+`get_drawio_reference` e `search_shapes`; `list_pages|get_page|set_page` (arquivo local por caminho) ficam em `deny` nos modelos de settings e os
+`open_*` em `ask`. Riscos e decisões: `.specs/done/drawio-mcp/security-review.md` (cadeia de suprimentos, sobe em toda sessão, diagrama no `#fragment`
+de `app.diagrams.net`).
 
 ### Salinha dos agentes (opcional)
 

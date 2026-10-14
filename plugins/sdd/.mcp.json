@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "drawio": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/drawio.js"]
+    }
+  }
+}

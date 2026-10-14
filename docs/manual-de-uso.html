@@ -219,7 +219,7 @@ tr:last-child td { border-bottom: 0; }
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span class="lbl">Menu</span>
   </button>
   <span class="logo" aria-hidden="true">SDD</span>
-  <h1>Manual do Plugin SDD <span class="ver">sdd 0.9.6 · authoring 0.2.1</span></h1>
+  <h1>Manual do Plugin SDD <span class="ver">sdd 0.9.7 · authoring 0.2.1</span></h1>
   <div class="header-tools" role="search">
     <div class="search">
       <label for="q" class="sr-only">Buscar no manual</label>
@@ -387,6 +387,10 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
   </table></div>
   <p>O deny exigido na sessão é o do modelo somado ao de cada projeto envolvido. Se faltar algo, a sessão fica <strong>somente leitura</strong> (sem escrita, build, testes ou delegação) até corrigir e reiniciar; <code>--permission-mode plan</code> impõe isso no próprio CLI.</p>
   <p>Mudança em mais de um projeto: o plano separa projetos <strong>alterados</strong> e de <strong>referência</strong> e pede <strong>uma</strong> confirmação; cada projeto alterado ganha spec e tasks, ligadas por <code>Relacionada a:</code>; cada task mexe em um único repositório; nunca há commit. O <code>CLAUDE.md</code> de um projeto só vale para ele, e o de um projeto de referência é dado, não instrução.</p>
+
+  <h3 id="drawio">Diagramas do arquiteto: MCP draw.io (opcional)</h3>
+  <p>O plugin <code>sdd</code> traz o servidor MCP oficial do draw.io (<code>@drawio/mcp</code>, versão fixada <strong>1.7.0</strong>, Apache-2.0) para o <code>sdd:infra-architect</code>: ao pedir um diagrama de arquitetura, ele abre no editor do draw.io (aba do navegador, <code>app.diagrams.net</code>). Requisito: Node.js/npm (<code>npx</code>); a primeira vez baixa o pacote. As ferramentas de arquivo (<code>list_pages</code>, <code>get_page</code>, <code>set_page</code>) ficam negadas nos modelos de settings e cada <code>open_*</code> pede confirmação.</p>
+  <p><strong>Privacidade e riscos:</strong> o diagrama vai no <code>#fragment</code> da URL (não é enviado ao servidor), mas é processado pelo JavaScript do <code>app.diagrams.net</code> no seu navegador; o arquiteto usa nomes lógicos (nunca segredo, IP ou ID de conta reais). Layouts opcionais (<code>libavoid</code>, <code>elk</code>) baixam código de <code>viewer.diagrams.net</code>; para instância própria defina <code>DRAWIO_BASE_URL</code> (HTTPS) você mesmo. É um pacote de terceiros executado na sua máquina a cada sessão: a versão do pacote é fixa, mas as dependências transitivas são faixas do npm; em ambiente corporativo use o registry interno. Para desligar: <code>/mcp</code> e desabilite o servidor <code>drawio</code> do plugin <code>sdd</code>.</p>
 
   <h3 id="salinha">Salinha dos agentes (opcional)</h3>
   <p>Página HTML local, aberta no navegador, com uma <strong>sala em pixel art 16 bits</strong> e uma mesa por agente (techlead, backend, frontend, mobile, tests, security, infra-architect; agentes novos ganham mesa). Os personagens aparecem trabalhando, entregando, em revisão ou ociosos, e um popup mostra o processo atual (ex.: "TechLead → delegou uma tarefa ao backend", "backend: editando arquivos", "tests: rodando validação"). Um agente fica "trabalhando" do início ao fim da tarefa, mesmo sem eventos no intervalo (o popup mostra "há N min"); a página aberta depois reconstrói o estado, e 30 min sem nenhum evento viram "sem atividade". Sem dependências de terceiros, sem servidor, sem rede.</p>
@@ -856,7 +860,7 @@ claude plugin update sdd@claude-sdd-framework --scope project
   <p>Não use <code>claude plugin marketplace remove</code>: ele desinstala o plugin dos projetos. Reinicie a sessão para aplicar. <span class="badge verified">Verificado</span></p>
   <div class="table-wrap"><table>
     <thead><tr><th>Plugin</th><th>Versão deste manual</th></tr></thead>
-    <tbody><tr><td><code>sdd</code></td><td>0.9.6</td></tr><tr><td><code>authoring</code></td><td>0.2.1</td></tr></tbody>
+    <tbody><tr><td><code>sdd</code></td><td>0.9.7</td></tr><tr><td><code>authoring</code></td><td>0.2.1</td></tr></tbody>
   </table></div>
   <p>As versões seguem semver, definidas em <code>plugins/*/.claude-plugin/plugin.json</code>; as mudanças ficam no <a href="../CHANGELOG.md">CHANGELOG.md</a>.</p>
   <p>Para validar um plugin ou testá-lo sem instalar (só na sessão):</p>
@@ -937,7 +941,7 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
 </main>
 </div>
 
-<footer class="site-footer">Manual do Plugin SDD · sdd 0.9.6 · authoring 0.2.1 · arquivo único, funciona offline.</footer>
+<footer class="site-footer">Manual do Plugin SDD · sdd 0.9.7 · authoring 0.2.1 · arquivo único, funciona offline.</footer>
 
 <button type="button" class="btn" id="to-top" aria-label="Voltar ao topo">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span class="lbl">Topo</span>

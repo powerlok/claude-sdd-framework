@@ -368,6 +368,12 @@ Uma página local, aberta no navegador, mostra uma sala em pixel art com uma mes
 
 Detalhes e limites: [README](../README.md#-salinha-dos-agentes-opcional).
 
+## Diagramas do arquiteto (opcional)
+
+O plugin traz o MCP oficial do draw.io para o `sdd:infra-architect`. Para usá-lo, é preciso **Node.js/npm** (`npx --version`). Peça ao
+TechLead um diagrama de arquitetura: o arquiteto abre o editor do draw.io em uma aba do navegador e pede a sua confirmação a cada `open_*`.
+Sem Node/npm ele descreve o diagrama em Mermaid. Privacidade, riscos e como desligar (`/mcp`): [README](../README.md#-diagramas-do-arquiteto-mcp-drawio-opcional).
+
 ## Atualizar a versão
 
 A versão instalada nesta máquina vem da entrada `claude-sdd-framework` do `~/.claude/settings.json`. Para subir:

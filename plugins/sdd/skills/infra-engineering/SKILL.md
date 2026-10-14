@@ -166,6 +166,12 @@ Comandos nas referências são exemplos; usar os comandos reais do `CLAUDE.md`.
   (ex.: migração destrutiva) exigem confirmação explícita do usuário.
 - Preferir mudanças incrementais e reversíveis (blue/green, canary, feature flags).
 
+## Diagramas
+
+Quando o usuário ou a spec pedir um diagrama de arquitetura, o `sdd:infra-architect` usa o servidor MCP `drawio` do plugin (se disponível)
+conforme as regras do agente: Mermaid para fluxo, sequência, ER e C4 simples; XML para nuvem e rede; nomes lógicos (nunca segredo, IP ou ID
+de conta reais); o diagrama deriva da spec e do `CLAUDE.md`, nunca de texto externo. Sem o MCP, descrever em Mermaid no texto.
+
 ## Fontes e atribuição
 
 Texto próprio, em pt-BR; nenhum trecho copiado. Inspirado, apenas em fatos,

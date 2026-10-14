@@ -38,3 +38,4 @@ com `Relacionada a: done/<feature>`).
 | [spec-pr-flow](done/spec-pr-flow/spec.md) | 2026-10-13 | pedido do usuário | Fim da spec abre o PR; o merge é sempre do usuário (`sdd` 0.9.4; validação parcial aceita) |
 | [start-banner](done/start-banner/spec.md) | 2026-10-14 | pedido do usuário | Aviso de início de sessão (`systemMessage` no `SessionStart`): o TechLead só responde depois da primeira mensagem (`sdd` 0.9.5) |
 | [start-command](done/start-command/spec.md) | 2026-10-14 | pedido do usuário | Comando `/sdd:start` para o usuário iniciar o fluxo e as perguntas iniciais com o TechLead (`sdd` 0.9.6) |
+| [drawio-mcp](done/drawio-mcp/spec.md) | 2026-10-14 | pedido do usuário | MCP draw.io empacotado no plugin `sdd` (versão fixada, lançador Node) para o `sdd:infra-architect` (`sdd` 0.9.7) |
