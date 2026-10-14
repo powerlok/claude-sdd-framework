@@ -405,7 +405,7 @@ A versão instalada nesta máquina vem da entrada `claude-sdd-framework` do `~/.
 estão no [CHANGELOG](../CHANGELOG.md). Ao subir de versão, reaplique também o `deny`/`ask` do
 [template](../templates/project-settings.git.json) no `.claude/settings.json` do projeto, se o CHANGELOG avisar que mudou.
 
-> **Ao subir para a 0.8.0:** o agente `sdd:tecleader` foi renomeado para `sdd:techlead`. Troque
+> **Ao subir da 0.7.x ou anterior para a 0.11.0 ou mais:** o agente `sdd:tecleader` foi renomeado para `sdd:techlead` na 0.8.0 e **removido** na 0.11.0. Troque
 > `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` (ou no
 > `.claude/settings.local.json`) e reinicie o Claude Code. Passo a passo no [CHANGELOG](../CHANGELOG.md).
 
@@ -420,7 +420,7 @@ estão no [CHANGELOG](../CHANGELOG.md). Ao subir de versão, reaplique também o
 | Abri o `claude` e nada acontece | O Claude Code só responde depois da primeira mensagem (não existe primeiro turno automático para agente de plugin) | Digite `/sdd:start` (ou qualquer mensagem); o TechLead responde com a situação do projeto e pergunta se pode fazer o onboarding. O aviso de início do sdd lembra disso ao abrir |
 | Resposta genérica, sem "Sou o TechLead" | Plugin não instalado no projeto; pasta não confiada; ou sessão aberta antes do install | Rode o `plugin install` na raiz; aceite o diálogo de confiança; `/reload-plugins` ou nova sessão |
 | `/plugin` › Errors: "enabled in project settings but isn't installed here" | O settings foi copiado (ou veio pelo git), mas o plugin não foi instalado nesta máquina | `claude plugin install sdd@claude-sdd-framework --scope project` na raiz do projeto |
-| A sessão abre com o agente "OBSOLETO" (`sdd:tecleader`) em vez do TechLead | O `settings` ainda aponta para o nome antigo, renomeado na 0.8.0 | Troque `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` (ou `settings.local.json`) e reinicie (ou `/reload-plugins`) |
+| A sessão abre sem o TechLead (ou avisa que o agente `sdd:tecleader` não existe) | O `settings` ainda aponta para o nome antigo, renomeado na 0.8.0 e removido na 0.11.0 | Troque `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` (ou `settings.local.json`) e reinicie (ou `/reload-plugins`) |
 | Verificação de onboarding (hook) sem efeito no Windows | Git for Windows ausente (o hook usa `bash`) | Instale o Git for Windows; sem ele, o TechLead faz a mesma verificação lendo os arquivos |
 | `git diff` mostra o `.claude/settings.json` alterado logo após o install | O `plugin install` reordena as chaves | Sem mudança de conteúdo; pode commitar ou descartar |
 | A salinha dos agentes não abre | Preferência desligada, navegador padrão não definido ou Git Bash ausente | Rode `/sdd:office status` (se `off`, `/sdd:office on`); defina um navegador padrão; instale o Git for Windows (e confira que o `bash` do PATH não é o do WSL) |

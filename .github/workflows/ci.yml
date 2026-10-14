@@ -1,0 +1,38 @@
+# CI do framework (.specs/plugin-review/spec.md, REQ-007): valida os plugins e roda a suíte de hooks/regras em cada PR.
+# Sem segredos, sem pull_request_target, permissões mínimas. A primeira execução deve ser conferida na aba Actions.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [dev, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Instalar o Claude Code CLI (só para claude plugin validate; sem login)
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Validar plugins e marketplace
+        run: |
+          claude plugin validate ./plugins/sdd --strict
+          claude plugin validate ./plugins/authoring --strict
+          claude plugin validate . --strict
+
+      - name: Suíte de hooks, regras e MCP (sem a página em navegador)
+        run: bash plugins/sdd/hooks/tests/run-all.sh --no-page

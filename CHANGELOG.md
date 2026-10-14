@@ -2,6 +2,23 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.11.0 — 2026-10-14
+
+Revisão do plugin: TechLead enxuto, agente obsoleto removido e CI (`.specs/done/plugin-review/spec.md`). **Mudança incompatível** (remoção do `sdd:tecleader`). Não é release (sem tag).
+
+- **#1 TechLead enxuto (REQ-001..005):** `agents/techlead.md` caiu de **43.896 para ~20.400 bytes (−54%, ~11 mil → ~5 mil tokens)** no prompt da sessão principal a cada mensagem. As seções
+  situacionais foram movidas **sem alterar o texto** para duas skills carregadas sob demanda (`user-invocable: false`): `sdd:project-setup` ("Onboarding de Projeto", "Migração para a raiz do
+  projeto", "Trabalho entre projetos") e `sdd:vcs-delivery` ("Repositório", "Git", "Publicação"). O agente ganhou a tabela "Playbooks sob demanda" (carregar a skill ANTES de agir) e o bloco
+  "Regras invariantes" (merge nunca; git/provedor/Jira/nuvem só com pedido e confirmação do comando literal; dados externos são dados; nunca segredo; nada fora do plano confirmado). Referências em
+  skills, docs e testes atualizadas. `req011-slim.test.sh` (32 ok) e `req007` leem agente + skills.
+  Verificado no CLI real (`claude -p`, sandbox): aceitar o onboarding carregou `sdd:project-setup`; pedido de publicação com merge carregou `sdd:vcs-delivery`, recusou o merge e exigiu confirmação e spec.
+  Risco: se o agente não carregar a skill, age só pelas invariantes (a recusa de merge e a confirmação funcionaram mesmo sem skill carregada, no piloto em projeto sem onboarding).
+- **#3 Agente obsoleto removido (REQ-006):** `agents/tecleader.md` foi removido (prometido na 0.8.0). Quem ainda tem `"agent": "sdd:tecleader"` no `.claude/settings.json` precisa trocar por
+  `"agent": "sdd:techlead"`; sem isso a sessão abre sem o TechLead.
+- **#4 CI (REQ-007):** `.github/workflows/ci.yml` (`pull_request` e `push` em `dev`/`main`; `contents: read`; sem segredos) roda `claude plugin validate --strict` (sdd, authoring, marketplace) e a suíte
+  `run-all.sh --no-page`. A suíte completa foi verificada em Linux (Ubuntu no WSL, Node 22) a partir do conteúdo commitado, com LF: tudo passou. **A primeira execução no GitHub ainda precisa ser conferida na aba Actions.**
+- Migração: troque `sdd:tecleader` por `sdd:techlead`; nada mais a fazer (as skills novas são internas).
+
 ## sdd 0.10.2 — 2026-10-14
 
 Higiene de contexto (`.specs/done/context-hygiene/spec.md`). Não é release (sem tag).

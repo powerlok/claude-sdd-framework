@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.10.2-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.11.0-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -75,6 +75,7 @@ Estados de cada task: `TODO → IN_PROGRESS → IMPLEMENTED → SECURITY_REVIEW 
 | `frontend-engineering` | Princípios + referências **React** e **Angular** e checklist de interface web |
 | `mobile-engineering` | Princípios mobile + referência **React Native/Expo** (outras plataformas: sem referência, lacuna declarada) |
 | `git-lang` | Comando `/sdd:git-lang pt\|en`: idioma de commits e PR (seção `## Git` do `CLAUDE.md`) |
+| `project-setup`, `vcs-delivery` | Playbooks internos do TechLead (onboarding/migração/workspace; repositório/Git/publicação), carregados sob demanda para o agente principal pesar menos (0.11.0) |
 | `start` | Comando `/sdd:start`: o usuário inicia o fluxo com o TechLead (situação do projeto e perguntas iniciais do onboarding) |
 | `publish` | Comando `/sdd:publish bloqueada\|confirmar`: liga/desliga o modo publicação (push da branch, PR e release com confirmação a cada comando; o merge é sempre seu), só no `settings.local.json` |
 | `requirements-grilling` | Perguntas certas para fechar requisitos antes da spec |
@@ -301,9 +302,8 @@ Não use `claude plugin marketplace remove` (desinstala o plugin dos projetos).
 
 Reinicie a sessão para aplicar. Versões seguem semver; veja o [CHANGELOG](CHANGELOG.md).
 
-> **0.8.0 (mudança incompatível):** `sdd:tecleader` foi renomeado para `sdd:techlead`. Troque
-> `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` (ou `settings.local.json`) e
-> reinicie. Até lá, a sessão abre com um agente obsoleto que só mostra essa instrução (removido na versão seguinte).
+> **0.8.0 e 0.11.0 (mudança incompatível):** `sdd:tecleader` foi renomeado para `sdd:techlead` na 0.8.0 e o agente antigo foi **removido** na 0.11.0. Se o seu
+> `.claude/settings.json` (ou `settings.local.json`) ainda tem `"agent": "sdd:tecleader"`, troque por `"agent": "sdd:techlead"` e reinicie: sem isso a sessão abre sem o TechLead.
 
 ## 📐 Diagramas do arquiteto: MCP draw.io (opcional)
 

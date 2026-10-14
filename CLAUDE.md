@@ -36,6 +36,7 @@ Ativas em `.specs/<feature>/` (`spec.md`, `tasks.md`); concluídas em `.specs/do
 - Antes de cada bump de versão (obrigatório): `claude plugin validate ./plugins/sdd --strict`,
   `claude plugin validate ./plugins/authoring --strict` e `claude plugin validate .` (marketplace); depois bump de
   `version`, CHANGELOG e versões no README e em `docs/` (ver "Versão × release")
+- CI: `.github/workflows/ci.yml` roda `validate --strict` e `run-all.sh --no-page` em cada PR (Linux); conferir a aba Actions.
 - Testar a salinha dos agentes (hooks + página): `bash plugins/sdd/hooks/tests/run-all.sh` (~4 min no Windows;
   `--no-page` pula a página)
 - Testar um agente sem instalar: `claude -p "<prompt>" --plugin-dir ./plugins/sdd --agent sdd:<agente> --allowedTools "..."`
