@@ -50,7 +50,7 @@ check("nenhuma regra Write(...) nem padrão `* :*` ineficaz (avisos do Claude Co
 // Nada some em relação ao deny da v0.9.1 (lista congelada em deny-v0.9.1.txt).
 const frozen = path.join(__dirname, "deny-v0.9.1.txt");
 if (fs.existsSync(frozen)) {
-  const old = fs.readFileSync(frozen, "utf8").split("\n").filter(Boolean);
+  const old = fs.readFileSync(frozen, "utf8").split(/\r?\n/).filter(Boolean);
   const swapped = ["Bash(git push *-*f*)", "Bash(git * push *-*f*)", "Bash(git push * :*)", "Bash(git * push * :*)", "Write(**/.git/**)", "Write(~/.gitconfig)"];
   const missing = old.filter((x) => !deny.includes(x) && !ask.includes(x) && !GROUP.includes(x) && !swapped.includes(x));
   check("todo item do deny da v0.9.1 continua coberto por deny ∪ ask ∪ grupo (nada some; exceto os padrões trocados)", missing.length === 0, missing.join(" | "));

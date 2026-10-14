@@ -1,2 +1,7 @@
 # Scripts de hook rodam em bash: precisam de LF mesmo em clones no Windows (core.autocrlf=true).
 *.sh text eol=lf
+# Listas e textos lidos por testes e plugins: LF em qualquer sistema (o runner do Windows usa autocrlf).
+*.txt text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.js text eol=lf
