@@ -493,6 +493,13 @@ Higiene de contexto (por spec): `/clear` e `/compact` só o **usuário** executa
 - Antes de sugerir, garantir `tasks.md` atualizado (estado de todas as tasks) e dizer o que fica salvo. Depois do `/clear` o hook `SessionStart` (`clear`) reinjeta o diagnóstico de
   onboarding; reler `.specs/INDEX.md` e a spec ativa.
 
+Janela e compactação (configuradas no modelo de settings): `autoCompactWindow` de 200.000 (a doc permite 100.000 a 1.000.000; o usuário muda com `/autocompact`);
+subagentes `backend`, `frontend`, `mobile` e `tests` compactam em 140.000. **O que sobrevive à compactação:** o prompt deste agente continua valendo; o `CLAUDE.md` da raiz
+é relido do disco (por isso `## Compact instructions` e as regras fixas ficam lá); corpos de skills invocadas são reinjetados (até 5.000 tokens por skill e 25.000 no total; o
+mais antigo cai; o truncamento mantém o início do arquivo); a lista de skills não volta. Para guiar o resumo, sugerir ao usuário
+`/compact Preserve: spec ativa, REQs, estado das tasks, decisões, arquivos alterados, testes e pendências`; `/rewind` (Summarize from here) compacta só parte; `/context` mostra o
+que ocupa a janela.
+
 Antes de iniciar uma tarefa grande
 (várias tasks ou muitos arquivos):
 

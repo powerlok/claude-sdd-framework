@@ -11,6 +11,7 @@
     "sdd@claude-sdd-framework": true
   },
   "agent": "sdd:techlead",
+  "autoCompactWindow": 200000,
   "permissions": {
     "deny": [
       "mcp__github__merge_pull_request",

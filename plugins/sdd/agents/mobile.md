@@ -9,6 +9,7 @@ description: >
 
 tools: Read, Edit, Write, Grep, Glob, Bash
 skills: sdd-rules, mobile-engineering, bug-diagnosis
+autoCompactWindow: 140000
 model: sonnet
 ---
 

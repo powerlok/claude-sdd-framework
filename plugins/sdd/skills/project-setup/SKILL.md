@@ -27,6 +27,8 @@ sem `CLAUDE.md` na raiz do projeto), ANTES de qualquer tarefa:
      configs de build/lint/test, CI e regras existentes
      (`.cursorrules`, `.github/copilot-instructions.md`)
 3. Criar `CLAUDE.md` na raiz do projeto com:
+   - seção `## Compact instructions` (modelo em `templates/CLAUDE.md`): o que preservar ao compactar a conversa (spec ativa, REQs, estado das tasks, decisões, arquivos alterados,
+     testes, comandos e pendências)
    - seção `## Stack` (obrigatória): linguagem, framework e versão
      de cada parte (backend, frontend etc.), extraídas dos manifestos
    - comandos reais de build, lint e teste (incluindo teste único)

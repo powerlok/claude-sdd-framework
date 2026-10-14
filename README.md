@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.11.0-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.11.1-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -287,10 +287,20 @@ por usuário, nunca no repositório. Para apagar, remova o arquivo.
 
 ## 🧠 Contexto e tokens
 
-Cada mensagem reenvia a conversa inteira, então o custo cresce com o contexto. O framework **não** abre contexto novo por spec: só as delegações a subagentes têm janela isolada, e o
-estado de cada task fica em `tasks.md`. `/clear` e `/compact` **só você** executa (o Claude Code não deixa o agente digitá-los); o TechLead **sugere** `/clear` em uma linha ao arquivar uma
-spec e ao receber uma tarefa diferente, e **não** sugere na mesma tarefa. Depois de `/clear`, o diagnóstico de onboarding é reinjetado. A compactação automática do Claude Code pode ser
-antecipada com `autoCompactWindow`, `claude --autocompact` ou `CLAUDE_CODE_AUTO_COMPACT_WINDOW` (100 mil a 1 milhão de tokens; em modelos de 1 milhão o padrão só compacta perto de 967 mil).
+Cada mensagem reenvia a conversa inteira, então o custo cresce com o contexto. Configuração conforme a [documentação oficial](https://code.claude.com/docs/en/costs) (verificada em 2026-10-14):
+
+- **Compactação automática:** o modelo de settings traz `"autoCompactWindow": 200000`. Sem isso, modelos de 1 milhão de tokens só compactam perto de ~967 mil. Aceita 100.000 a 1.000.000;
+  mude com `/autocompact 500k` (por modelo, vale mais que o arquivo), `claude --autocompact`, `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, ou remova a chave para o padrão. Compactar em 200 mil perde detalhe da conversa no
+  resumo (o estado fica em `.specs/` e `tasks.md`) e a compactação em si é uma requisição grande: se preferir a janela cheia, remova a chave.
+- **Subagentes:** `backend`, `frontend`, `mobile` e `tests` compactam em 140.000 (70% de 200 mil; campo `autoCompactWindow` do agente, exige Claude Code 2.1.296+; em versões anteriores é ignorado).
+  Cada delegação tem janela isolada: só o resumo volta para a conversa principal.
+- **O que sobrevive à compactação:** o prompt do agente continua valendo; o `CLAUDE.md` da raiz é relido do disco; corpos de skills invocadas são reinjetados (até 5.000 tokens por skill e 25.000 no total;
+  o truncamento mantém o início, então cada `SKILL.md` do framework tem ≤ 15 KB e o essencial no topo); a lista de skills não volta. O hook `SessionStart` (`compact`) manda reler a spec e as tasks.
+- **`## Compact instructions`:** o modelo de `CLAUDE.md` (e o onboarding) inclui a seção que orienta o resumo: spec ativa, REQs, estado das tasks, decisões, arquivos alterados, testes e pendências.
+  Em projetos já existentes, copie a seção de [`templates/CLAUDE.md`](templates/CLAUDE.md).
+- **`/clear` e `/compact` só você executa** (o Claude Code não deixa o agente digitá-los). O TechLead **sugere** `/clear` em uma linha ao arquivar uma spec e ao receber uma tarefa diferente, e **não** sugere na mesma
+  tarefa; sugere `/compact Preserve: ...` para guiar o resumo. `/context` mostra o que ocupa a janela; `/rewind` (Summarize from here) compacta só uma parte. Depois de `/clear`, o diagnóstico de onboarding é reinjetado.
+- **O framework não abre contexto novo por spec:** só as delegações a subagentes têm janela isolada.
 
 ## 🔁 Atualização
 

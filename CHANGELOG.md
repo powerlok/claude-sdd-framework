@@ -2,6 +2,19 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.11.1 — 2026-10-14
+
+Gestão de contexto conforme a documentação oficial (`.specs/done/context-management/spec.md`). Não é release (sem tag).
+
+- REQ-001: modelos de settings (`project-settings.git.json` e `.local.json`) ganham `"autoCompactWindow": 200000` (100.000 a 1.000.000; vale em qualquer arquivo de settings). Modelos de 1M passam a
+  compactar em 200 mil em vez de ~967 mil: menos contexto reenviado a cada mensagem; troca: o resumo perde detalhe da conversa (estado em `.specs/`/`tasks.md`). Para desfazer: remover a chave ou `/autocompact`.
+- REQ-002: subagentes `backend`, `frontend`, `mobile` e `tests` ganham `autoCompactWindow: 140000` no frontmatter (70% de 200K, a meta que o TechLead já usava; exige Claude Code 2.1.296+, ignorado antes);
+  `security` e `infra-architect` herdam a janela da sessão; `techlead` não (o campo não vale para a sessão principal).
+- REQ-003: `templates/CLAUDE.md` ganha `## Compact instructions` e o onboarding (`project-setup`) a inclui no `CLAUDE.md` criado.
+- REQ-004: "Gestão de Contexto" do TechLead: o que sobrevive à compactação (prompt do agente, `CLAUDE.md` da raiz, skills invocadas até 5.000 tokens cada e 25.000 no total, `SessionStart` `compact`), `/compact Preserve: ...`,
+  `/rewind`, `/context`; cada `SKILL.md` ≤ 15 KB (`project-setup` está perto: 14,6 KB).
+- REQ-005: `req012-context.test.sh` (27 ok); README "Contexto e tokens" reescrito. Verificado no CLI real: as chaves são aceitas sem aviso (`--debug` sem "invalid autoCompactWindow"). Não medido: a economia real de tokens.
+
 ## sdd 0.11.0 — 2026-10-14
 
 Revisão do plugin: TechLead enxuto, agente obsoleto removido e CI (`.specs/done/plugin-review/spec.md`). **Mudança incompatível** (remoção do `sdd:tecleader`). Não é release (sem tag).
