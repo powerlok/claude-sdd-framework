@@ -2,6 +2,16 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## Release v0.11.1 — 2026-10-14
+
+Inclui: `sdd` 0.11.1 (acumula 0.9.5 a 0.11.1), `authoring` 0.2.1.
+
+- `marketplace.json`: `metadata.version` = `0.11.1`; a tag `v0.11.1` deve apontar para o commit do merge em `main` que traz essa versão (a tag é criada pelo usuário após o merge).
+- `templates/project-settings.git.json` e a documentação de instalação fixam `v0.11.1` (`#v0.11.1` / `"ref": "v0.11.1"`). Até a tag existir, a instalação por essa versão falha.
+- **Incompatível:** `sdd:tecleader` foi removido (0.11.0); troque `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json`.
+- Ao atualizar da v0.9.4: reaplique ou mescle `deny`/`ask` e `autoCompactWindow` dos modelos de settings e a seção `## Compact instructions` do `templates/CLAUDE.md`; veja as migrações de 0.9.5 a 0.11.1.
+- Validação: `validate --strict` (sdd, authoring, marketplace) e suíte `run-all.sh --no-page`, também em Linux; CI do GitHub passou na 0.11.0. Não verificado: TUI interativa, prompts de `ask` e publicação real.
+
 ## sdd 0.11.1 — 2026-10-14
 
 Gestão de contexto conforme a documentação oficial (`.specs/done/context-management/spec.md`). Não é release (sem tag).

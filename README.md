@@ -113,7 +113,7 @@ Catálogo opcional **`authoring`**: `skill-development` e `agent-development`, p
    entrada no `~/.claude/settings.json` e repita o `add`; não use `marketplace remove`):
 
    ```bash
-   claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.9.4"
+   claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.11.1"
    ```
 
 2. **Na raiz do projeto** (raiz do repositório git; em monorepo, a pasta do projeto; nunca uma pasta-mãe fora do git),
@@ -197,7 +197,7 @@ draw.io e do Playwright. **Todo o git** (force push, `reset --hard`, `clean`, `r
 comentários, `gh api`, workflows, Jira, GitLab, Azure DevOps) e os **comandos de nuvem** (`az`, `azd`, `aws`, `gcloud`) ficam em `permissions.ask`: o Claude Code
 **pergunta a cada comando** (desde a 0.10.0; antes estavam bloqueados). Leituras como `git status|diff|log` seguem livres.
 
-**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.9.4"`). Quem decide a versão na máquina é a entrada
+**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.11.1"`). Quem decide a versão na máquina é a entrada
 `claude-sdd-framework` do `~/.claude/settings.json`; para subir de versão, troque o `ref` dela, rode
 `claude plugin marketplace add "...git#vNOVA"` e `claude plugin update sdd@claude-sdd-framework --scope project`
 ([passo a passo](docs/primeiros-passos.md#atualizar-a-versão)). Sem `ref`, vale a branch padrão do repositório
