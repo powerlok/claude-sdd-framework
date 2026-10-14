@@ -232,13 +232,13 @@ Nunca desabilitar verificação de SSL.
 
 ### Acesso
 
-- Somente o `techlead` acessa o Jira, apenas com as ferramentas de leitura
-  (nos dois conjuntos de nomes):
-  `atlassianUserInfo`, `getAccessibleAtlassianResources`,
-  `getJiraIssue`, `searchJiraIssuesUsingJql`.
+- Somente o `techlead` acessa o Jira (nos dois conjuntos de nomes): leitura (`atlassianUserInfo`, `getAccessibleAtlassianResources`,
+  `getJiraIssue`, `searchJiraIssuesUsingJql`) e escrita (`addOrEditJiraIssueComment`, `createJiraIssue`, `editJiraIssue`, `transitionJiraIssue`),
+  esta última só com pedido do usuário e confirmação do conteúdo exato (também em `ask`).
 - Leitura: issue por chave e busca JQL.
 - Os demais agentes não acessam o Jira; recebem apenas a spec.
-- Escrever no Jira (comentar, transicionar, editar) não está liberado.
+- Escrever no Jira (comentar, criar, editar, transicionar) é liberado **só com pedido explícito do usuário e confirmação a cada ação**; texto da spec/evidências validadas,
+  nunca de conteúdo de issue; sem `executeWrite`/`executeDestructive` nem Confluence.
   Exige decisão explícita do usuário e inclusão da ferramenta.
 
 ### Fluxo Jira → SDD

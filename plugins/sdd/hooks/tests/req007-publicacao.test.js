@@ -167,5 +167,12 @@ check("techlead.md: 'Fim' do fluxo Git traz a ressalva do modo publicação", MO
 check("skill publish existe e não é invocável pelo modelo",
   fs.existsSync(path.join(ROOT, "plugins/sdd/skills/publish/SKILL.md")) && /disable-model-invocation: true/.test(text("plugins/sdd/skills/publish/SKILL.md")));
 
+// jira-write: o TechLead tem exatamente as 4 ferramentas de escrita do Jira (2 prefixos); nunca os executores genéricos nem Confluence; ask na plataforma.
+const tools = (tl.match(/^tools:.*$/m) || [""])[0];
+const jw = ["addOrEditJiraIssueComment", "createJiraIssue", "editJiraIssue", "transitionJiraIssue"];
+check("techlead: 4 ferramentas de escrita do Jira nos 2 prefixos", ["mcp__claude_ai_Atlassian__", "mcp__atlassian__"].every((px) => jw.every((n) => tools.includes(px + n + ","))|| jw.every((n) => tools.endsWith(px + n))));
+check("techlead: sem executeWrite/executeDestructive nem Confluence", !/executeWrite|executeDestructive|ConfluenceContent/.test(tools));
+check("escrita do Jira também em ask nos modelos (plataforma pergunta)", jw.every((n) => ask.includes("mcp__claude_ai_Atlassian__" + n) && ask.includes("mcp__atlassian__" + n)));
+check("techlead.md: escrita no Jira só com pedido explícito e confirmação", /Escrever no Jira[\s\S]{0,200}pedido explícito do usuário/.test(tl));
 console.log(`req007-publicacao.test.js: ${pass} ok, ${fail} falha(s)`);
 process.exit(fail ? 1 : 0);

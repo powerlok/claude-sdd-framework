@@ -71,7 +71,7 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.10.0 | padrão | 7 agentes (mais o obsoleto `tecleader`), 13 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
+| `sdd` | 0.10.1 | padrão | 7 agentes (mais o obsoleto `tecleader`), 13 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
 | `authoring` | 0.2.1 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
@@ -199,7 +199,7 @@ Na delegação e no settings, os agentes são chamados com o prefixo do plugin (
 
 | Agente | Papel | Model | Tools | Skills pré-carregadas (`skills:`) |
 |---|---|---|---|---|
-| `sdd:techlead` | Orquestrador: tech lead, scrum master, coordenador SDD; único que encerra tasks | opus | Read, Edit, Write, Grep, Glob, Bash, Agent, Skill + 4 ferramentas de leitura do Jira em dois prefixos + ferramentas de leitura do provedor de código (seção 9) | nenhuma (carrega via ferramenta `Skill`, seção 6) |
+| `sdd:techlead` | Orquestrador: tech lead, scrum master, coordenador SDD; único que encerra tasks | opus | Read, Edit, Write, Grep, Glob, Bash, Agent, Skill + 4 de leitura e 4 de escrita do Jira em dois prefixos + ferramentas de leitura do provedor de código (seção 9) | nenhuma (carrega via ferramenta `Skill`, seção 6) |
 | `sdd:backend` | Implementador backend agnóstico de linguagem (DDD, SOLID, Clean/Hexagonal, TDD) | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, backend-engineering, bug-diagnosis, domain-modeling |
 | `sdd:frontend` | Implementador frontend agnóstico de framework (UX/UI, acessibilidade, performance, E2E) | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, frontend-engineering, bug-diagnosis |
 | `sdd:mobile` | Implementador mobile (React Native/Expo na referência atual; acessibilidade, permissões, armazenamento seguro, testes) | sonnet | Read, Edit, Write, Grep, Glob, Bash | sdd-rules, mobile-engineering, bug-diagnosis |
@@ -376,7 +376,7 @@ Requisito sem teste é reportado pelo `sdd:tests` como lacuna de cobertura e imp
 
 | Controle | Onde | Como |
 |---|---|---|
-| Jira somente leitura (1ª camada) | `tools:` do `sdd:techlead` | só `atlassianUserInfo`, `getAccessibleAtlassianResources`, `getJiraIssue`, `searchJiraIssuesUsingJql`, nos prefixos `mcp__claude_ai_Atlassian__` (conector claude.ai, padrão) e `mcp__atlassian__` (`.mcp.json` opcional) |
+| Jira: leitura e escrita com confirmação (1ª camada) | `tools:` do `sdd:techlead` | leitura (`atlassianUserInfo`, `getAccessibleAtlassianResources`, `getJiraIssue`, `searchJiraIssuesUsingJql`) e escrita (`addOrEditJiraIssueComment`, `createJiraIssue`, `editJiraIssue`, `transitionJiraIssue`; sem `executeWrite`/`executeDestructive`/Confluence), nos prefixos `mcp__claude_ai_Atlassian__` (conector claude.ai, padrão) e `mcp__atlassian__` (`.mcp.json` opcional) |
 | Jira: escrita com confirmação (2ª camada) | `permissions.ask` nos templates de settings (desde a 0.10.0; antes `deny`) | 16 regras pedem confirmação para as ferramentas de escrita do Atlassian (comentar, criar, editar, transicionar issue; Confluence; `executeWrite`/`executeDestructive`) nos dois prefixos; o TechLead não as tem em `tools` |
 | Somente o TechLead acessa o Jira | frontmatter dos agentes | os demais agentes não têm ferramentas Atlassian |
 | Regras não relaxáveis | `sdd-rules` e `templates/CLAUDE.md` | regras do projeto não podem relaxar segredos/credenciais, verificação SSL, confirmação de ações irreversíveis, Jira somente leitura e menor privilégio |

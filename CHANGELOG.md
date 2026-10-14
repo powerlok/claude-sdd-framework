@@ -2,6 +2,17 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.10.1 — 2026-10-14
+
+TechLead pode escrever no Jira, sempre com confirmação (`.specs/done/jira-write/spec.md`). Não é release (sem tag). Revisão independente dispensada pelo usuário.
+
+- REQ-001: `tools` do `sdd:techlead` ganha 4 ferramentas de escrita do Jira nos dois prefixos (`mcp__claude_ai_Atlassian__*` e `mcp__atlassian__*`):
+  `addOrEditJiraIssueComment`, `createJiraIssue`, `editJiraIssue`, `transitionJiraIssue`. Sem `executeWrite`, `executeDestructive` nem Confluence.
+- REQ-002/REQ-003: as 8 já estavam em `ask` (0.10.0); o agente e a `sdd-governance` exigem pedido explícito do usuário e confirmação do conteúdo exato; texto só de spec/evidências validadas,
+  nunca de conteúdo de issue.
+- REQ-004: `req007-publicacao.test.js` (97 ok); docs.
+- Riscos: conteúdo de issue é dado não confiável (injeção de prompt pode induzir escrita indevida; a confirmação é a barreira); escrita em Jira corporativo pode notificar pessoas e disparar automações.
+
 ## sdd 0.10.0 — 2026-10-14
 
 Git, escrita em sistemas externos e comandos de nuvem liberados **com confirmação** (`.specs/done/relax-deny/spec.md`). **Mudança de comportamento padrão e relaxamento

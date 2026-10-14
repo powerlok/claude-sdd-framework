@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.10.0-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.10.1-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -335,12 +335,13 @@ implementou (fluxo, validação, console, rede, acessibilidade), **complementand
 - **Cadeia de suprimentos:** pacote 0.x de terceiros (com dependência `playwright` alpha) executado na sua máquina a cada sessão com o plugin habilitado; versão
   e integridade fixadas (ver `.specs/done/playwright-mcp/spec.md`). **Desligar:** `/mcp` e desabilite o servidor `playwright` do plugin `sdd`.
 
-## 🧩 Jira (opcional, somente leitura)
+## 🧩 Jira (opcional)
 
 - **Padrão:** conector Atlassian do claude.ai (Settings → Connectors → Atlassian). Só o TechLead acessa.
 - **Sem login claude.ai:** copie [`templates/mcp-atlassian.json`](templates/mcp-atlassian.json) para
   `.mcp.json` (MCP remoto oficial da Atlassian, OAuth, sem token em arquivo).
-- Ferramentas de escrita (criar, editar, comentar, transicionar) ficam bloqueadas nos templates.
+- **Leitura** livre. **Escrita** (criar, editar, comentar, transicionar): o TechLead só escreve com pedido seu e confirmação do conteúdo exato; o Claude Code também pergunta (`ask` nos
+  templates, desde a 0.10.0). Texto vem da spec/evidências, nunca de conteúdo de issue; sem `executeWrite`/`executeDestructive` nem Confluence.
 
 ## 🔗 Repositório: GitHub, Bitbucket, GitLab, Azure DevOps (opcional, somente leitura)
 
