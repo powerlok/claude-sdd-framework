@@ -14,9 +14,9 @@ jobs:
         run: |
           echo "bash $BASH_VERSION"; /bin/bash --version | head -1; which bash
           export CLAUDE_CONFIG_DIR="$RUNNER_TEMP/cfg" TMPDIR="$RUNNER_TEMP/tmp"
-          mkdir -p "$CLAUDE_CONFIG_DIR/sdd" "$TMPDIR"; printf 'on\n' > "$CLAUDE_CONFIG_DIR/sdd/office"; ls -la "$CLAUDE_CONFIG_DIR/sdd"
+          mkdir -p "$CLAUDE_CONFIG_DIR/sdd" "$TMPDIR"; printf 'on\n' > "$CLAUDE_CONFIG_DIR/sdd/office.conf"; ls -la "$CLAUDE_CONFIG_DIR/sdd"
           grep -n "office\b" plugins/sdd/hooks/tests/req003-event.test.sh | head -5
           J='{"hook_event_name":"PreToolUse","tool_name":"Agent","tool_input":{"description":"Revisar T-003","subagent_type":"sdd:security"}}'
           export CLAUDE_PROJECT_DIR="$RUNNER_TEMP/proj"; mkdir -p "$CLAUDE_PROJECT_DIR"
-          printf '%s' "$J" | bash -x plugins/sdd/hooks/office-event.sh 2>&1 | grep -nE "m=|bad_m|re_secret|re_path|\[\[ .*(m|raw) =~" | cut -c1-260 | head -40
+          printf '%s' "$J" | bash -x plugins/sdd/hooks/office-event.sh 2>&1 | grep -E "^\+* *(m=|raw=|if \[\[|\[\[ )" | cut -c1-230 | head -60 || true
           find "$TMPDIR" -name events.js -exec cat {} \;
