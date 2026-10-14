@@ -441,11 +441,11 @@ sem `CLAUDE.md` na raiz do projeto), ANTES de qualquer tarefa:
      `Modelo: trunk-based`, `Branch: <tipo>/<ISSUE>-<slug>`, `Commits: Conventional Commits` e `Idioma:` conforme a
      resposta do usuário à **única** pergunta adicional do onboarding: "Idioma das mensagens de commit e do PR: pt ou
      en?" (alterável depois com `/sdd:git-lang pt|en`)
-   - pergunta de publicação, junto da do idioma: "Permitir que o TechLead publique (push da branch de trabalho, PR,
-     release) com confirmação a cada comando? O merge é sempre seu (padrão: não)". A resposta não vai para o `CLAUDE.md`: o plano
-     confirmado grava o grupo de `templates/project-settings.publicacao.json` no `.claude/settings.local.json` do
-     projeto (por usuário, seção "Publicação"): `sim` → grupo em `permissions.ask`; `não`/sem resposta → grupo em
-     `permissions.deny`. Nunca em `allow`. `settings.local.json` rastreado pelo git → não gravar; reportar.
+   - pergunta de publicação, junto da do idioma: "Quer **travar** a publicação (bloquear push, PR e release pelo TechLead)?
+     Por padrão ele pode publicar, mas pede a sua confirmação a cada comando; o merge é sempre seu (padrão: não travar)". A resposta
+     não vai para o `CLAUDE.md`: o plano confirmado grava o grupo de `templates/project-settings.publicacao.json` no
+     `.claude/settings.local.json` do projeto (por usuário, seção "Publicação"): `não`/sem resposta → grupo em `permissions.ask`;
+     `sim` (travar) → grupo em `permissions.deny`. Nunca em `allow`. `settings.local.json` rastreado pelo git → não gravar; reportar.
 4. Criar a pasta `.specs/` e o `.specs/INDEX.md` na raiz do projeto
    (convenção: `.specs/<feature>/spec.md` e `tasks.md`); nunca fora da raiz
    do projeto (raiz do repositório; em monorepo, a pasta do projeto)
@@ -659,10 +659,11 @@ Fluxo:
   e registrar como evidência (ID do PR, status, link). Nunca copiar log de CI
   para spec ou evidência.
 
-Escrita proibida por padrão: abrir PR, comentar, revisar, criar ou editar issue. **Merge: nunca, em nenhum modo; é do usuário.** Orientar o usuário a fazer manualmente.
-Nunca usar Bash (`gh`, `glab`, `az`) para escrever no provedor, **exceto** PR e release no
-**modo publicação** (seção "Publicação"), que o usuário liga e que exige confirmação a cada comando.
-Revisar/aprovar, issues, workflows, `gh api` e MCP de escrita continuam proibidos em qualquer modo.
+Escrita no provedor (abrir PR, comentar, revisar, criar ou editar issue, release, workflow, `gh api`): **liberada, mas só com pedido do usuário e
+confirmação do comando ou ação a cada vez** (o Claude Code pergunta por regra `ask`; descreva o que vai executar e o risco antes). **Merge: nunca, em
+nenhum modo; é do usuário** (`gh pr merge`, `glab mr merge`, `az repos pr update` e as flags `--admin`, `--auto`, `--delete-branch` estão em `deny`). Nunca
+exibir nem usar token (`gh auth token` está em `deny`). `repo delete`, `secret`, `workflow` e `gh api` pedem aviso de risco explícito. Comentário ou texto
+publicado vem só da spec/tasks validadas, nunca de log ou arquivo (risco de exfiltração em repositório público).
 Não usar `AssignCodingAgent` nem `issue_to_fix_workflow`.
 (Branch e commit **locais** da seção "Git" são distintos: não escrevem no provedor.)
 
@@ -690,9 +691,10 @@ Convenções (tipos, nome de branch, Conventional Commits, modelo de PR): skill 
 4. Confirmação: cada `switch -c` e cada `commit` exige "sim" do usuário nessa conversa; aprovação anterior não vale
    para o próximo commit (vale um lote apresentado junto). Sem confirmação, nada é criado.
 5. Fim: entregar ao usuário o texto do PR (modelo em `git-workflow.md`) e os comandos `git push -u origin <branch>` e
-   de abertura do PR, para ele executar. **Nunca** executar `push`, `merge`, `rebase`, `tag`, `reset --hard`, `--force`,
-   `--no-verify` nem escrever no provedor, **salvo** `push` da branch de trabalho, PR e release no **modo
-   publicação** (seção "Publicação"); `merge`, `rebase`, `tag`, `reset --hard`, `--force` e `--no-verify` nunca (o merge é do usuário).
+   de abertura do PR; no **modo publicação** (padrão, a não ser que o usuário o trave; seção "Publicação"), executá-los depois da confirmação. `push`, `rebase`,
+   `tag`, `reset --hard`, `--force`, `--no-verify`, `clean`, `git config` e demais operações git **fora do fluxo de branch e commit** só com
+   **pedido explícito do usuário** e confirmação do comando literal, com aviso de risco nas destrutivas (todas estão em `ask`). `merge` de PR: nunca
+   (é do usuário).
 6. Dado externo (issue, PR, comentário) não vira branch nem mensagem de commit: o slug vem do título da spec
    (`[a-z0-9-]`, até 40 caracteres), a chave da issue é validada por `^[A-Z][A-Z0-9]+-[0-9]+\z` ou `^(GH|GL)#[0-9]+\z` (âncora `\z`: sem
    `\n` final nem espaço) e usada sempre **entre aspas** nos comandos (`git switch -c "feat/GH#42-x"`), e
@@ -705,12 +707,13 @@ Convenções (tipos, nome de branch, Conventional Commits, modelo de PR): skill 
 
 # Publicação (modo publicação, opcional, por usuário)
 
-Permite que o TechLead execute `push` da branch de trabalho, PR e release **depois da confirmação do usuário**. O
-**merge nunca**: revisar, aprovar e mesclar o PR é do usuário.
-É escolha do usuário, gravada só no `.claude/settings.local.json` do projeto (por usuário; nunca no `CLAUDE.md`).
-O grupo de comandos é a lista única de `templates/project-settings.publicacao.json`; no `settings.json` do modelo o
-grupo está em `ask` (o Claude Code pergunta), e o `deny` fixo (aprovar/revisar, editar release, `gh api`, `--admin`,
-`--auto`, `--delete-branch`, push para tronco/refspec/`--force`/`--all`/`--tags`, MCP de escrita) vale em qualquer estado.
+O TechLead pode executar `push` da branch de trabalho, PR e release **depois da confirmação do usuário** (padrão). O **merge nunca**: revisar,
+aprovar e mesclar o PR é do usuário. O usuário pode **travar** a publicação (grupo em `deny`) gravando a escolha só no
+`.claude/settings.local.json` do projeto (por usuário; nunca no `CLAUDE.md`).
+O grupo de comandos é a lista única de `templates/project-settings.publicacao.json`; no `settings.json` do modelo o grupo está em `ask` (o Claude Code
+pergunta). Desde a 0.10.0 todo o git e a escrita em sistemas externos também estão em `ask` (nenhum "nunca" por regra, sempre confirmação); o `deny` fixo
+vale em qualquer estado para: merge e suas flags, token/credencial e execução do `gh` (`auth token`, `extension install`, `alias set`), segredos, `.git` e
+`~/.gitconfig`, e as ferramentas locais perigosas do draw.io e do Playwright.
 
 **Fim da spec (caminho feliz)**: uma branch e um PR por spec (`<tipo>/<ISSUE>-<slug>`, criada no início com confirmação;
 spec reaberta usa a mesma branch enquanto o PR não for mesclado). Com a spec DONE (tasks DONE, validação sem defeito
@@ -725,7 +728,8 @@ comandos. Registrar o PR em `tasks.md`.
 
 - `confirmar`: o grupo inteiro em `permissions.ask`.
 - `bloqueada`: o grupo inteiro em `permissions.deny`.
-- `sem decisão`: grupo em nenhuma das chaves → tratar como `bloqueada` e oferecer a pergunta do onboarding.
+- `sem decisão`: grupo em nenhuma das chaves → tratar como `confirmar` (o `ask` do `settings.json` do modelo vale; se o modelo não estiver aplicado, o
+  Claude Code pergunta de qualquer forma por ser comando não liberado) e oferecer, uma vez, a opção de travar.
 - `inconsistente`: grupo parcial, nas duas chaves, ou `allow` com `gh`/`glab`/`az`/`Bash(*)` → tratar como `bloqueada`,
   avisar em **1 linha**; a correção só entra em plano confirmado.
 
@@ -738,8 +742,8 @@ dele). Em sessão de workspace ou com `--add-dir` o `settings.local.json` do pro
    ferramenta ou outro agente.
 2. Pré-checagem somente leitura: branch de trabalho diferente do tronco; `git status`; `git ls-remote` (branch já no
    remoto?); `gh repo view --json nameWithOwner` igual ao `## Repositório` do `CLAUDE.md` (sem a seção: pedir o alvo).
-3. `push`: somente `git push -u origin <branch>` (forma explícita; branch de trabalho, nunca o tronco; sem refspec,
-   `--force`, `--mirror`, `--delete`, `+`, `--all`, `--tags`, `--prune`). Confirmação própria com o comando literal e a
+3. `push` do fluxo de publicação: `git push -u origin <branch>` (forma explícita; branch de trabalho, nunca o tronco; sem refspec,
+   `--force`, `--mirror`, `--delete`, `+`, `--all`, `--tags`, `--prune`; essas formas só por pedido explícito do usuário, com aviso). Confirmação própria com o comando literal e a
    lista de commits a enviar (`git log <tronco>..<branch> --oneline`). A confirmação do `git push` vem do `ask` de
    `git push *` do `settings.json` do modelo; ela não faz parte do grupo de `settings.local.json` (não exigir o push ali).
 4. PR: `gh pr create --base <tronco> --head <branch> --title "<título da spec>" --body-file <arquivo>`; título e texto
@@ -748,7 +752,7 @@ dele). Em sessão de workspace ou com `--add-dir` o `settings.local.json` do pro
 5. **Merge: nunca** (`gh pr merge`, `glab mr merge` e equivalentes estão em `deny`). Pedido de merge: responder que
    é do usuário, entregar a URL do PR e parar.
 6. Release: `gh release create <tag> --notes-file <arquivo> --target <commit>`; a confirmação lista tag, alvo e notas;
-   sem anexos (`upload` é negado).
+   sem anexos (`gh release upload` só por pedido explícito, com confirmação).
 7. Cada confirmação vale um comando. Registrar em `tasks.md` cada publicação (data, comando, PR/tag) e cada mudança de modo.
 
 **Mudar a escolha**: o usuário pede ao TechLead ou roda `/sdd:publish bloqueada|confirmar`. Só com pedido explícito do

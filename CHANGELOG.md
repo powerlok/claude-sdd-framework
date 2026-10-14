@@ -2,6 +2,29 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.10.0 — 2026-10-14
+
+Git, escrita em sistemas externos e comandos de nuvem liberados **com confirmação** (`.specs/done/relax-deny/spec.md`). **Mudança de comportamento padrão e relaxamento
+deliberado de controles**, por decisão explícita do usuário. Não é release (sem tag).
+
+- REQ-001: nos modelos `project-settings.git.json` e `.local.json`, 315 entradas saem de `permissions.deny` e entram em `permissions.ask`: **todas as regras `Bash(git ...)`**
+  (force push, push para tronco, `reset --hard`, `clean`, `checkout .`, `restore`, `rebase`, `merge`, `tag`, `branch -D`, `config`, `commit --amend|--no-verify|-a`, `add -A|.`,
+  `git -c`...), e a **escrita em sistemas externos** (`gh|gh.exe|glab|az` de escrita; ferramentas MCP de escrita do Atlassian, GitHub, GitLab e Azure DevOps). Leituras
+  (`git status|diff|log`) seguem livres. Nada em `allow`; nenhuma regra some.
+- REQ-005: `az`, `azd`, `aws`, `gcloud` (e `.cmd`/`.exe`) em `ask`: todo comando de nuvem pergunta. O arquiteto segue sem `Bash`; quem executa é o TechLead, depois da prévia.
+- Seguem em `deny`: **merge de PR** (`gh pr merge` e flags, `glab mr merge`, `az repos pr update`, MCP de merge), token/credencial e execução de terceiros pelo `gh` (`auth token`,
+  `extension install`, `alias set`, `glab auth`), segredos (`Read`/`Edit` de `.env`, chaves, `~/.ssh`, `~/.aws`...), `Edit(**/.git/**)`, `Edit(~/.gitconfig)` e as ferramentas locais
+  perigosas do draw.io e do Playwright.
+- REQ-002: TechLead, `git-workflow.md`, `sdd-governance` e `infra-engineering` trocam "nunca" por "só com pedido do usuário e confirmação do comando literal a cada vez, com aviso
+  de risco"; merge continua sendo sempre do usuário. Modo publicação: sem decisão = `confirmar` (antes `bloqueada`); travar = `/sdd:publish bloqueada`. A pergunta do onboarding vira
+  "quer **travar** a publicação?".
+- REQ-003: `req007-publicacao.test.js` (93 ok) cobre git, nuvem e as exceções; docs (README, manual, arquitetura) atualizados.
+- **Riscos residuais:** `ask` não protege em `bypassPermissions` nem em `claude -p`; os padrões `Bash` não cobrem `sh -c`, caminho absoluto nem alias. O usuário passa a ser a única barreira
+  para force push, `reset --hard`, `git config`/`git -c`, `gh api`, `gh repo delete`, `gh secret`, comentários públicos e comandos de nuvem destrutivos. Recomendado: `disableBypassPermissionsMode`,
+  proteção de branch no servidor e credenciais de nuvem somente leitura.
+- Migração: reaplique o `deny`/`ask` dos modelos (o `deny` encolheu e o `ask` cresceu). Quem quiser manter o bloqueio antigo pode copiar as entradas de volta para o `deny` do próprio settings.
+  O `.claude/settings.json` do workspace é do usuário: ver o arquivo proposto na entrega.
+
 ## sdd 0.9.8 — 2026-10-14
 
 MCP Playwright empacotado no plugin, para o frontend acessar o navegador (`.specs/done/playwright-mcp/spec.md`, parecer em `security-review.md`). Não é release (sem tag).

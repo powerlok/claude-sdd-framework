@@ -85,7 +85,8 @@ Nunca:
 
 Comandos em decisões e designs: somente leitura e prévia
 (`plan`, `what-if`, `preview`, `diff`). Qualquer mudança real exige
-confirmação explícita do usuário e é executada fora deste agente.
+confirmação explícita do usuário, a cada comando, e é executada fora deste agente
+(pelo TechLead, com `ask`; este agente não tem `Bash`).
 
 Escrita permitida APENAS para registrar decisões
 (documentos de arquitetura). Sem Bash: análise por leitura.

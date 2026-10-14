@@ -71,7 +71,7 @@ O repositório `claude-sdd-framework` é um **marketplace** do Claude Code (`.cl
 
 | Plugin | Versão atual | Instalação | Conteúdo |
 |---|---|---|---|
-| `sdd` | 0.9.8 | padrão | 7 agentes (mais o obsoleto `tecleader`), 13 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
+| `sdd` | 0.10.0 | padrão | 7 agentes (mais o obsoleto `tecleader`), 13 skills, hooks (pós-compact, onboarding, salinha dos agentes opcional) |
 | `authoring` | 0.2.1 | opcional | skills `skill-development` e `agent-development` (criar skills e agentes) |
 
 ```mermaid
@@ -377,13 +377,13 @@ Requisito sem teste é reportado pelo `sdd:tests` como lacuna de cobertura e imp
 | Controle | Onde | Como |
 |---|---|---|
 | Jira somente leitura (1ª camada) | `tools:` do `sdd:techlead` | só `atlassianUserInfo`, `getAccessibleAtlassianResources`, `getJiraIssue`, `searchJiraIssuesUsingJql`, nos prefixos `mcp__claude_ai_Atlassian__` (conector claude.ai, padrão) e `mcp__atlassian__` (`.mcp.json` opcional) |
-| Jira somente leitura (2ª camada) | `permissions.deny` nos templates de settings | 16 regras bloqueiam as ferramentas de escrita do Atlassian (comentar, criar, editar, transicionar issue; Confluence; `executeWrite`/`executeDestructive`) nos dois prefixos |
+| Jira: escrita com confirmação (2ª camada) | `permissions.ask` nos templates de settings (desde a 0.10.0; antes `deny`) | 16 regras pedem confirmação para as ferramentas de escrita do Atlassian (comentar, criar, editar, transicionar issue; Confluence; `executeWrite`/`executeDestructive`) nos dois prefixos; o TechLead não as tem em `tools` |
 | Somente o TechLead acessa o Jira | frontmatter dos agentes | os demais agentes não têm ferramentas Atlassian |
 | Regras não relaxáveis | `sdd-rules` e `templates/CLAUDE.md` | regras do projeto não podem relaxar segredos/credenciais, verificação SSL, confirmação de ações irreversíveis, Jira somente leitura e menor privilégio |
 | `security` não altera o projeto | `tools:` sem Edit/Write | tem Bash para verificações; a proibição de alterar vale pelo prompt |
 | `infra-architect` não executa | `tools:` sem Bash | limitado de fato |
 | Git local com confirmação | `techlead.md`, `sdd-rules/references/git-workflow.md` | o TechLead só cria branch e commit local após confirmação explícita (branch, mensagem e arquivos listados) e com a seção `## Git` no `CLAUDE.md`; nunca `rebase`, `--force`, `--no-verify`; `push` da branch de trabalho, PR e release só no modo publicação (o merge é sempre do usuário) (escolha do usuário em `settings.local.json`, `/sdd:publish`, confirmação a cada comando); slug sanitizado e dado externo não vira mensagem |
-| Git destrutivo negado | `permissions.deny` em `templates/project-settings.git.json` | `git reset --hard`, `git clean -f*`, `git commit --no-verify`/`-n`, `git branch -D`, `git config*`, `git checkout -- `, `git restore*`; `git push *` segue em `ask`; `commit` e `switch -c` não estão em `allow` |
+| Git e escrita externa com confirmação | `permissions.ask` em `templates/project-settings.git.json` (desde a 0.10.0; antes `deny`) | `git reset --hard`, `git clean -f*`, `git commit --no-verify`/`-n`, `git branch -D`, `git config*`, force push etc. e `gh|glab|az` de escrita, comandos de nuvem (`az`, `azd`, `aws`, `gcloud`) pedem confirmação a cada comando; ficam em `deny` o merge de PR, token/credencial e execução de terceiros pelo `gh`, segredos, `Edit(.git/**)`, `Edit(~/.gitconfig)`; nada em `allow` |
 | Hook seguro | `hooks.json` | apenas `echo` |
 | Credenciais do GitHub | README | nunca usuário/senha/token na URL; SSH ou gerenciador de credenciais do git |
 | Conteúdo de terceiros | rodapés das skills | origem `repo@commit` e licença SPDX; `authoring` reescrito com texto próprio |

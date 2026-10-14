@@ -40,3 +40,4 @@ com `Relacionada a: done/<feature>`).
 | [start-command](done/start-command/spec.md) | 2026-10-14 | pedido do usuário | Comando `/sdd:start` para o usuário iniciar o fluxo e as perguntas iniciais com o TechLead (`sdd` 0.9.6) |
 | [drawio-mcp](done/drawio-mcp/spec.md) | 2026-10-14 | pedido do usuário | MCP draw.io empacotado no plugin `sdd` (versão fixada, lançador Node) para o `sdd:infra-architect` (`sdd` 0.9.7) |
 | [playwright-mcp](done/playwright-mcp/spec.md) | 2026-10-14 | pedido do usuário | MCP Playwright empacotado no plugin `sdd` (versão fixada, perfil isolado, 19 ferramentas) para o `sdd:frontend` acessar o navegador (`sdd` 0.9.8) |
+| [relax-deny](done/relax-deny/spec.md) | 2026-10-14 | pedido do usuário | Git, escrita em sistemas externos e comandos de nuvem liberados com confirmação (`deny` → `ask`); merge, credenciais e segredos seguem em `deny` (`sdd` 0.10.0) |

@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.9.8-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.10.0-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -86,13 +86,13 @@ Estados de cada task: `TODO → IN_PROGRESS → IMPLEMENTED → SECURITY_REVIEW 
 
 Com a seção `## Git` no `CLAUDE.md` do projeto (modelo trunk-based, Conventional Commits, branch `<tipo>/<ISSUE>-<slug>`,
 `Idioma: pt | en`, perguntado no onboarding), o `sdd:techlead` pode criar a **branch** e **commits locais**, sempre
-**depois da sua confirmação** (mostra antes branch, mensagem e lista explícita de arquivos). Por padrão ele nunca faz `push`,
-`merge`, `rebase`, `--force` nem `--no-verify` (rebase, `--force` e `--no-verify` nunca); o texto do PR é entregue a você para abrir manualmente (a não ser que
-você ligue o modo publicação, abaixo). Sem a seção `## Git`, nada é criado. Convenções: `skills/sdd-rules/references/git-workflow.md`. Troque o idioma com
-`/sdd:git-lang pt` ou `/sdd:git-lang en`. O `templates/project-settings.git.json` nega por padrão operações destrutivas
-(`git reset --hard`, `git clean -f*`, `git commit --no-verify`, `git branch -D`, `git config*` etc.).
+**depois da sua confirmação** (mostra antes branch, mensagem e lista explícita de arquivos). Ele faz `push` da
+branch de trabalho, abre o PR e cria release **só depois da sua confirmação** (padrão; dá para travar, abaixo); `rebase`, `--force`, `--no-verify`, `reset --hard` e
+afins só a pedido seu, com aviso de risco; **o merge é sempre seu**. Sem a seção `## Git`, nada é criado. Convenções: `skills/sdd-rules/references/git-workflow.md`. Troque o idioma com
+`/sdd:git-lang pt` ou `/sdd:git-lang en`. No `templates/project-settings.git.json`, as operações destrutivas do git
+(`git reset --hard`, `git clean -f*`, `git commit --no-verify`, `git branch -D`, `git config*` etc.) pedem confirmação (`ask`).
 
-**Modo publicação (opcional, por usuário).** Se você ligar no onboarding ou com `/sdd:publish confirmar` (grava só no `.claude/settings.local.json`), o TechLead também faz `push -u origin <branch>` da branch de trabalho, `gh pr create` e `gh release create`, cada um com a sua confirmação. Caminho feliz: ao concluir a spec, o TechLead propõe um lote (push da branch da spec + PR com o texto montado da spec); você confirma, ele abre o PR e entrega a URL; **revisar, aprovar e fazer o merge é sempre seu**. Seguem negados: `gh pr merge`, `--admin`, `--auto`, `--delete-branch`, push para `main`/`master`, refspec, `--force`, aprovar/revisar PR e `gh api` seguem negados. Sem decisão sua, o TechLead não publica (o `settings.json` do modelo só pede confirmação, não libera).
+**Modo publicação (opcional, por usuário).** Por padrão (ou com `/sdd:publish confirmar`; a escolha de travar grava só no `.claude/settings.local.json`), o TechLead faz `push -u origin <branch>` da branch de trabalho, `gh pr create` e `gh release create`, cada um com a sua confirmação. Caminho feliz: ao concluir a spec, o TechLead propõe um lote (push da branch da spec + PR com o texto montado da spec); você confirma, ele abre o PR e entrega a URL; **revisar, aprovar e fazer o merge é sempre seu**. Seguem negados: `gh pr merge`, `--admin`, `--auto`, `--delete-branch`, push para `main`/`master`, refspec, `--force`, aprovar/revisar PR e `gh api` seguem negados. Sem decisão sua, ele publica pedindo a sua confirmação a cada comando; para **travar** (nada de push, PR ou release pelo TechLead), `/sdd:publish bloqueada`.
 Troque quando quiser com `/sdd:publish bloqueada|confirmar` ou pedindo ao TechLead. Limites: `ask` não vale com
 `bypassPermissions` nem em `claude -p`; os padrões `Bash(...)` não cobrem `sh -c`, caminho absoluto nem alias, então o
 controle real é o prompt de confirmação e a proteção de branch no servidor (recomendado: `disableBypassPermissionsMode`).
@@ -188,12 +188,13 @@ preencha a seção **`## Stack`** e os comandos. O TechLead confere o que faltar
 
 [`templates/project-settings.git.json`](templates/project-settings.git.json) declara o marketplace
 (`extraKnownMarketplaces`), habilita o plugin (`enabledPlugins`) e define `"agent": "sdd:techlead"`. Por isso copie o
-arquivo inteiro: o template também bloqueia (`permissions.deny`) as ferramentas de escrita do Jira e dos provedores de
-repositório; a leitura de segredos (`.env`/`.env.*`, também na edição, exceto `.env.example`/`.sample`/`.template`;
-chaves e certificados; credenciais de npm, PyPI, git e `netrc`; estado e variáveis do Terraform; e, na home,
-`~/.ssh`, `~/.aws`, `~/.azure`, `~/.config/gh`, `~/.kube`, `~/.docker/config.json`); e as formas usuais de push
-forçado/destrutivo (`--force*`, `-f`, `+refspec`, `--mirror`, `--delete`/`-d`). Push comum pede confirmação
-(`permissions.ask`).
+arquivo inteiro: o template **bloqueia** (`permissions.deny`) só o que não deve acontecer por conta do agente: o **merge de PR** (e `az repos pr update`), o token e a execução
+de terceiros pelo `gh` (`auth token`, `extension install`, `alias set`), a leitura de segredos (`.env`/`.env.*`, também na edição, exceto
+`.env.example`/`.sample`/`.template`; chaves e certificados; credenciais de npm, PyPI, git e `netrc`; estado e variáveis do Terraform; e, na home,
+`~/.ssh`, `~/.aws`, `~/.azure`, `~/.config/gh`, `~/.kube`, `~/.docker/config.json`), a edição de `.git/**` e `~/.gitconfig` e as ferramentas locais perigosas do
+draw.io e do Playwright. **Todo o git** (force push, `reset --hard`, `clean`, `rebase`, `config`, `-c`...), a **escrita em sistemas externos** (issues,
+comentários, `gh api`, workflows, Jira, GitLab, Azure DevOps) e os **comandos de nuvem** (`az`, `azd`, `aws`, `gcloud`) ficam em `permissions.ask`: o Claude Code
+**pergunta a cada comando** (desde a 0.10.0; antes estavam bloqueados). Leituras como `git status|diff|log` seguem livres.
 
 **Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.9.4"`). Quem decide a versão na máquina é a entrada
 `claude-sdd-framework` do `~/.claude/settings.json`; para subir de versão, troque o `ref` dela, rode
