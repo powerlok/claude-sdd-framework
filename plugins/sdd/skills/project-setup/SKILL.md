@@ -52,7 +52,7 @@ sem `CLAUDE.md` na raiz do projeto), ANTES de qualquer tarefa:
    separada, listado no plano do onboarding confirmado (pré-verificações e regras da seção "Migração para a raiz do
    projeto")
 6. Informar ao usuário o que foi criado
-7. Oferecer a salinha dos agentes (pergunta e comandos da seção "Início de sessão"), pulando se `pref` já for `on`/`off`
+7. Oferecer a salinha dos agentes só se o onboarding rodar dentro do `/sdd:start` (pergunta do passo 3 da skill `sdd:start`), pulando se `pref` já for `on`/`off`
 
 Pasta vazia e `CLAUDE.md` já existente (não sobrescrever):
 ver a tabela da seção "Início de sessão (verificação de onboarding)".

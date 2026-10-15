@@ -2,6 +2,39 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## Release v0.12.0 — 2026-10-14
+
+Inclui: `sdd` 0.12.0 (acumula 0.11.1 e 0.12.0; a `v0.11.1` não chegou a ser fixada nos docs de quem já instalou), `authoring` 0.2.1.
+
+- `marketplace.json`: `metadata.version` = `0.12.0`; a tag `v0.12.0` deve apontar para o commit do merge em `main` que traz essa versão (a tag é criada pelo usuário após o merge).
+- `templates/project-settings.git.json` e a documentação de instalação fixam `v0.12.0` (`#v0.12.0` / `"ref": "v0.12.0"`). Até a tag existir, a instalação por essa versão falha.
+- Salinha: pergunta inicial no `/sdd:start`. Documentação refeita (instalação por tipo, verificador de ambiente).
+- Novo: hook `merge-guard` (bloqueia merge de PR e push forçado em qualquer modo, inclusive `sh -c`); CI em Linux, macOS e Windows; correções de portabilidade (bash 3.2, YAML da skill `start`).
+- **Incompatível (desde a 0.11.0):** `sdd:tecleader` foi removido; troque `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json`.
+- Ao atualizar da v0.11.1 ou anterior: troque o `ref` da entrada `claude-sdd-framework` do `~/.claude/settings.json` para `v0.12.0`, rode `claude plugin marketplace add "...git#v0.12.0"` e `claude plugin update sdd@claude-sdd-framework --scope project`.
+- Validação: `validate --strict` (sdd, authoring, marketplace) e suíte `run-all.sh --no-page` nos 3 sistemas (CI). Não verificado: TUI interativa, prompts de `ask`, publicação real.
+
+## sdd 0.12.0 — 2026-10-14
+
+Guarda de merge e push forçado como hook do plugin (`.specs/done/merge-guard/spec.md`). Não é release (sem tag).
+
+- REQ-001..003: `hooks/merge-guard.sh` (`PreToolUse`, matcher `Bash`, síncrono, timeout 5) bloqueia com exit 2 o comando que faria **merge de PR** (`gh pr merge`, `glab mr merge|accept`, `az repos pr update`,
+  `gh|glab api` com `merge`) ou **push forçado/destrutivo** (`--force*`, `-f`, `--mirror`, `--delete`, `-d`, `+ref`, `:ref`). Reconhece o comando em `sh -c`, `bash -c`, `$(...)`, depois de `;` `&&` `||` `|`,
+  com caminho absoluto e `.exe`, e `git -C . push`; o que `Bash(...)` em `deny` não pega. Vale em qualquer modo de permissão (a doc: hook com exit 2 bloqueia antes das regras) e não depende do projeto copiar o
+  `settings.json`. Só builtins do bash (sem rede, `eval` ou escrita); funciona no bash 3.2 do macOS e no Git Bash; a mensagem é constante e não repete o comando.
+- REQ-004: limites: variável, `eval`, base64 ou script externo escapam (não é sandbox, que não existe no Windows nativo); comando que apenas cita o texto (ex.: mensagem de commit com `gh pr merge`) pode ser
+  bloqueado e deve ser reescrito. O `deny` dos modelos de settings continua como segunda camada.
+- REQ-005: `req013-mergeguard.test.sh` (53 ok); docs e skill `vcs-delivery`.
+- Documentação refeita (`.specs/done/docs-install/spec.md`): **`docs/instalacao.md`** (nova, página única da instalação) separa os tipos **A** máquina sem Claude Code (CLI por SO, PATH, login, Git/Git Bash, rede), **B** projeto novo,
+  **C** código existente, **D** projeto que já usa o sdd, **E** atualizar a versão e **F** clone local, com fluxograma, comandos conferidos na documentação oficial e problemas comuns. README curto (~100 linhas);
+  conteúdo de referência em **`docs/referencia.md`**; `primeiros-passos.md` cobre só o que vem depois da instalação; manual e arquitetura apontam para as novas páginas.
+  Novos **verificadores somente leitura** `scripts/check-env.sh` (macOS/Linux/Git Bash) e `scripts/check-env.ps1` (Windows): conferem CLI (presença, versão mínima 2.1.288, login), git/bash, marketplace e a pasta (tipo B, C, D ou
+  workspace; `.claude/settings.json`; plugin instalado, habilitado e do projeto certo via `claude plugin list --json`; `CLAUDE.md` com `## Stack`) e imprimem o comando exato de correção e o PRÓXIMO PASSO.
+  Testes `req014-*` (docs: links, âncoras, versões, subcomandos no `--help`; verificador com `claude` falso em 16 situações; PowerShell; fluxo real num `CLAUDE_CONFIG_DIR` temporário). A versão do framework fica em
+  `SDD_VERSION` dos dois scripts e é conferida pelo teste. O fluxo de instalação por URL (tipo B) foi executado com o CLI real numa configuração temporária, com `#dev` no lugar da tag (que só existe após a release).
+- Salinha (`.specs/done/office-ask-at-start/spec.md`): a pergunta "Quer ligar a salinha?" passa a ser feita pelo `/sdd:start` (uma vez, só com `pref=unset`), não mais no fim da primeira resposta de qualquer mensagem; o hook `office-pref.sh status` também roda em `SessionStart` `clear`. Padrão continua desligado.
+- Migração: nenhuma (o hook vem com o plugin). O `deny` do workspace antigo (174 entradas) pode ser trocado pelo modelo atual (83 `deny` + `ask`); o `agent` deve ser `sdd:techlead`.
+
 ## Release v0.11.1 — 2026-10-14
 
 Inclui: `sdd` 0.11.1 (acumula 0.9.5 a 0.11.1), `authoring` 0.2.1.

@@ -21,12 +21,12 @@ Ativas em `.specs/<feature>/` (`spec.md`, `tasks.md`); concluídas em `.specs/do
   **sem tag**.
 - **Release**: conjunto pronto para os projetos consumirem. Exige `validate --strict` (sdd, authoring, marketplace),
   revisão de segurança aprovada quando aplicável, validação sem defeito aberto e CHANGELOG fechado.
-- Na release: `metadata.version` do `.claude-plugin/marketplace.json` = `X.Y.Z`; tag anotada `vX.Y.Z` (push da tag);
+- Na release: `metadata.version` do `.claude-plugin/marketplace.json` = `X.Y.Z`; `SDD_VERSION` de `scripts/check-env.sh` e `.ps1` e os comandos `#vX.Y.Z` de `docs/instalacao.md`; tag anotada `vX.Y.Z` (push da tag);
   `"ref"` de `templates/project-settings.git.json` = `vX.Y.Z`; seção `## Release vX.Y.Z` no CHANGELOG com as versões
   dos plugins incluídos. A tag versiona o marketplace (os dois plugins juntos), não um plugin.
 - Não é release: só docs/specs, trabalho em andamento, mudança não validada.
 - O TechLead pergunta "é release?" ao encerrar uma feature; a tag só é criada com confirmação do usuário.
-- Releases: `v0.6.4` (sdd 0.6.4, authoring 0.2.1); `v0.7.0` (sdd 0.7.0, authoring 0.2.1); `v0.9.1` (sdd 0.9.1, authoring 0.2.1; inclui 0.8.x e 0.9.0/0.9.1, sem tag v0.8.1); `v0.9.4` (sdd 0.9.4, authoring 0.2.1; inclui 0.9.2 a 0.9.4); `v0.11.1` (sdd 0.11.1, authoring 0.2.1; inclui 0.9.5 a 0.11.1, remove `sdd:tecleader`).
+- Releases: `v0.6.4` (sdd 0.6.4, authoring 0.2.1); `v0.7.0` (sdd 0.7.0, authoring 0.2.1); `v0.9.1` (sdd 0.9.1, authoring 0.2.1; inclui 0.8.x e 0.9.0/0.9.1, sem tag v0.8.1); `v0.9.4` (sdd 0.9.4, authoring 0.2.1; inclui 0.9.2 a 0.9.4); `v0.11.1` (sdd 0.11.1, authoring 0.2.1; inclui 0.9.5 a 0.11.1, remove `sdd:tecleader`); `v0.12.0` (sdd 0.12.0, authoring 0.2.1; inclui 0.11.1 e 0.12.0, hook `merge-guard`).
 
 ## Comandos (verificados em 2026-10-09, Claude Code 2.1.288)
 
