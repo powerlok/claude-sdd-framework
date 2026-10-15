@@ -105,7 +105,7 @@ check "req014 plugin não instalado: manda 'plugin install --scope project'" has
 eq "req014 plugin não instalado: exit 1" "1" "$RC"
 
 # 9) instalado em OUTRO projeto não conta; instalado e desabilitado; instalado e habilitado
-PJ="$SB/pl.json"; HERE="$(cd "$E" && pwd)"
+PJ="$SB/pl.json"; HERE="$(cd "$E" && pwd -P)"
 plugins_json "$PJ" "$(jpath "$SB/outro")" true
 STUB_MP_FILE="$MP_OK" STUB_PLUGINS_FILE="$PJ" run "$E" yes
 check "req014 plugin instalado em outro projeto: não conta" has "plugin sdd não instalado neste projeto"
