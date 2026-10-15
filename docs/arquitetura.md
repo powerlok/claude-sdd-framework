@@ -5,7 +5,7 @@ componentes, fluxo SDD, agentes, skills, carregamento, hooks, segurança e limit
 Público: devs do time que vão usar e manter o plugin.
 
 - Manual de uso com exemplos passo a passo: [manual-de-uso.html](manual-de-uso.html)
-- Instalação, atualização e comandos: [README](../README.md)
+- Instalação: [instalacao.md](instalacao.md); visão geral: [README](../README.md); recursos e proteções: [referencia.md](referencia.md)
 - Histórico de versões: [CHANGELOG](../CHANGELOG.md)
 - Decisões de design: [.specs/done/sdd-plugin/design.md](../.specs/done/sdd-plugin/design.md)
 
@@ -354,7 +354,7 @@ temporária do sistema (`sdd-office-<uid>/<sala>/`, sala por projeto identificad
 `office/office.html`, aberta no navegador via `file://`, relê esse arquivo (reinjeção de script a cada 1 s) e anima
 a sala. Só entram agente, categoria da ferramenta, destino da delegação, tipo do evento, horário e a descrição curta da
 delegação (caminhos e segredos viram `[omitido]`). A preferência (`on`/`off`) fica em `~/.claude/sdd/office.conf`;
-desligada, o hook só a confere e sai. Sem servidor e sem rede. Guia de uso: [README](../README.md#-salinha-dos-agentes-opcional).
+desligada, o hook só a confere e sai. Sem servidor e sem rede. Guia de uso: [referência](referencia.md#salinha-dos-agentes-opcional).
 
 ```mermaid
 flowchart LR

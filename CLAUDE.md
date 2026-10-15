@@ -21,7 +21,7 @@ Ativas em `.specs/<feature>/` (`spec.md`, `tasks.md`); concluídas em `.specs/do
   **sem tag**.
 - **Release**: conjunto pronto para os projetos consumirem. Exige `validate --strict` (sdd, authoring, marketplace),
   revisão de segurança aprovada quando aplicável, validação sem defeito aberto e CHANGELOG fechado.
-- Na release: `metadata.version` do `.claude-plugin/marketplace.json` = `X.Y.Z`; tag anotada `vX.Y.Z` (push da tag);
+- Na release: `metadata.version` do `.claude-plugin/marketplace.json` = `X.Y.Z`; `SDD_VERSION` de `scripts/check-env.sh` e `.ps1` e os comandos `#vX.Y.Z` de `docs/instalacao.md`; tag anotada `vX.Y.Z` (push da tag);
   `"ref"` de `templates/project-settings.git.json` = `vX.Y.Z`; seção `## Release vX.Y.Z` no CHANGELOG com as versões
   dos plugins incluídos. A tag versiona o marketplace (os dois plugins juntos), não um plugin.
 - Não é release: só docs/specs, trabalho em andamento, mudança não validada.

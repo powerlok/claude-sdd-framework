@@ -3,10 +3,11 @@
 # Uso: bash run-all.sh [--no-page]   (--no-page pula o teste de página em navegador headless)
 D="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 rc=0
-for t in "$D"/req00[1-5]-*.test.sh "$D"/req008-*.test.sh "$D"/req009-*.test.sh "$D"/req010-*.test.sh "$D"/req011-*.test.sh "$D"/req012-*.test.sh "$D"/req013-*.test.sh; do
+for t in "$D"/req00[1-5]-*.test.sh "$D"/req008-*.test.sh "$D"/req009-*.test.sh "$D"/req010-*.test.sh "$D"/req011-*.test.sh "$D"/req012-*.test.sh "$D"/req013-*.test.sh "$D"/req014-*.test.sh; do
   echo "== ${t##*/}"; bash "$t" || rc=1
 done
 echo "== req007-publicacao.test.js"; node "$D/req007-publicacao.test.js" || rc=1
+echo "== req014-docs.test.js"; node "$D/req014-docs.test.js" || rc=1
 if [ "${1:-}" != "--no-page" ]; then
   echo "== req005-page.test.js"; node "$D/req005-page.test.js" || rc=1
   echo "== req006-working.test.js"; node "$D/req006-working.test.js" || rc=1

@@ -299,49 +299,45 @@ tr:last-child td { border-bottom: 0; }
 <!-- 2 -->
 <section class="sec" id="instalacao" aria-labelledby="h-inst">
   <h2 id="h-inst"><span class="n">2.</span>Instalação</h2>
-  <div class="callout tip" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5V15h8v-1.5A6 6 0 0 0 12 3z"/></svg><div><span class="t">Primeira vez?</span><p>Siga o guia <a href="primeiros-passos.md">Primeiros passos</a>: os mesmos passos abaixo, com o que você vai ver e como conferir em cada um, nos dois caminhos (código existente e projeto do zero), além de o que versionar e problemas comuns.</p></div></div>
+  <div class="callout tip" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5V15h8v-1.5A6 6 0 0 0 12 3z"/></svg><div><span class="t">Guia completo</span><p>O passo a passo por tipo de situação, com o que você vê e como conferir, está em <a href="instalacao.md">docs/instalacao.md</a>. Aqui fica o resumo.</p></div></div>
 
-  <h3>Pré-requisitos <span class="badge verified">Verificado</span></h3>
-  <ul>
-    <li>Claude Code <strong>2.1.288</strong> ou superior (<code>claude --version</code>; testado no 2.1.296).</li>
-    <li>Git com acesso de rede ao GitHub (o repositório é público; não precisa de credencial). Teste: <code>git ls-remote https://github.com/powerlok/claude-sdd-framework.git</code>. O Claude Code usa o git da máquina; se um proxy ou firewall bloquear o github.com, ajuste a rede antes.</li>
-    <li>Windows: Git for Windows (o hook do plugin usa <code>bash</code>) e <code>claude</code> no PATH (ver <a href="#problemas">Solução de problemas</a>).</li>
-    <li>Opcional: conector <strong>Atlassian</strong> no claude.ai, para ler issues do Jira.</li>
-  </ul>
+  <h3>Três peças <span class="badge verified">Verificado</span></h3>
+  <table>
+    <thead><tr><th>Peça</th><th>O que é</th><th>Quantas vezes</th></tr></thead>
+    <tbody>
+      <tr><td>Claude Code (CLI)</td><td>o programa <code>claude</code> (2.1.288 ou superior)</td><td>1 vez por máquina</td></tr>
+      <tr><td>Marketplace <code>claude-sdd-framework</code></td><td>o catálogo de onde o plugin vem</td><td>1 vez por máquina</td></tr>
+      <tr><td>Plugin <code>sdd</code></td><td>o TechLead e o time de agentes</td><td>1 vez por projeto</td></tr>
+    </tbody>
+  </table>
 
-  <h3>A partir do GitHub <span class="badge verified">Verificado</span></h3>
-  <ol>
-    <li><strong>Uma vez por máquina</strong>, registre o marketplace na versão desejada (tag). Antes, rode <code>claude plugin marketplace list</code>: se <code>claude-sdd-framework</code> <strong>não aparece</strong>, execute o comando abaixo (cria o <code>~/.claude/settings.json</code> se não existir); se <strong>já aparece</strong> sem versão ou com outra (erro <code>its source doesn't match its extraKnownMarketplaces entry</code>), edite o <code>ref</code> da entrada no <code>~/.claude/settings.json</code> e repita o <code>add</code> (não use <code>marketplace remove</code>, que desinstala o plugin dos projetos). Passo a passo: <a href="primeiros-passos.md#passo-c-já-registrado-sem-versão-ou-com-outra-versão">primeiros-passos.md</a>:</li>
-  </ol>
-  <div class="code" data-label="bash"><pre><code>claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.12.0"</code></pre></div>
-  <ol start="2">
-    <li><strong>Na raiz do projeto</strong> (raiz do repositório git; no projeto do zero, antes rode <code>git init</code>), copie o arquivo <strong>inteiro</strong> <a href="../templates/project-settings.git.json"><code>templates/project-settings.git.json</code></a> para <code>.claude/settings.json</code>. Só esse arquivo não carrega o plugin.</li>
-    <li>Instale o plugin no projeto e confira:</li>
-  </ol>
-  <div class="code" data-label="bash"><pre><code>claude plugin install sdd@claude-sdd-framework --scope project
-claude plugin list        # sdd 0.9.4, Scope: project, enabled</code></pre></div>
-  <ol start="4">
-    <li>Abra <code>claude</code> na raiz do projeto e aceite o diálogo de confiança da pasta (sem confiar, o plugin do projeto não carrega). O Claude Code só responde depois da sua primeira mensagem: o sdd mostra um aviso ao abrir, então <strong>digite <code>/sdd:start</code></strong> (ou qualquer mensagem). A primeira resposta é do TechLead ("Sou o TechLead"), com a situação do projeto. Se instalou com a sessão aberta, use <code>/reload-plugins</code> ou abra nova sessão.</li>
-    <li>Sem <code>CLAUDE.md</code>, o TechLead faz o onboarding: com <strong>código existente</strong>, pergunta "Faço o onboarding agora?" e, com o seu sim, lê o código e cria <code>CLAUDE.md</code> e <code>.specs/INDEX.md</code>; no <strong>projeto do zero</strong>, pergunta a stack (linguagem, framework, versão), a nuvem/infra (ou "nenhuma") e as convenções, assume que os artefatos são versionados (<code>Versionar artefatos SDD: sim</code>; você pode pedir <code>não</code>) e só cria os arquivos depois do seu ok. Ele nunca faz commit.</li>
-  </ol>
+  <h3>Em que situação você está? <span class="badge verified">Verificado</span></h3>
+  <table>
+    <thead><tr><th></th><th>Situação</th><th>Você faz</th></tr></thead>
+    <tbody>
+      <tr><td><strong>A</strong></td><td>Sem Claude Code na máquina</td><td>instalar o CLI, logar, conferir o git (Git Bash no Windows)</td></tr>
+      <tr><td><strong>B</strong></td><td>Projeto novo, pasta vazia</td><td><code>git init</code>, marketplace, settings, plugin</td></tr>
+      <tr><td><strong>C</strong></td><td>Projeto com código existente</td><td>marketplace, settings, plugin</td></tr>
+      <tr><td><strong>D</strong></td><td>Um colega já configurou o projeto</td><td>marketplace e <code>plugin install</code></td></tr>
+      <tr><td><strong>E</strong></td><td>Trocar de versão</td><td>trocar o <code>ref</code>, <code>add</code>, <code>update</code></td></tr>
+      <tr><td><strong>F</strong></td><td>Mexe no framework</td><td>marketplace por caminho local</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Os comandos (tipos B, C e D) <span class="badge verified">Verificado</span></h3>
+  <div class="code" data-label="bash"><pre><code>claude --version                       # 2.1.288 ou superior
+claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.12.0"   # 1x por máquina
+# copie templates/project-settings.git.json para .claude/settings.json (tipos B e C)
+claude plugin install sdd@claude-sdd-framework --scope project   # na raiz do projeto
+claude plugin list                     # sdd, Scope: project, enabled
+claude                                 # aceite a confiança da pasta e digite /sdd:start</code></pre></div>
+  <p>O Claude Code só responde depois da sua primeira mensagem: digite <strong>/sdd:start</strong>. A resposta vem do TechLead ("Sou o TechLead"), com a situação do projeto; sem <code>CLAUDE.md</code> ele faz o onboarding (com código existente, lê o código; no projeto novo, pergunta a stack) e só cria algo com a sua confirmação.</p>
   <div class="callout danger" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18h.01"/></svg><div><span class="t">Perigo</span><p><strong>Nunca</strong> coloque usuário, senha ou token na URL do repositório. Use SSH ou HTTPS com o gerenciador de credenciais do git.</p></div></div>
-  <p>Equipe: o <code>.claude/settings.json</code> versionado não instala nada sozinho; cada dev roda o <code>marketplace add</code> (uma vez) e o <code>plugin install</code> (por projeto). Opcional: em vez do onboarding, copie <a href="../templates/CLAUDE.md"><code>templates/CLAUDE.md</code></a> e preencha <code>## Stack</code> e os comandos.</p>
 
-  <h3>A partir de uma pasta local <span class="badge verified">Verificado</span></h3>
-  <ol>
-    <li>Copie <a href="../templates/project-settings.local.json"><code>templates/project-settings.local.json</code></a> para <code>&lt;projeto&gt;/.claude/settings.json</code> e troque <code>&lt;CAMINHO_ABSOLUTO_DO_REPO_claude-sdd-framework&gt;</code> pelo caminho da pasta (use <code>/</code>).</li>
-    <li>No projeto, rode:</li>
-  </ol>
-  <div class="code" data-label="bash"><pre><code>claude plugin marketplace add "&lt;caminho&gt;/claude-sdd-framework" --scope project
-claude plugin install sdd@claude-sdd-framework --scope project
-claude plugin list        # sdd ... Status: enabled</code></pre></div>
-  <ol start="3">
-    <li>Abra <code>claude</code> no projeto. A sessão já inicia como <code>sdd:techlead</code> (<code>"agent": "sdd:techlead"</code> no settings). Alternativa:</li>
-  </ol>
-  <div class="code" data-label="bash"><pre><code>claude --agent sdd:techlead</code></pre></div>
+  <h3>Verificar o ambiente <span class="badge verified">Verificado</span></h3>
+  <p>O verificador (somente leitura) confere o CLI, o login, o git, o marketplace e a pasta atual, diz o tipo do projeto (B, C ou D), o que falta e o próximo passo: <code>bash scripts/check-env.sh</code> (macOS, Linux, Git Bash) ou <code>scripts\check-env.ps1</code> (Windows PowerShell). Veja <a href="instalacao.md">docs/instalacao.md</a>.</p>
 
-  <h3>Catálogo opcional <code>authoring</code> <span class="badge verified">Verificado</span></h3>
-  <p>Skills para criar novas skills e agentes. Sem instalação, nada com prefixo <code>authoring:</code> aparece.</p>
+  <h3>Catálogo opcional <span class="badge verified">Verificado</span></h3>
   <div class="code" data-label="bash"><pre><code>claude plugin install authoring@claude-sdd-framework --scope project</code></pre></div>
 </section>
 
@@ -933,7 +929,7 @@ claude -p "&lt;prompt&gt;" --plugin-dir ./plugins/sdd --agent sdd:backend --allo
   <h2 id="h-ref"><span class="n">13.</span>Referências</h2>
   <p>Links relativos a partir de <code>docs/</code>.</p>
   <ul>
-    <li><a href="../README.md">README.md</a>: instalação, atualização, validação, árvore de pastas.</li>
+    <li><a href="instalacao.md">docs/instalacao.md</a>: instalação por tipo de situação; <a href="../README.md">README.md</a>: visão geral.</li>
     <li><a href="arquitetura.md">arquitetura.md</a>: arquitetura do plugin (componentes, carregamento, hooks, segurança).</li>
     <li><a href="../CHANGELOG.md">CHANGELOG.md</a>: mudanças por versão.</li>
     <li><a href="../templates/CLAUDE.md">templates/CLAUDE.md</a>: modelo de <code>CLAUDE.md</code> com <code>## Stack</code>.</li>
