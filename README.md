@@ -264,7 +264,7 @@ tarefa ao backend", "backend: editando arquivos", "tests: rodando validação").
 servidor, sem rede. Um agente fica "trabalhando" do início ao fim da tarefa, mesmo sem eventos no intervalo (o
 popup mostra "há N min"); a página aberta depois reconstrói o estado, e 30 min sem nenhum evento viram "sem atividade".
 
-**Desligada por padrão.** O TechLead oferece uma vez (no fim da primeira resposta e no fim do onboarding; recusar
+**Desligada por padrão.** O TechLead pergunta uma vez, quando você roda **`/sdd:start`** (e só se ainda não houver preferência; recusar
 grava `off`). Depois, liga e desliga a qualquer momento:
 
 | Comando | Efeito |

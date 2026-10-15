@@ -355,7 +355,7 @@ no README.
 Uma página local, aberta no navegador, mostra uma sala em pixel art com uma mesa por agente e o que cada um está fazendo
 (ex.: "backend: editando arquivos"). O agente fica "trabalhando" do início até o fim da tarefa, mesmo em silêncio (ex.: "tests: trabalhando há 10 min"); sem nenhum evento por 30 min aparece "sem atividade". Vem **desligada**; sem dependências de terceiros, sem servidor, sem rede.
 
-- **Aceitar na primeira conversa:** o TechLead oferece uma vez, no fim da primeira resposta (e no fim do onboarding).
+- **Aceitar no `/sdd:start`:** o TechLead pergunta uma vez, ao rodar `/sdd:start` (e só se ainda não houver preferência).
   Responda que quer; se recusar, ela fica desligada.
 - **Ligar ou desligar depois:** `/sdd:office on`, `/sdd:office off` ou `/sdd:office status` (na primeira vez o Claude
   pede para você aprovar o comando), ou peça ao TechLead. O `on` já abre a tela e, nas sessões seguintes, ela abre

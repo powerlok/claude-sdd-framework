@@ -115,7 +115,7 @@ const h=require(process.argv[1]).hooks;let bad=[];
 for(const [ev,blocks] of Object.entries(h)) for(const b of blocks) for(const x of b.hooks){
   if(/office-start/.test(x.command||"")){ if(ev!=="SessionStart"||b.matcher!=="startup"||x.async!==true) bad.push(ev+":"+b.matcher); }
 }
-const ss=h.SessionStart.filter(b=>b.hooks.some(x=>/office-/.test(x.command||"")));
+const ss=h.SessionStart.filter(b=>b.hooks.some(x=>/office-start/.test(x.command||"")));  // office-pref status também roda em clear (office-ask-at-start)
 console.log(bad.length===0&&ss.length===1&&ss[0].matcher==="startup"?"ok":"bad "+bad);
 ' "$J")"
 eq "req002 hooks.json: office-start só em startup e async" "ok" "$res"

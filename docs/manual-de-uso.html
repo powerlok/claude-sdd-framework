@@ -398,7 +398,7 @@ claude plugin list        # sdd ... Status: enabled</code></pre></div>
 
   <h3 id="salinha">Salinha dos agentes (opcional)</h3>
   <p>Página HTML local, aberta no navegador, com uma <strong>sala em pixel art 16 bits</strong> e uma mesa por agente (techlead, backend, frontend, mobile, tests, security, infra-architect; agentes novos ganham mesa). Os personagens aparecem trabalhando, entregando, em revisão ou ociosos, e um popup mostra o processo atual (ex.: "TechLead → delegou uma tarefa ao backend", "backend: editando arquivos", "tests: rodando validação"). Um agente fica "trabalhando" do início ao fim da tarefa, mesmo sem eventos no intervalo (o popup mostra "há N min"); a página aberta depois reconstrói o estado, e 30 min sem nenhum evento viram "sem atividade". Sem dependências de terceiros, sem servidor, sem rede.</p>
-  <p><strong>Desligada por padrão.</strong> O TechLead oferece uma vez (no fim da primeira resposta e no fim do onboarding; recusar grava <code>off</code>). Depois, liga e desliga a qualquer momento:</p>
+  <p><strong>Desligada por padrão.</strong> O TechLead pergunta uma vez, ao rodar <code>/sdd:start</code> (e só se ainda não houver preferência; recusar grava <code>off</code>). Depois, liga e desliga a qualquer momento:</p>
   <div class="table-wrap"><table>
     <thead><tr><th>Comando</th><th>Efeito</th></tr></thead>
     <tbody>

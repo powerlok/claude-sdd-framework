@@ -51,5 +51,14 @@ check "req001 skill tem argument-hint on|off|status" grep -q '^argument-hint: on
 check "req001 skill disable-model-invocation" grep -q '^disable-model-invocation: true$' "$S"
 check "req001 techlead oferece opt-in (pref=unset)" grep -q 'pref=unset' "$HOOKS_DIR/../agents/techlead.md"
 check "req001 techlead cita /sdd:office on|off" grep -q '/sdd:office on|off' "$HOOKS_DIR/../agents/techlead.md"
+# Pergunta inicial no /sdd:start (.specs/done/office-ask-at-start): só lá, uma vez, só com pref=unset.
+ST="$HOOKS_DIR/../skills/start/SKILL.md"; TL="$HOOKS_DIR/../agents/techlead.md"
+check "req001 /sdd:start pergunta a salinha só com pref=unset" bash -c 'grep -q "pref=unset" "$1" && grep -q "Quer ligar a salinha" "$1"' _ "$ST"
+check "req001 /sdd:start liga/desliga só com aceite explícito (on/off via office-pref.sh)" bash -c 'grep -q "office-pref.sh\" on" "$1" && grep -q "com .off." "$1"' _ "$ST"
+check "req001 /sdd:start não pergunta com pref=on ou off" grep -q 'Com `pref=on` ou `off`, não pergunte' "$ST"
+check "req001 techlead: pergunta é do /sdd:start e não oferece por conta própria" bash -c 'grep -q "pergunta inicial é feita pelo .*/sdd:start" "$1" && grep -q "NÃO oferecer por conta própria" "$1" && ! grep -q "ao FIM da primeira resposta (depois de tratar o pedido) fazer UMA pergunta" "$1"' _ "$TL"
+eq "req001 hooks.json: office-pref status em startup e clear" "2" "$(node -e '
+const h=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).hooks.SessionStart;
+let n=0; for(const g of h) if(g.matcher==="startup"||g.matcher==="clear") for(const k of g.hooks) if(/office-pref\.sh" status/.test(k.command)) n++; console.log(n)' "$HOOKS_DIR/hooks.json")"
 drop_sandbox
 finish
