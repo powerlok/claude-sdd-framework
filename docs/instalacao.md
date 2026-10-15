@@ -2,7 +2,7 @@
 
 Como instalar o plugin **`sdd`** do Claude Code, do zero até o primeiro `/sdd:start`. Comandos conferidos na [documentação oficial](https://code.claude.com/docs/en/setup) em 2026-10-15.
 
-## Em duas peças
+## Em três peças
 
 | Peça | O que é | Quantas vezes |
 |---|---|---|
@@ -10,12 +10,16 @@ Como instalar o plugin **`sdd`** do Claude Code, do zero até o primeiro `/sdd:s
 | **Marketplace `claude-sdd-framework`** | O catálogo (este repositório) de onde o plugin vem | 1 vez por máquina |
 | **Plugin `sdd`** | O TechLead e o time de agentes | 1 vez **por projeto** |
 
+**Termos:** *marketplace* = catálogo de plugins (aqui, este repositório no GitHub). *Plugin* = o `sdd` (o TechLead e os agentes). *Escopo `project`* = vale só para este repositório (`user` = todos os seus projetos). *Diálogo de confiança* = pergunta que o Claude Code faz na primeira vez que você abre uma pasta (responda que confia; sem isso o plugin do projeto não carrega).
+
+> **Terminal:** os blocos abaixo são para o **bash** (macOS, Linux, **Git Bash** no Windows). No Windows, abra o *Git Bash* para rodar os comandos de `git`, `mkdir`, `cd` e `claude`; no PowerShell 5.1 o `&&` não existe, então rode uma linha por vez. Onde o comando é diferente no PowerShell, ele aparece à parte.
+
 ## Em que situação você está?
 
 ```mermaid
 flowchart TD
-    S([Começar]) --> Q1{"claude --version<br/>funciona?"}
-    Q1 -->|não| A["A. Máquina sem Claude Code"]
+    S([Começar]) --> Q1{"claude --version mostra<br/>2.1.288 ou superior?"}
+    Q1 -->|não instalado ou antigo| A["A. Máquina sem Claude Code<br/>(ou versão antiga)"]
     Q1 -->|sim| Q2{"O projeto já usa o sdd?<br/>(.claude/settings.json com sdd)"}
     Q2 -->|sim, é de outra pessoa| D["D. Projeto que já usa o sdd"]
     Q2 -->|não| Q3{"A pasta tem código?"}
@@ -37,26 +41,49 @@ flowchart TD
 
 > **Não sabe em qual está?** Rode o verificador (somente leitura) na pasta do projeto: ele diz o tipo, o que falta e o próximo passo.
 >
+> **1. Baixe** (e leia o arquivo: ele só lê, não instala, não escreve, não usa `eval`):
+>
 > ```bash
 > # macOS, Linux, Git Bash
-> curl -fsSL https://raw.githubusercontent.com/powerlok/claude-sdd-framework/main/scripts/check-env.sh -o check-env.sh && bash check-env.sh --net
+> curl -fsSL https://raw.githubusercontent.com/powerlok/claude-sdd-framework/v0.12.0/scripts/check-env.sh -o check-env.sh
 > ```
 >
 > ```powershell
-> # Windows PowerShell
-> irm https://raw.githubusercontent.com/powerlok/claude-sdd-framework/main/scripts/check-env.ps1 -OutFile check-env.ps1
+> # Windows PowerShell (funciona mesmo sem Git instalado)
+> irm https://raw.githubusercontent.com/powerlok/claude-sdd-framework/v0.12.0/scripts/check-env.ps1 -OutFile check-env.ps1
+> ```
+>
+> **2. Rode** na pasta do projeto (`--net` também testa o acesso ao GitHub):
+>
+> ```bash
+> bash check-env.sh --net
+> ```
+>
+> ```powershell
 > powershell -ExecutionPolicy Bypass -File .\check-env.ps1 -Net
 > ```
 >
-> Leia o arquivo antes de rodar: ele só lê (não instala, não escreve, não usa `eval`). Com o repositório clonado: `bash scripts/check-env.sh` na pasta do projeto.
+> Com o repositório do framework clonado: `bash scripts/check-env.sh` na pasta do projeto.
 
 ---
 
 ## A. Máquina sem Claude Code
 
+> Também vale se o seu `claude` é **anterior à 2.1.288**: pule para o passo A3 e atualize.
+
 **Requisitos:** macOS 13+, Windows 10 (1809+), Ubuntu 20.04+/Debian 10+/Alpine 3.19+, 4 GB de RAM, internet, e uma conta Claude (Pro, Max, Teams, Enterprise ou Console; o plano gratuito não inclui o Claude Code).
 
-**A1. Instale o CLI** (instalador nativo, recomendado; não precisa de administrador nem de Node):
+**A1. Git primeiro** (principalmente no Windows). O sdd precisa do `git` e, no Windows, do **Git Bash** (os hooks do plugin usam `bash`):
+
+| Sistema | Instalar |
+|---|---|
+| Windows | [Git for Windows](https://git-scm.com/download/win) (traz o Git Bash); reabra o terminal; `bash --version` deve funcionar |
+| macOS | `xcode-select --install` (ou `brew install git`) |
+| Linux | `sudo apt install git` (ou o gerenciador da sua distro) |
+
+No Windows com **WSL**, instale e rode tudo dentro do WSL (siga as linhas de Linux; o Git for Windows não é necessário lá).
+
+**A2. Instale o CLI** (instalador nativo, recomendado; não precisa de administrador nem de Node):
 
 | Sistema | Comando |
 |---|---|
@@ -66,13 +93,13 @@ flowchart TD
 
 Alternativas: `brew install --cask claude-code` (macOS), `winget install Anthropic.ClaudeCode` (Windows) ou `npm install -g @anthropic-ai/claude-code` (exige Node 22+; nunca com `sudo`). Atualizar o CLI: `claude update` (instalador nativo) ou o comando do gerenciador usado.
 
-**A2. Confira.** Abra um terminal **novo** e rode:
+**A3. Confira.** Abra um terminal **novo** e rode:
 
 ```bash
 claude --version
 ```
 
-Você vê algo como `2.1.300 (Claude Code)`. O sdd exige **2.1.288 ou superior**. Se aparecer "comando não encontrado", o PATH não inclui a pasta do `claude`:
+Você vê algo como `2.1.300 (Claude Code)`. O sdd exige **2.1.288 ou superior**; versão antiga: `claude update` (ou o comando do gerenciador que você usou). Se aparecer "comando não encontrado", o PATH não inclui a pasta do `claude`:
 
 | Sistema | Onde está o binário | Corrigir o PATH |
 |---|---|---|
@@ -82,17 +109,7 @@ Você vê algo como `2.1.300 (Claude Code)`. O sdd exige **2.1.288 ou superior**
 
 Terminal dentro de um editor (VS Code etc.) herda o PATH do editor: feche e reabra o editor. Para diagnóstico: `claude doctor`.
 
-**A3. Faça login.** Rode `claude`; o navegador abre para entrar (se não abrir, tecle `c` para copiar a URL). Depois, `claude auth status` deve responder com a sua conta (sai com código 0 logado e 1 sem login).
-
-**A4. Git.** O sdd precisa do `git` e, no Windows, do **Git Bash** (os hooks do plugin usam `bash`):
-
-| Sistema | Instalar |
-|---|---|
-| Windows | [Git for Windows](https://git-scm.com/download/win) (traz o Git Bash); reabra o terminal; `bash --version` deve funcionar |
-| macOS | `xcode-select --install` (ou `brew install git`) |
-| Linux | `sudo apt install git` (ou o gerenciador da sua distro) |
-
-No Windows com **WSL**, instale e rode tudo dentro do WSL (siga as linhas de Linux; o Git for Windows não é necessário lá).
+**A4. Faça login.** Rode `claude`; o navegador abre para entrar (se não abrir, o próprio prompt de login oferece copiar a URL: tecle `c`). Depois, `claude auth status` deve responder com a sua conta (sai com código 0 logado e 1 sem login).
 
 **A5. Rede.** O Claude Code usa o git da máquina para baixar o marketplace. Confira (repositório público, sem credencial):
 
@@ -108,10 +125,12 @@ Pronto. Siga para **B**, **C** ou **D** conforme o seu projeto.
 
 ## B. Projeto novo (pasta vazia)
 
-**B1. Crie a pasta e o repositório:**
+**B1. Crie a pasta e o repositório** (uma linha por vez serve em qualquer terminal):
 
 ```bash
-mkdir meu-projeto && cd meu-projeto && git init
+mkdir meu-projeto
+cd meu-projeto
+git init
 ```
 
 **B2. Registre o marketplace** (uma vez por máquina; se já registrou antes, pule):
@@ -121,9 +140,22 @@ claude plugin marketplace list
 claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.12.0"
 ```
 
-O primeiro comando lista o que já existe. Se `claude-sdd-framework` já aparece **sem** `@v0.12.0`, veja [E](#e-atualizar-a-versão). Você vê `Successfully added marketplace: claude-sdd-framework`.
+O primeiro comando lista o que já existe. Se `claude-sdd-framework` já aparece **sem** `@v0.12.0`, vá para [E](#e-atualizar-a-versão). Você vê `Successfully added marketplace: claude-sdd-framework`.
 
-**B3. Copie o settings.** Copie o arquivo **inteiro** [`templates/project-settings.git.json`](../templates/project-settings.git.json) para `meu-projeto/.claude/settings.json` (crie a pasta `.claude`). Ele declara o marketplace e o plugin, define o TechLead como agente e traz as [proteções](referencia.md#proteções-do-template). Sozinho ele **não carrega** o plugin: falta o B4.
+**B3. Baixe o settings** para `meu-projeto/.claude/settings.json`. Ele declara o marketplace e o plugin, define o TechLead como agente e traz as [proteções](referencia.md#proteções-do-template); sozinho ele **não carrega** o plugin (falta o B4).
+
+```bash
+mkdir -p .claude
+curl -fsSL https://raw.githubusercontent.com/powerlok/claude-sdd-framework/v0.12.0/templates/project-settings.git.json -o .claude/settings.json
+```
+
+```powershell
+# PowerShell
+New-Item -ItemType Directory -Force .claude | Out-Null
+irm https://raw.githubusercontent.com/powerlok/claude-sdd-framework/v0.12.0/templates/project-settings.git.json -OutFile .claude\settings.json
+```
+
+Com o framework clonado, copie [`templates/project-settings.git.json`](../templates/project-settings.git.json) à mão. Copie o arquivo **inteiro**, não só um trecho.
 
 **B4. Instale o plugin** (na raiz do projeto):
 
@@ -140,7 +172,7 @@ claude plugin list
 claude
 ```
 
-Aceite o diálogo de confiança da pasta (sem confiar, o plugin do projeto não carrega). O Claude Code só responde depois da sua primeira mensagem: digite **`/sdd:start`**. O TechLead pergunta a stack e propõe o `CLAUDE.md`; nada é criado sem a sua confirmação. Depois, [faça o primeiro pedido](primeiros-passos.md).
+Aceite o diálogo de confiança da pasta. O Claude Code só responde depois da sua primeira mensagem: digite **`/sdd:start`**. O TechLead pergunta a stack e propõe o `CLAUDE.md`; nada é criado sem a sua confirmação. Depois, [faça o primeiro pedido](primeiros-passos.md).
 
 ---
 
@@ -148,11 +180,26 @@ Aceite o diálogo de confiança da pasta (sem confiar, o plugin do projeto não 
 
 Igual ao **B**, sem o `git init`. Na raiz do repositório do projeto:
 
-**C1.** Registre o marketplace (uma vez por máquina), como em [B2](#b-projeto-novo-pasta-vazia).
+**C1.** Registre o marketplace (uma vez por máquina), como no [passo B2](#b-projeto-novo-pasta-vazia).
 
-**C2. Settings.** Copie o arquivo inteiro [`templates/project-settings.git.json`](../templates/project-settings.git.json) para `.claude/settings.json`.
+**C2. Settings.** Se **não** existe `.claude/settings.json`, baixe o modelo como no [passo B3](#b-projeto-novo-pasta-vazia).
 
-**Já existe um `.claude/settings.json`?** Não sobrescreva: acrescente `extraKnownMarketplaces`, `enabledPlugins` e `agent` do modelo e una as listas `permissions.deny` e `permissions.ask` com as do modelo (nenhuma entrada sua é removida). Se você tem `permissions.allow` com `Bash(gh *)` ou `Bash(*)`, remova: um `allow` amplo anula as confirmações.
+**Já existe um `.claude/settings.json`?** Não sobrescreva. Mescle (o TechLead também faz isso no onboarding, com a sua confirmação). Exemplo mínimo, com um `permissions` próprio:
+
+```jsonc
+// seu arquivo ANTES
+{ "permissions": { "allow": ["Bash(npm test)"] } }
+
+// DEPOIS: as 3 chaves do modelo (extraKnownMarketplaces, enabledPlugins, agent) + as listas deny/ask do modelo unidas às suas
+{
+  "extraKnownMarketplaces": { "claude-sdd-framework": { "source": { "source": "git", "url": "https://github.com/powerlok/claude-sdd-framework.git", "ref": "v0.12.0" } } },
+  "enabledPlugins": { "sdd@claude-sdd-framework": true },
+  "agent": "sdd:techlead",
+  "permissions": { "allow": ["Bash(npm test)"], "deny": [ /* as do modelo */ ], "ask": [ /* as do modelo */ ] }
+}
+```
+
+Suas outras chaves e o seu `permissions.allow` ficam como estão. Remova de `permissions.allow` entradas como `Bash(gh *)` ou `Bash(*)`: um `allow` amplo anula as confirmações do modelo. Depois de mesclar, rode `claude doctor`: ele aponta erro nos arquivos de configuração (JSON inválido). O `scripts/check-env.sh` confere só se o sdd está declarado.
 
 **C3. Plugin:**
 
@@ -170,19 +217,26 @@ claude plugin list
 O repositório já tem `.claude/settings.json` com o sdd (um colega configurou). Você só precisa do marketplace e do plugin **na sua máquina**:
 
 ```bash
-git clone <url-do-projeto> && cd <projeto>
+git clone <url-do-projeto>
+cd <projeto>
 claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.12.0"
 claude plugin install sdd@claude-sdd-framework --scope project
 claude
 ```
 
-Aceite a confiança da pasta. O `settings.json` do projeto só habilita o plugin; baixá-lo na sua máquina é o `install`. Sem ele, o `/plugin` mostra o erro "enabled in project settings but isn't installed".
+- **Use a mesma versão que o projeto declara.** Veja o `"ref"` em `.claude/settings.json` (`extraKnownMarketplaces`) e troque o `#v0.12.0` por ele; usar outra causa o erro `its source doesn't match` ([problemas comuns](#problemas-comuns)).
+- O `settings.json` do projeto só **habilita** o plugin; baixá-lo na sua máquina é o `install`. Sem ele, o `/plugin` mostra "enabled in project settings but isn't installed". Se o Claude oferecer instalar o plugin do projeto ao abrir a pasta, aceite: o resultado é o mesmo.
+- Aceite o diálogo de confiança da pasta.
 
 ---
 
 ## E. Atualizar a versão
 
-Quem decide a versão na máquina é a entrada `claude-sdd-framework` do seu `~/.claude/settings.json` (Windows: `%USERPROFILE%\.claude\settings.json`). Para trocar de versão:
+Quem decide a versão na máquina é a entrada `claude-sdd-framework` do seu `~/.claude/settings.json` (Windows: `$env:USERPROFILE\.claude\settings.json` no PowerShell, `%USERPROFILE%\.claude\settings.json` no CMD).
+
+> **Antes de mexer:** não use `claude plugin marketplace remove` (ele desinstala o plugin de todos os projetos e apaga a declaração dos `.claude/settings.json` deles) nem `marketplace update` logo depois de editar o `ref` à mão (o marketplace aparece como "not found" até o `add`).
+
+> **Vindo de versão anterior à 0.11.0** (por exemplo 0.9.4): troque `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` de **cada projeto**; sem isso a sessão abre sem o TechLead. O que mudou em cada versão: [CHANGELOG](../CHANGELOG.md).
 
 ```bash
 claude plugin marketplace list
@@ -193,7 +247,7 @@ claude plugin marketplace list
 | `...git@v0.12.0` | Nada: já está na versão atual. |
 | outra versão (`@v0.11.1`, `@v0.9.4`...) ou sem `@...` | Siga os passos abaixo. |
 
-1. Edite `~/.claude/settings.json` e, em `extraKnownMarketplaces.claude-sdd-framework.source`, ponha o `ref` desejado:
+1. Se o `~/.claude/settings.json` tem a entrada `claude-sdd-framework`, ponha nela o `ref` desejado (se não tem, pule este passo):
 
    ```json
    "claude-sdd-framework": {
@@ -201,18 +255,19 @@ claude plugin marketplace list
    }
    ```
 
-2. Registre de novo com a **mesma** fonte, e atualize em cada projeto (na raiz dele):
+2. Registre de novo com a **mesma** fonte:
 
    ```bash
    claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.12.0"
+   ```
+
+3. **Em cada projeto** onde o plugin está instalado, na raiz dele (cada projeto continua na versão antiga até você rodar isto nele):
+
+   ```bash
    claude plugin update sdd@claude-sdd-framework --scope project
    ```
 
-3. Reinicie o `claude`. Confira: `claude plugin list` mostra a versão nova.
-
-> **Evite `claude plugin marketplace remove`:** ele desinstala o plugin de todos os projetos e apaga a declaração dos `.claude/settings.json` deles. Evite também `marketplace update` logo depois de editar o `ref` à mão (o marketplace aparece como "not found" até o `add`).
-
-Vindo de versão anterior à 0.11.0: troque `"agent": "sdd:tecleader"` por `"agent": "sdd:techlead"` no `.claude/settings.json` do projeto. O que mudou em cada versão: [CHANGELOG](../CHANGELOG.md).
+4. Reinicie o `claude` e confira: `claude plugin list` mostra a versão nova.
 
 ---
 
@@ -237,13 +292,14 @@ Catálogo opcional `authoring` (criar skills e agentes): `claude plugin install 
 
 | Sintoma | Causa | Solução |
 |---|---|---|
-| `claude: command not found` | PATH sem `~/.local/bin` | [A2](#a-máquina-sem-claude-code) |
+| `claude: command not found` | PATH sem `~/.local/bin` | [passo A3](#a-máquina-sem-claude-code) (tabela de PATH) |
 | `its source doesn't match its extraKnownMarketplaces entry` | O `add` usa uma fonte diferente da entrada do `~/.claude/settings.json` | [E](#e-atualizar-a-versão): use a **mesma** URL e `ref` |
-| Clone do marketplace falha | Rede, proxy ou tag inexistente | `git ls-remote` ([A5](#a-máquina-sem-claude-code)); confira se a tag `v0.12.0` existe |
+| Clone do marketplace falha | Rede, proxy ou tag inexistente | `git ls-remote` ([passo A5](#a-máquina-sem-claude-code)); confira se a tag `v0.12.0` existe |
 | `claude plugin list` mostra `sdd` **disabled** | Instalado, mas não habilitado neste projeto | `claude plugin enable sdd@claude-sdd-framework --scope project`; confira o `enabledPlugins` do `.claude/settings.json` |
 | O `claude` abre, mas não responde como TechLead | `agent` ausente ou `sdd:tecleader` (removido na 0.11.0) | ponha `"agent": "sdd:techlead"` no `.claude/settings.json` e reabra |
 | Abri o `claude` e nada acontece | O Claude Code só responde após a sua 1ª mensagem | digite `/sdd:start` |
-| Hooks não rodam no Windows | Sem Git Bash (os hooks usam `bash`) | instale o Git for Windows ([A4](#a-máquina-sem-claude-code)) e reabra o terminal |
+| Hooks não rodam no Windows | Sem Git Bash (os hooks usam `bash`) | instale o Git for Windows ([passo A1](#a-máquina-sem-claude-code)) e reabra o terminal |
 | O plugin do projeto não carrega | Pasta não confiada | aceite o diálogo de confiança ao abrir o `claude` |
+| Quero desfazer a instalação num projeto | Não há comando único | `claude plugin uninstall sdd@claude-sdd-framework --scope project` (na raiz do projeto); antes de tirar o marketplace da máquina, leia o aviso do [tipo E](#e-atualizar-a-versão) |
 
 Mais: [primeiros passos](primeiros-passos.md) · [referência](referencia.md) · [manual de uso](manual-de-uso.html).

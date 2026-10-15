@@ -20,7 +20,7 @@ claude
 O que acontece, na ordem:
 
 1. **Diálogo de confiança da pasta** (só na primeira vez). Aceite: sem confiar, o plugin do projeto não carrega.
-2. O sdd mostra um **aviso de início**. O Claude Code **só responde depois da sua primeira mensagem**, então digite **`/sdd:start`**.
+2. Normalmente o sdd mostra um **aviso de início**. O Claude Code **só responde depois da sua primeira mensagem**, então digite **`/sdd:start`**.
 3. A resposta vem do **TechLead** ("Sou o TechLead"), com a situação do projeto, e conduz as perguntas iniciais, **uma etapa de cada vez**. Nada é criado ou alterado sem a sua confirmação.
 
 Instalou o plugin com a sessão já aberta? Rode `/reload-plugins` ou abra uma sessão nova.
@@ -42,7 +42,7 @@ O TechLead diz que a pasta não tem código e pergunta a **stack** (linguagem, f
 ### Confira
 
 - a resposta começa com "Sou o TechLead" (se vier genérica, veja [Problemas comuns](#problemas-comuns));
-- `/plugin`: aba **Installed** mostra o `sdd`, aba **Errors** vazia;
+- `/plugin`: o `sdd` aparece como instalado e sem erros (a tela pode mudar entre versões do Claude Code);
 - `CLAUDE.md` e `.specs/INDEX.md` existem na raiz do projeto.
 
 Prefere preencher à mão? Parta do modelo [`templates/CLAUDE.md`](../templates/CLAUDE.md); o TechLead confere o que faltar.
@@ -75,14 +75,12 @@ Abra o `claude` **dentro do repositório** em que vai trabalhar (é lá que fica
 
 ## Problemas comuns
 
-Os de instalação (PATH, marketplace, versão, plugin desabilitado) estão em [instalacao.md](instalacao.md#problemas-comuns). Os de uso:
+Os de instalação (PATH, marketplace, versão, plugin desabilitado, sessão sem o TechLead, hooks no Windows) estão em [instalacao.md](instalacao.md#problemas-comuns). Os de uso:
 
 | Sintoma | Causa provável | Solução |
 |---|---|---|
 | Resposta genérica, sem "Sou o TechLead" | Plugin não instalado no projeto, pasta não confiada, ou sessão aberta antes do install | `plugin install` na raiz, aceite a confiança, `/reload-plugins` ou sessão nova |
 | `/plugin` › Errors: "enabled in project settings but isn't installed here" | O settings veio pelo git, mas o plugin não foi instalado nesta máquina | `claude plugin install sdd@claude-sdd-framework --scope project` |
-| A sessão abre sem o TechLead | `agent` ausente, ou `sdd:tecleader` (removido na 0.11.0) | `"agent": "sdd:techlead"` no `.claude/settings.json` e reinicie |
-| Verificação de onboarding (hook) sem efeito no Windows | Git for Windows ausente (o hook usa `bash`) | Instale o Git for Windows; sem ele o TechLead faz a mesma verificação lendo os arquivos |
 | `git diff` mostra o `.claude/settings.json` alterado após o install | O `plugin install` reordena as chaves | Sem mudança de conteúdo; pode commitar ou descartar |
 | A salinha dos agentes não abre | Preferência desligada, sem navegador padrão ou sem Git Bash | `/sdd:office status`; se `off`, `/sdd:office on`; confira o navegador padrão |
 

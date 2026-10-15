@@ -84,6 +84,7 @@ const refs = [];
 for (const [f, t] of allDocs) {
   for (const m of t.matchAll(/claude-sdd-framework\.git[#@]v(\d+\.\d+\.\d+)/g)) if (m[1] !== ver) refs.push(`${f}: ${m[0]}`);
   for (const m of t.matchAll(/"ref":\s*"v(\d+\.\d+\.\d+)"/g)) if (m[1] !== ver) refs.push(`${f}: ${m[0]}`);
+  for (const m of t.matchAll(/claude-sdd-framework\/v(\d+\.\d+\.\d+)\//g)) if (m[1] !== ver) refs.push(`${f}: ${m[0]}`);
 }
 check(`todo "#vX.Y.Z" e "ref" das docs = v${ver}`, refs.length === 0, refs.join(" | "));
 
@@ -103,6 +104,11 @@ for (const need of ["https://claude.ai/install.sh", "https://claude.ai/install.p
 }
 check("instalacao.md tem o fluxograma de decisão (mermaid)", /```mermaid[\s\S]*Q1[\s\S]*```/.test(inst));
 check("instalacao.md: README aponta para cada tipo A a F", ["a-máquina-sem-claude-code", "b-projeto-novo-pasta-vazia", "c-projeto-com-código-existente", "d-projeto-que-já-usa-o-sdd", "e-atualizar-a-versão", "f-clone-local-quem-mexe-no-framework"].every((a) => rd("README.md").includes("instalacao.md#" + a)));
+check("instalacao.md: terminal explicado (Git Bash/PowerShell) e termos definidos", /Git Bash/.test(inst) && /PowerShell 5\.1/.test(inst) && /Escopo `project`/.test(inst) && /Diálogo de confiança/.test(inst));
+check("instalacao.md: A começa por Git, depois CLI, conferir, login, rede", (() => { const a = inst.indexOf("**A1. Git"), b = inst.indexOf("**A2. Instale o CLI"), c = inst.indexOf("**A3. Confira"), d = inst.indexOf("**A4. Faça login"), e = inst.indexOf("**A5. Rede"); return a > 0 && a < b && b < c && c < d && d < e; })());
+check("instalacao.md: baixar o settings por curl e PowerShell (B3)", inst.includes("project-settings.git.json -o .claude/settings.json") && inst.includes("-OutFile .claude\\settings.json"));
+check("instalacao.md: E avisa do agente tecleader e de atualizar cada projeto", /anterior à 0\.11\.0/.test(inst) && /Em cada projeto/.test(inst));
+check("instalacao.md: D manda usar a mesma versão do projeto", /mesma versão que o projeto declara/.test(inst));
 check("README curto (<= 130 linhas)", rd("README.md").split("\n").length <= 130, String(rd("README.md").split("\n").length));
 for (const f of ["scripts/check-env.sh", "scripts/check-env.ps1", "templates/project-settings.git.json", "templates/project-settings.local.json"]) check(`${f} existe`, fs.existsSync(path.join(ROOT, f)));
 

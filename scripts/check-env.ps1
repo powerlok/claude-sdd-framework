@@ -141,7 +141,10 @@ elseif ($code) { Write-Output "  Tipo: C, projeto com código existente"; $type 
 else { Write-Output "  Tipo: C, pasta com arquivos (sem manifesto de código conhecido)"; $type = "C" }
 
 if ($type -ne "workspace") {
-  if ($isGit) { Ok "dentro de um repositório git" }
+  if ($isGit) {
+    Ok "dentro de um repositório git"
+    if ($root -and ((Norm $root) -ne (Norm $here))) { Warn "a raiz do repositório git é $root, acima desta pasta" "o sdd é instalado na raiz do repositório: rode este script (e os passos) em $root" }
+  }
   else { Miss "a pasta não é um repositório git" "git init" "Crie o repositório: git init (a raiz do repositório é a raiz do projeto)" }
 
   if (Test-Path -LiteralPath $settings) {

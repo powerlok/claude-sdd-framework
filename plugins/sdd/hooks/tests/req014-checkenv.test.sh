@@ -120,6 +120,7 @@ check "req014 sem CLAUDE.md: AVISO manda rodar /sdd:start" bash -c 'echo "$1" | 
 mkdir -p "$E/sub"; plugins_json "$PJ" "$(jpath "$HERE")" true
 STUB_MP_FILE="$MP_OK" STUB_PLUGINS_FILE="$PJ" run "$E/sub" yes
 check "req014 subpasta do projeto instalado: plugin conta" has "plugin sdd $VER instalado e habilitado"
+check "req014 subpasta: avisa que a raiz do repositório git está acima" has "a raiz do repositório git é"
 
 # 10) tudo pronto: exit 0 e PRÓXIMO PASSO = /sdd:start
 printf '# P\n\n## Stack\n- node\n' > "$E/CLAUDE.md"

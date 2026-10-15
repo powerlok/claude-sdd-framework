@@ -187,6 +187,9 @@ fi
 if [ "$TYPE" != workspace ]; then
   if [ "$is_git" = yes ]; then
     ok "dentro de um repositório git"
+    if [ -n "$root" ] && [ "$root" != "$PWD" ]; then
+      warn "a raiz do repositório git é $root, acima desta pasta" "o sdd é instalado na raiz do repositório: rode este script (e os passos) em $root"
+    fi
   else
     miss "a pasta não é um repositório git" "git init" "Crie o repositório: git init (a raiz do repositório é a raiz do projeto)"
   fi
@@ -211,6 +214,7 @@ if [ "$TYPE" != workspace ]; then
   if [ -n "$CLAUDE" ] && [ "$MP_OK" = yes ]; then
     # claude plugin list --json: um objeto por instalação (id, version, scope, enabled, projectPath). Compara com a raiz do projeto.
     here="${root:-$PWD}"
+    here="$(cd "$here" 2>/dev/null && pwd -P || printf '%s' "$here")"   # caminho físico (macOS: /var é link para /private/var)
     if command -v cygpath >/dev/null 2>&1; then here="$(cygpath -ml "$here" 2>/dev/null || printf '%s' "$here")"; fi
     here="$(printf '%s' "$here" | tr 'A-Z' 'a-z')"
     found=""

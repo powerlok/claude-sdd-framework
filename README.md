@@ -39,14 +39,16 @@ Escolha a sua situação e siga o passo a passo em **[docs/instalacao.md](docs/i
 | **E** | Já instalado, quero trocar de versão | [E. Atualizar](docs/instalacao.md#e-atualizar-a-versão) |
 | **F** | Mexo no framework | [F. Clone local](docs/instalacao.md#f-clone-local-quem-mexe-no-framework) |
 
-O caso mais comum (C, com o Claude Code já instalado), em 4 comandos na raiz do repositório:
+O caso mais comum (C, com o Claude Code **2.1.288 ou superior** já instalado), na raiz do repositório:
 
 ```bash
 claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.12.0"   # 1x por máquina
-# copie templates/project-settings.git.json para .claude/settings.json
+mkdir -p .claude && curl -fsSL https://raw.githubusercontent.com/powerlok/claude-sdd-framework/v0.12.0/templates/project-settings.git.json -o .claude/settings.json
 claude plugin install sdd@claude-sdd-framework --scope project
 claude          # aceite a confiança da pasta e digite /sdd:start
 ```
+
+Já tem `.claude/settings.json`? Mescle em vez de sobrescrever (veja o [tipo C](docs/instalacao.md#c-projeto-com-código-existente)). No Windows, use o Git Bash para estes comandos.
 
 **Não sabe o que falta?** O verificador (somente leitura) diz o tipo do projeto, o que falta e o próximo passo: `bash scripts/check-env.sh` (macOS, Linux, Git Bash) ou `scripts\check-env.ps1` (Windows PowerShell).
 
