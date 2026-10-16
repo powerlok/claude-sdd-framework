@@ -5,7 +5,7 @@
 **Spec-Driven Development para o Claude Code: um time de agentes que vai do requisito ao DONE, com evidência.**
 
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.288-D97757)
-![sdd](https://img.shields.io/badge/plugin%20sdd-0.12.0-2563EB)
+![sdd](https://img.shields.io/badge/plugin%20sdd-0.13.0-2563EB)
 ![authoring](https://img.shields.io/badge/plugin%20authoring-0.2.1-7C3AED)
 ![stacks](https://img.shields.io/badge/stacks-.NET%20%7C%20Python%20%7C%20React%20%7C%20Angular-0F766E)
 ![cloud](https://img.shields.io/badge/cloud-AWS%20%7C%20Azure%20%7C%20Google%20Cloud-F59E0B)
@@ -78,9 +78,9 @@ Ao concluir uma spec, o TechLead abre o PR e entrega a URL; revisar e fazer o me
 | Agente | Papel | Modelo |
 |---|---|---|
 | `sdd:techlead` | Orquestra, cria specs e tasks, aprova design, encerra (sessão principal) | opus |
-| `sdd:backend` | APIs, domínio, persistência e testes, na stack do projeto | sonnet |
-| `sdd:frontend` | Interfaces, UX, acessibilidade e testes; confere a tela no navegador (Playwright) | sonnet |
-| `sdd:mobile` | Apps mobile (React Native/Expo), acessibilidade, permissões e testes | sonnet |
+| `sdd:backend` | APIs, domínio, persistência e testes, na stack do projeto; consulta docs atuais (Context7) | sonnet |
+| `sdd:frontend` | Interfaces, UX, acessibilidade e testes; confere a tela (Playwright) e inspeciona performance, console e rede (Chrome DevTools) | sonnet |
+| `sdd:mobile` | Apps mobile (React Native/Expo), acessibilidade, permissões e testes; consulta docs atuais (Context7) | sonnet |
 | `sdd:tests` | Validação independente: regressão, contratos, E2E, aceite | sonnet |
 | `sdd:security` | Revisão de segurança (AppSec, dependências, segredos), somente leitura | opus |
 | `sdd:infra-architect` | Arquitetura de nuvem (AWS, Azure, Google Cloud) e diagramas (draw.io); nunca aplica mudança | opus |

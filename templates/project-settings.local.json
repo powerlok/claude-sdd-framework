@@ -96,7 +96,11 @@
       "mcp__plugin_sdd_playwright__browser_evaluate",
       "mcp__plugin_sdd_playwright__browser_run_code_unsafe",
       "mcp__plugin_sdd_playwright__browser_file_upload",
-      "mcp__plugin_sdd_playwright__browser_drop"
+      "mcp__plugin_sdd_playwright__browser_drop",
+      "mcp__plugin_sdd_devtools__evaluate_script",
+      "mcp__plugin_sdd_devtools__upload_file",
+      "mcp__plugin_sdd_devtools__take_heapsnapshot",
+      "mcp__plugin_sdd_devtools__screencast_start"
     ],
     "ask": [
       "Bash(git push)",
@@ -454,7 +458,9 @@
       "Bash(aws *)",
       "Bash(aws.exe *)",
       "Bash(gcloud *)",
-      "Bash(gcloud.cmd *)"
+      "Bash(gcloud.cmd *)",
+      "mcp__plugin_sdd_devtools__new_page",
+      "mcp__plugin_sdd_devtools__navigate_page"
     ]
   }
 }

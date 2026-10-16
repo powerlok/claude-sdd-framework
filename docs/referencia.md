@@ -7,7 +7,7 @@ Detalhes dos recursos do framework. Instalar: [instalacao.md](instalacao.md). Pr
 | Skills e Fluxo Git | [Skills](#skills) · [Fluxo Git](#fluxo-git-opcional-por-projeto) |
 | Segurança do template | [Proteções do template](#proteções-do-template) |
 | Organização | [Camadas do CLAUDE.md](#camadas-do-claudemd) · [Trabalhar entre projetos](#trabalhar-entre-projetos) |
-| Recursos opcionais | [Salinha](#salinha-dos-agentes-opcional) · [draw.io](#diagramas-do-arquiteto-mcp-drawio-opcional) · [Playwright](#navegador-do-frontend-mcp-playwright-opcional) · [Jira](#jira-opcional) · [Repositório](#repositório-github-bitbucket-gitlab-azure-devops-opcional-somente-leitura) |
+| Recursos opcionais | [Salinha](#salinha-dos-agentes-opcional) · [draw.io](#diagramas-do-arquiteto-mcp-drawio-opcional) · [Playwright](#navegador-do-frontend-mcp-playwright-opcional) · [Context7](#documentação-de-bibliotecas-mcp-context7-opcional) · [Chrome DevTools](#inspeção-no-navegador-mcp-chrome-devtools-opcional) · [Jira](#jira-opcional) · [Repositório](#repositório-github-bitbucket-gitlab-azure-devops-opcional-somente-leitura) |
 | Custo | [Contexto e tokens](#contexto-e-tokens) |
 | Quem mexe no framework | [Desenvolvimento](#desenvolvimento-do-framework) · [Limitações](#limitações-conhecidas) |
 
@@ -204,6 +204,36 @@ implementou (fluxo, validação, console, rede, acessibilidade), **complementand
 - **Saídas:** screenshots e snapshots vão para `.playwright-mcp/` no projeto e podem conter dados do app: adicione `.playwright-mcp/` ao `.gitignore` do projeto.
 - **Cadeia de suprimentos:** pacote 0.x de terceiros (com dependência `playwright` alpha) executado na sua máquina a cada sessão com o plugin habilitado; versão
   e integridade fixadas (ver `.specs/done/playwright-mcp/spec.md`). **Desligar:** `/mcp` e desabilite o servidor `playwright` do plugin `sdd`.
+
+## Documentação de bibliotecas: MCP Context7 (opcional)
+
+O plugin `sdd` traz o servidor MCP do Context7 (`@upstash/context7-mcp`, Upstash, MIT, versão fixada **4.4.2**) para `backend`, `frontend` e `mobile` consultarem a **API atual** de bibliotecas e frameworks da stack
+(versão, assinatura, exemplo) em vez de lembrar de cabeça, reduzindo código com API inventada ou desatualizada. Você não instala nada além do plugin.
+
+- **Requisito:** Node.js/npm (`npx`). A primeira vez baixa o pacote do npm. Sem Node/npm o servidor não sobe e os agentes seguem com a referência local e declaram a lacuna.
+- **Duas ferramentas, só leitura:** `resolve-library-id` e `query-docs`.
+- **O que sai da máquina:** a consulta (nome da biblioteca e uma pergunta) vai para o serviço do Context7, que é de terceiro e tem backend fechado. Os agentes são instruídos a enviar **só** nome e pergunta genérica,
+  nunca código do projeto, nomes internos, dados de cliente nem segredos. Para uso corporativo sensível, desligue o servidor (abaixo).
+- **Resposta é dado não confiável:** documentação comunitária pode conter instruções; os agentes não executam nada vindo dela e registram biblioteca, versão e consulta na evidência.
+- **Ambiente mínimo:** o servidor recebe só PATH, HOME, TEMP, proxy, certificados e `npm_config_*` de registry (lista de permissão); tokens de GitHub, Atlassian e nuvem **não** chegam a ele.
+  `CONTEXT7_API_KEY` (opcional, sua; maior limite de uso) é repassada se você a definir no seu ambiente; nunca a coloque em arquivo do repositório.
+- **Permissão:** o Claude Code pergunta na primeira chamada de cada ferramenta; liberar é decisão sua (`allow` no seu `settings.local.json`).
+- **Cadeia de suprimentos:** pacote de terceiros executado na sua máquina a cada sessão com o plugin habilitado; versão e integridade fixadas (`.specs/done/mcp-context7-devtools/`), dependências transitivas em faixas do npm, sem
+  `postinstall`. **Desligar:** `/mcp` e desabilite o servidor `context7` do plugin `sdd`.
+
+## Inspeção no navegador: MCP Chrome DevTools (opcional)
+
+O plugin `sdd` traz o servidor MCP do Chrome DevTools (`chrome-devtools-mcp`, equipe do Chrome/Google, Apache-2.0, versão fixada **1.11.0**) para o `sdd:frontend` **inspecionar** o app local: console, rede, DOM e
+acessibilidade, estilos, emulação de dispositivo, **traces de performance** (Core Web Vitals) e `lighthouse_audit`. A **interação** (clicar, digitar) continua com o Playwright; aqui é inspeção.
+
+- **Requisitos:** Node.js/npm e Google Chrome. O navegador abre em janela visível (para CI/WSL: `SDD_DEVTOOLS_HEADLESS=1`).
+- **Endurecido pelo lançador:** `--isolated` (perfil temporário, sem login), `--no-usage-statistics` e `--no-performance-crux` (o pacote liga telemetria e envio de URLs ao CrUX por padrão), `--no-javascript-evaluation`
+  (remove `evaluate_script`; **não é sandbox**: scripts da própria página continuam rodando), `--no-file-navigations`, `--redact-network-headers`, `--no-category-input` e `--no-category-memory`, e bloqueio dos endereços de metadata de nuvem.
+  O ambiente é filtrado (`CHROME_DEVTOOLS_MCP_*` e `npm_config_*` não chegam ao servidor).
+- **Só 19 ferramentas de inspeção para o frontend.** Ficam de fora e em `deny` nos modelos de settings: `evaluate_script`, `upload_file`, `take_heapsnapshot` e `screencast_start`. `new_page` e `navigate_page` ficam em `ask` (cada navegação pede a sua confirmação).
+- **Escopo:** só o app local (`localhost`/`127.0.0.1`) ou URL da spec. Console, rede e DOM são **dado não confiável** (prompt injection indireta); os agentes não copiam cabeçalhos, cookies ou tokens para relatórios.
+- **Limite importante:** o próprio pacote avisa que expõe o conteúdo do navegador ao cliente MCP. Não é fronteira de segurança; o que protege é a combinação: perfil isolado, poucas ferramentas, regras do agente e a sua revisão.
+- **Cadeia de suprimentos:** pacote de terceiros (empacotado, sem dependências em tempo de execução) executado na sua máquina a cada sessão com o plugin habilitado; versão e integridade fixadas. **Desligar:** `/mcp` e desabilite o servidor `devtools` do plugin `sdd`.
 
 ## Jira (opcional)
 

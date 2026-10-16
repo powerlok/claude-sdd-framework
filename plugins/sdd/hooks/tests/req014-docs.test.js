@@ -70,23 +70,27 @@ for (const f of HTML) {
 // ---------- 2) versões coerentes ----------
 const ver = JSON.parse(rd("plugins/sdd/.claude-plugin/plugin.json")).version;
 const mk = JSON.parse(rd(".claude-plugin/marketplace.json"));
-check(`marketplace.json metadata.version = ${ver}`, mk.metadata && mk.metadata.version === ver, mk.metadata && mk.metadata.version);
+// "rel" = versão LANÇADA (tag): marketplace, ref do template, SDD_VERSION e comandos de instalação coincidem entre si.
+// "ver" = versão do plugin em desenvolvimento (badge, arquitetura, manual): igual ou maior que a lançada.
+const rel = mk.metadata && mk.metadata.version;
+const cmp = (a, b) => { const x = a.split(".").map(Number), y = b.split(".").map(Number); for (let i = 0; i < 3; i++) { if (x[i] !== y[i]) return x[i] < y[i] ? -1 : 1; } return 0; };
+check(`plugin ${ver} é igual ou maior que a versão lançada (marketplace ${rel})`, !!rel && cmp(ver, rel) >= 0, rel);
 const tpl = JSON.parse(rd("templates/project-settings.git.json"));
 const tplRef = tpl.extraKnownMarketplaces["claude-sdd-framework"].source.ref;
-check(`ref do template = v${ver}`, tplRef === "v" + ver, tplRef);
+check(`ref do template = v${rel} (versão lançada)`, tplRef === "v" + rel, tplRef);
 check("README: badge do sdd", rd("README.md").includes(`plugin%20sdd-${ver}-`));
 check("arquitetura: tabela de versões", rd("docs/arquitetura.md").includes(`| \`sdd\` | ${ver} |`));
 check("manual: selo de versão", rd("docs/manual-de-uso.html").includes(`sdd ${ver} · authoring`));
-check("check-env.sh: SDD_VERSION", rd("scripts/check-env.sh").includes(`SDD_VERSION="${ver}"`));
-check("check-env.ps1: SddVersion", rd("scripts/check-env.ps1").includes(`$SddVersion = "${ver}"`));
+check("check-env.sh: SDD_VERSION = versão lançada", rd("scripts/check-env.sh").includes(`SDD_VERSION="${rel}"`));
+check("check-env.ps1: SddVersion = versão lançada", rd("scripts/check-env.ps1").includes(`$SddVersion = "${rel}"`));
 const allDocs = [...MD, ...HTML].map((f) => [f, rd(f)]);
 const refs = [];
 for (const [f, t] of allDocs) {
-  for (const m of t.matchAll(/claude-sdd-framework\.git[#@]v(\d+\.\d+\.\d+)/g)) if (m[1] !== ver) refs.push(`${f}: ${m[0]}`);
-  for (const m of t.matchAll(/"ref":\s*"v(\d+\.\d+\.\d+)"/g)) if (m[1] !== ver) refs.push(`${f}: ${m[0]}`);
-  for (const m of t.matchAll(/claude-sdd-framework\/v(\d+\.\d+\.\d+)\//g)) if (m[1] !== ver) refs.push(`${f}: ${m[0]}`);
+  for (const m of t.matchAll(/claude-sdd-framework\.git[#@]v(\d+\.\d+\.\d+)/g)) if (m[1] !== rel) refs.push(`${f}: ${m[0]}`);
+  for (const m of t.matchAll(/"ref":\s*"v(\d+\.\d+\.\d+)"/g)) if (m[1] !== rel) refs.push(`${f}: ${m[0]}`);
+  for (const m of t.matchAll(/claude-sdd-framework\/v(\d+\.\d+\.\d+)\//g)) if (m[1] !== rel) refs.push(`${f}: ${m[0]}`);
 }
-check(`todo "#vX.Y.Z" e "ref" das docs = v${ver}`, refs.length === 0, refs.join(" | "));
+check(`todo "#vX.Y.Z" e "ref" das docs = v${rel}`, refs.length === 0, refs.join(" | "));
 
 // versão mínima do CLI igual em todos os lugares
 const minSh = (rd("scripts/check-env.sh").match(/MIN_CLAUDE="([\d.]+)"/) || [])[1];

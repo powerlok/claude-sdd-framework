@@ -5,6 +5,7 @@
 ROOT="$(cd "$HOOKS_DIR/../../.." && pwd)"
 CE="$ROOT/scripts/check-env.sh"
 VER="$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).version)' "$ROOT/plugins/sdd/.claude-plugin/plugin.json")"
+REL="$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).metadata.version)' "$ROOT/.claude-plugin/marketplace.json")"   # versão LANÇADA (tag)
 
 new_sandbox
 S="$SB/stubs"; mkdir -p "$S"
@@ -73,7 +74,7 @@ check "req014 sem login: FALTA e manda 'claude auth login'" bash -c 'echo "$1" |
 
 # 4) sem marketplace
 STUB_MP_FILE="$MP_NONE" run "$E" yes
-check "req014 sem marketplace: manda registrar com a versão atual" has "claude plugin marketplace add \"https://github.com/powerlok/claude-sdd-framework.git#v$VER\""
+check "req014 sem marketplace: manda registrar com a versão atual" has "claude plugin marketplace add \"https://github.com/powerlok/claude-sdd-framework.git#v$REL\""
 STUB_MP_FILE="$MP_OLD" run "$E" yes
 check "req014 marketplace em outra versão: AVISO (não falha) e aponta a seção E" bash -c 'echo "$1" | grep -q "AVISO.*outra versão" && echo "$1" | grep -q "instalacao.md#e-atualizar-a-versão"' _ "$OUT"
 
@@ -171,7 +172,7 @@ check "req014 --help mostra o uso" bash -c 'bash "$1" --help | grep -q "Uso: bas
 # 16) higiene do script
 check "req014 script: nenhum eval/curl/wget executado" bash -c '! grep -nE "^[[:space:]]*(eval|curl|wget)[[:space:]]|[$][(](curl|wget|eval)" "$1"' _ "$CE"
 check "req014 script: nenhuma escrita em arquivo (só /dev/null e saída padrão)" bash -c '! grep -nE "[^<>2&-]>[[:space:]]*\"?[$A-Za-z./]" "$1" | grep -vE "/dev/null|>&2|-> "' _ "$CE"
-check "req014 script: SDD_VERSION = versão do plugin ($VER)" grep -q "SDD_VERSION=\"$VER\"" "$CE"
+check "req014 script: SDD_VERSION = versão lançada ($REL)" grep -q "SDD_VERSION=\"$REL\"" "$CE"
 
 drop_sandbox
 finish

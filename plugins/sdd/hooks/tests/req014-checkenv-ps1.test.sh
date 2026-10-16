@@ -5,6 +5,7 @@
 ROOT="$(cd "$HOOKS_DIR/../../.." && pwd)"
 PS1="$ROOT/scripts/check-env.ps1"
 VER="$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).version)' "$ROOT/plugins/sdd/.claude-plugin/plugin.json")"
+REL="$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).metadata.version)' "$ROOT/.claude-plugin/marketplace.json")"   # versão LANÇADA (tag)
 
 PSH="$(command -v powershell.exe 2>/dev/null || command -v pwsh 2>/dev/null || true)"
 if [ -z "$PSH" ]; then
@@ -18,7 +19,7 @@ S="$SB/stubs"; mkdir -p "$S" "$SB/home"
 w() { if command -v cygpath >/dev/null 2>&1; then cygpath -wl "$1"; else printf '%s' "$1"; fi; }
 GITDIR="$(dirname "$(command -v git)")"
 
-MP_OK="$SB/mp_ok.txt"; printf 'Configured marketplaces:\n\n  > claude-sdd-framework\n    Source: Git (https://github.com/powerlok/claude-sdd-framework.git@v%s)\n' "$VER" > "$MP_OK"
+MP_OK="$SB/mp_ok.txt"; printf 'Configured marketplaces:\n\n  > claude-sdd-framework\n    Source: Git (https://github.com/powerlok/claude-sdd-framework.git@v%s)\n' "$REL" > "$MP_OK"
 if [ "$WIN" = yes ]; then
   printf '%s\r\n' '@echo off' 'if "%1"=="--version" (echo %STUB_VERSION% (Claude Code)& exit /b 0)' 'if "%1"=="auth" exit /b %STUB_AUTH_RC%' 'if "%1 %2 %3"=="plugin marketplace list" (type "%STUB_MP_FILE%"& exit /b 0)' 'if "%1 %2 %3"=="plugin list --json" (if defined STUB_PLUGINS_FILE (type "%STUB_PLUGINS_FILE%") else (echo [])& exit /b 0)' 'exit /b 0' > "$S/claude.cmd"
 else
@@ -45,7 +46,7 @@ eq "req014-ps1 pasta vazia: exit 1" "1" "$RC"
 check "req014-ps1 pasta vazia: tipo B" has "Tipo: B, projeto novo (pasta vazia)"
 check "req014-ps1 pasta vazia: manda git init" has "git init"
 check "req014-ps1 CLI e login OK" has "[OK]     login feito (claude auth status)"
-check "req014-ps1 marketplace na versão atual" has "registrado em v$VER"
+check "req014-ps1 marketplace na versão atual" has "registrado em v$REL"
 
 # versão antiga
 STUB_VERSION=2.1.100 run "$E"
