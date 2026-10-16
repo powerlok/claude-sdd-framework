@@ -42,8 +42,8 @@ Escolha a sua situação e siga o passo a passo em **[docs/instalacao.md](docs/i
 O caso mais comum (C, com o Claude Code **2.1.288 ou superior** já instalado), na raiz do repositório:
 
 ```bash
-claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.12.0"   # 1x por máquina
-mkdir -p .claude && curl -fsSL https://raw.githubusercontent.com/powerlok/claude-sdd-framework/v0.12.0/templates/project-settings.git.json -o .claude/settings.json
+claude plugin marketplace add "https://github.com/powerlok/claude-sdd-framework.git#v0.13.0"   # 1x por máquina
+mkdir -p .claude && curl -fsSL https://raw.githubusercontent.com/powerlok/claude-sdd-framework/v0.13.0/templates/project-settings.git.json -o .claude/settings.json
 claude plugin install sdd@claude-sdd-framework --scope project
 claude          # aceite a confiança da pasta e digite /sdd:start
 ```

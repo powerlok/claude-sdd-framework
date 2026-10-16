@@ -2,9 +2,17 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## Release v0.13.0 — 2026-10-16
+
+Inclui: `sdd` 0.13.0 (MCPs Context7 e Chrome DevTools), `authoring` 0.2.1.
+
+- `marketplace.json`: `metadata.version` = `0.13.0`; a tag `v0.13.0` deve apontar para o commit do merge em `main` que traz essa versão (a tag é criada após o merge).
+- `templates/project-settings.git.json`, README, `docs/instalacao.md`, `docs/referencia.md`, manual HTML e `scripts/check-env.*` fixam `v0.13.0`. Até a tag existir, a instalação por essa versão falha.
+- **Migração:** projetos existentes acrescentam 6 entradas ao `permissions` (ver `sdd 0.13.0`); troque o `ref` para `v0.13.0`, rode `claude plugin marketplace add "...git#v0.13.0"` e `claude plugin update sdd@claude-sdd-framework --scope project`.
+
 ## sdd 0.13.0 — 2026-10-15
 
-MCPs Context7 e Chrome DevTools no plugin (`.specs/done/mcp-context7-devtools/spec.md`, parecer em `security-review.md`). Não é release (sem tag): marketplace, `ref` e docs de instalação seguem em `v0.12.0`.
+MCPs Context7 e Chrome DevTools no plugin (`.specs/done/mcp-context7-devtools/spec.md`, parecer em `security-review.md`). Entrou no release `v0.13.0` (abaixo).
 
 - **Context7** (`mcp/context7.js`, `@upstash/context7-mcp@4.4.2`, MIT): `backend`, `frontend` e `mobile` consultam a API atual das bibliotecas da stack (`resolve-library-id` e `query-docs`, só leitura). A consulta sai da máquina
   (serviço de terceiro): os agentes enviam só nome e pergunta genérica, nunca código ou segredo; a resposta é dado não confiável. Ambiente do servidor por **lista de permissão** (nenhum token de GitHub/Atlassian/nuvem chega ao pacote).

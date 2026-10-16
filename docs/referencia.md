@@ -63,7 +63,7 @@ um hook `PreToolUse` que bloqueia, em **qualquer modo de permissão** e sem depe
 e o **push forçado/destrutivo** (`--force`, `-f`, `--delete`, `+ref`, `:ref`), inclusive dentro de `sh -c`, `$(...)` e depois de `&&`. Limites: variável, `eval` ou script externo escapam (não é sandbox, que não
 existe no Windows nativo), e um comando que só cita o texto (mensagem de commit com `gh pr merge`) pode ser barrado: reescreva sem o comando literal. O `deny` do template segue como segunda camada.
 
-**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.12.0"`). Quem decide a versão na máquina é a entrada
+**Versão fixada:** o template fixa a versão com `"ref"` (tag, ex.: `"ref": "v0.13.0"`). Quem decide a versão na máquina é a entrada
 `claude-sdd-framework` do `~/.claude/settings.json`; para subir de versão, troque o `ref` dela, rode
 `claude plugin marketplace add "...git#vNOVA"` e `claude plugin update sdd@claude-sdd-framework --scope project`
 ([passo a passo](instalacao.md#e-atualizar-a-versão)). Sem `ref`, vale a branch padrão do repositório
