@@ -47,4 +47,5 @@ com `Relacionada a: done/<feature>`).
 | [context-management](done/context-management/spec.md) | 2026-10-14 | pedido do usuário | Gestão de contexto pela doc oficial: `autoCompactWindow` (settings e subagentes), `Compact instructions`, o que sobrevive à compactação (`sdd` 0.11.1) |
 | [merge-guard](done/merge-guard/spec.md) | 2026-10-14 | pedido do usuário | Hook `merge-guard` bloqueia merge de PR e push forçado em qualquer modo, inclusive `sh -c` (`sdd` 0.12.0) |
 | [office-ask-at-start](done/office-ask-at-start/spec.md) | 2026-10-15 | pedido do usuário | A pergunta da salinha passa a ser feita pelo `/sdd:start` (uma vez, só com `pref=unset`); padrão desligado (`sdd` 0.12.0) |
+| [mcp-context7-devtools](done/mcp-context7-devtools/spec.md) | 2026-10-15 | pedido do usuário | MCPs Context7 (docs de bibliotecas) e Chrome DevTools (inspeção) com lançadores endurecidos, parecer de segurança e testes (`sdd` 0.13.0) |
 | [docs-install](done/docs-install/spec.md) | 2026-10-15 | pedido do usuário | Documentação refeita: instalação por tipo (A a F), CLI por SO, verificadores `check-env` e testes (`sdd` 0.12.0) |

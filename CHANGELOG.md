@@ -2,6 +2,21 @@
 
 Formato por versão (semver). Regras de versionamento: `.specs/done/sdd-plugin/design.md`, seção 6.
 
+## sdd 0.13.0 — 2026-10-15
+
+MCPs Context7 e Chrome DevTools no plugin (`.specs/done/mcp-context7-devtools/spec.md`, parecer em `security-review.md`). Não é release (sem tag): marketplace, `ref` e docs de instalação seguem em `v0.12.0`.
+
+- **Context7** (`mcp/context7.js`, `@upstash/context7-mcp@4.4.2`, MIT): `backend`, `frontend` e `mobile` consultam a API atual das bibliotecas da stack (`resolve-library-id` e `query-docs`, só leitura). A consulta sai da máquina
+  (serviço de terceiro): os agentes enviam só nome e pergunta genérica, nunca código ou segredo; a resposta é dado não confiável. Ambiente do servidor por **lista de permissão** (nenhum token de GitHub/Atlassian/nuvem chega ao pacote).
+- **Chrome DevTools** (`mcp/devtools.js`, `chrome-devtools-mcp@1.11.0`, Apache-2.0): o `frontend` ganha 19 ferramentas de **inspeção** (console, rede, DOM/acessibilidade, estilos, emulação, traces de performance, `lighthouse_audit`);
+  a interação segue com o Playwright. Lançador com `--isolated`, `--no-usage-statistics`, `--no-performance-crux`, `--no-javascript-evaluation`, `--no-file-navigations`, `--redact-network-headers`, `--no-category-input`,
+  `--no-category-memory` e bloqueio de metadata de nuvem. `SDD_DEVTOOLS_HEADLESS=1` para CI/WSL.
+- **Modelos de settings**: `evaluate_script`, `upload_file`, `take_heapsnapshot` e `screencast_start` em `deny`; `new_page` e `navigate_page` em `ask`. Context7 sem regra (o Claude Code pergunta na 1ª chamada). **Migração:** projetos
+  existentes precisam acrescentar essas 6 entradas ao `permissions` (o modelo é uma cópia).
+- Testes `req015-context7` (24) e `req016-devtools` (83); o teste de docs passa a separar a versão **lançada** (marketplace, `ref`, `SDD_VERSION`, comandos) da versão do plugin em desenvolvimento (badge, arquitetura, manual).
+- Verificado no CLI real: `tools/list` pelos lançadores (2 e 21 ferramentas); piloto com `sdd:backend` (consulta ao Context7 enviando só "FastAPI" e perguntas genéricas) e com `sdd:frontend` (inspeção headless de uma página local:
+  título, erro de console, 404 de rede; recusou o texto de prompt injection que pusemos na página de teste). Não verificado: auditoria do código dos pacotes, tráfego de rede, macOS/Linux fora da CI, páginas reais.
+
 ## Release v0.12.0 — 2026-10-14
 
 Inclui: `sdd` 0.12.0 (acumula 0.11.1 e 0.12.0; a `v0.11.1` não chegou a ser fixada nos docs de quem já instalou), `authoring` 0.2.1.

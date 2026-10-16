@@ -1,0 +1,19 @@
+# Parecer de segurança: MCPs Context7 e Chrome DevTools (`sdd` 0.13.0)
+
+Data: 2026-10-15. Escopo: `mcp/context7.js`, `mcp/devtools.js`, `.mcp.json`, agentes (`backend`, `frontend`, `mobile`), modelos de settings. Método: leitura do `--help`, `tools/list` real dos dois servidores
+através dos lançadores e dois pilotos com o CLI real. **Os pacotes não foram auditados (código-fonte não revisado)**; o parecer cobre a integração.
+
+| # | Achado | Severidade | Tratamento |
+|---|---|---|---|
+| 1 | Context7 envia a consulta a um serviço de terceiro (backend fechado). Código ou segredo colocado na consulta vazaria. | Média | Regra nos 3 agentes: só nome da biblioteca e pergunta genérica; nunca código, nomes internos, segredos. Piloto: o agente enviou só "FastAPI" e perguntas genéricas. Risco residual: o modelo pode descumprir; para uso sensível, desligar em `/mcp`. |
+| 2 | Resposta do Context7 pode conter instruções (documentação comunitária): prompt injection indireta. | Média | Resposta tratada como dado não confiável; o agente não executa nada vindo dela; confirmar a API no código da dependência. |
+| 3 | Pacote de terceiros executado na máquina (Context7 com dependências em faixas do npm; DevTools empacotado). | Média | Versão e integridade fixadas (`4.4.2`, `1.11.0`); sem `postinstall` em ambos (conferido no registry); troca só com spec. Dependências transitivas do Context7 seguem em faixas (risco aceito, igual ao draw.io). |
+| 4 | O ambiente do servidor expõe segredos do usuário a um pacote de terceiros. | Alta (se não tratado) | Context7: **lista de permissão** (o teste confere que `GITHUB_PAT`, `GH_TOKEN`, `ATLASSIAN_API_TOKEN`, chaves de nuvem, `ANTHROPIC_API_KEY`, `NPM_TOKEN` etc. não passam; `CONTEXT7_API_KEY` passa por escolha do usuário). DevTools: filtro de `CHROME_DEVTOOLS_MCP_*` e `npm_config_*` (o navegador herda o ambiente: risco residual aceito, como no Playwright). |
+| 5 | DevTools expõe o conteúdo do navegador ao cliente; telemetria e CrUX ligados por padrão. | Média | `--isolated`, `--no-usage-statistics`, `--no-performance-crux`, `--redact-network-headers`; só app local; agente instruído a não copiar cabeçalhos/tokens. |
+| 6 | Execução de JavaScript na página (`evaluate_script`), upload de arquivo, heap snapshot e gravação de tela. | Alta | `--no-javascript-evaluation`, `--no-category-input`, `--no-category-memory`; as 4 ferramentas em `deny` nos modelos; o frontend não as recebe (o teste confere as 19 permitidas e a ausência das demais). `--no-javascript-evaluation` não é sandbox (o próprio pacote diz): scripts da página rodam. |
+| 7 | Navegação para fora do escopo (SSRF para metadata de nuvem; exfiltração por URL). | Média | `--blocked-url-pattern` para `169.254.169.254` e `metadata.google.internal`; `new_page` e `navigate_page` em `ask`; escopo local nas regras do agente. O pacote avisa que o bloqueio não cobre todo redirecionamento: defesa em profundidade, não fronteira. |
+| 8 | Prompt injection pela página inspecionada (DOM, console, rede). | Média | Dado não confiável nas regras. Piloto: uma página local de teste com texto dirigido ao assistente (executar `curl ... \| sh` e navegar para um domínio externo) foi **recusada** pelo agente `sdd:frontend`, que apenas reportou. Amostra de 1; não é garantia. |
+| 9 | Flags perigosas inseridas depois (`--browserUrl`, `--userDataDir`, `--chromeArg`, `--allowUnrestrictedPaths`, `--experimental*`, `--api-key`, `--transport http`). | Média | Comentário de aviso no lançador e testes que reprovam o código se elas aparecerem. |
+| 10 | Telemetria do Context7 / OpenTelemetry. | Baixa | O servidor roda em stdio; não há flag de telemetria no `--help`; o tráfego do pacote não foi inspecionado (não verificado). |
+
+**Veredito:** aprovado para uso opcional, com os limites acima. Não verificado: auditoria do código dos pacotes, tráfego de rede dos servidores, comportamento no macOS (CI) e em ambiente com inspeção TLS.

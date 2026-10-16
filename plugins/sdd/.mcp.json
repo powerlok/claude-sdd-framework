@@ -2,11 +2,27 @@
   "mcpServers": {
     "drawio": {
       "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/drawio.js"]
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/mcp/drawio.js"
+      ]
     },
     "playwright": {
       "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/playwright.js"]
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/mcp/playwright.js"
+      ]
+    },
+    "context7": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/mcp/context7.js"
+      ]
+    },
+    "devtools": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/mcp/devtools.js"
+      ]
     }
   }
 }
