@@ -6,7 +6,7 @@
 LC_ALL=C
 export LC_ALL
 
-SDD_VERSION="0.12.0"            # versão do framework (o teste confere com plugin.json)
+SDD_VERSION="0.13.0"            # versão do framework (o teste confere com plugin.json)
 MIN_CLAUDE="2.1.288"
 REPO_URL="https://github.com/powerlok/claude-sdd-framework.git"
 DOC="docs/instalacao.md"

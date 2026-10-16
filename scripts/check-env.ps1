@@ -7,7 +7,7 @@ param(
 )
 
 try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
-$SddVersion = "0.12.0"            # versão do framework (o teste confere com plugin.json)
+$SddVersion = "0.13.0"            # versão do framework (o teste confere com plugin.json)
 $MinClaude  = [version]"2.1.288"
 $RepoUrl    = "https://github.com/powerlok/claude-sdd-framework.git"
 $Doc        = "docs/instalacao.md"
